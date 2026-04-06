@@ -2,6 +2,7 @@
 import Input from '@/components/shared/Input.astro';
 import Password from '@/icons/Password.astro';
 import User from '@/icons/User.astro';
+import Deliveries from '@/icons/Deliveries.astro';
 ---
 
 <div class="flex min-h-screen">
@@ -19,9 +20,7 @@ import User from '@/icons/User.astro';
             type="checkbox"
             class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
           />
-          <label for="remember-me" class="ml-3 block text-sm text-slate-900">
-            Remember me
-          </label>
+          <label for="remember-me" class="ml-3 block text-sm text-slate-900"> Remember me </label>
         </div>
         <div class="text-sm">
           <a href="javascript:void(0);" class="text-blue-600 hover:underline font-medium">
@@ -48,12 +47,8 @@ import User from '@/icons/User.astro';
     </form>
   </div>
 
-  <!-- Logo (hidden on mobile) -->
+  <!-- Illustration (hidden on mobile) -->
   <div class="hidden lg:flex w-1/2 items-center justify-center bg-slate-50">
-    <img
-      src="/assets/login-image.webp"
-      class="w-4/5 max-w-lg object-cover"
-      alt="login img"
-    />
+    <Deliveries class="w-4/5 max-w-lg" />
   </div>
 </div>
