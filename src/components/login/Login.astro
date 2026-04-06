@@ -4,60 +4,56 @@ import Password from '@/icons/Password.astro';
 import User from '@/icons/User.astro';
 ---
 
-<div class="flex flex-col md:flex-row min-h-screen">
-  <div class="min-h-screen flex flex-col items-center justify-center">
-    <div>
-      <div class="grid lg:grid-cols-2 items-center gap-6 max-w-6xl w-full">
-        <div class="flex items-center justify-center max-w-full">
-          <form class="space-y-4">
-            <Input label="User name" name="username" icon={User} required />
-            <Input label="Password" name="password" type="password" icon={Password} required />
+<div class="flex min-h-screen">
+  <!-- Login form -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+    <form class="w-full max-w-sm space-y-4">
+      <Input label="User name" name="username" icon={User} required />
+      <Input label="Password" name="password" type="password" icon={Password} required />
 
-            <div class="flex flex-wrap items-center justify-between gap-4">
-              <div class="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-                />
-                <label for="remember-me" class="ml-3 block text-sm text-slate-900">
-                  Remember me
-                </label>
-              </div>
-              <div class="text-sm">
-                <a href="jajvascript:void(0);" class="text-blue-600 hover:underline font-medium">
-                  Forgot your password?
-                </a>
-              </div>
-            </div>
-
-            <div class="mt-12!">
-              <button
-                type="button"
-                class="w-full shadow-xl py-2.5 px-4 text-[15px] font-medium tracking-wide rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer"
-              >
-                Sign in
-              </button>
-              <p class="text-sm mt-6! text-center text-slate-600">
-                Don't have an account <a
-                  href="javascript:void(0);"
-                  class="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap"
-                  >Register here</a
-                >
-              </p>
-            </div>
-          </form>
-        </div>
-
-        <div class="hidden lg:block max-lg:mt-8">
-          <img
-            src="/assets/login-image.webp"
-            class="w-full aspect-71/50 max-lg:w-4/5 mx-auto block object-cover"
-            alt="login img"
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center">
+          <input
+            id="remember-me"
+            name="remember-me"
+            type="checkbox"
+            class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
           />
+          <label for="remember-me" class="ml-3 block text-sm text-slate-900">
+            Remember me
+          </label>
+        </div>
+        <div class="text-sm">
+          <a href="javascript:void(0);" class="text-blue-600 hover:underline font-medium">
+            Forgot your password?
+          </a>
         </div>
       </div>
-    </div>
+
+      <div class="mt-12!">
+        <button
+          type="button"
+          class="w-full shadow-xl py-2.5 px-4 text-[15px] font-medium tracking-wide rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer"
+        >
+          Sign in
+        </button>
+        <p class="text-sm mt-6! text-center text-slate-600">
+          Don't have an account <a
+            href="javascript:void(0);"
+            class="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap"
+            >Register here</a
+          >
+        </p>
+      </div>
+    </form>
+  </div>
+
+  <!-- Logo (hidden on mobile) -->
+  <div class="hidden lg:flex w-1/2 items-center justify-center bg-slate-50">
+    <img
+      src="/assets/login-image.webp"
+      class="w-4/5 max-w-lg object-cover"
+      alt="login img"
+    />
   </div>
 </div>
