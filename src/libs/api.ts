@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.LARAVEL_API_URL;
+const API_URL = import.meta.env.PUBLIC_LARAVEL_API_URL;
 
 export async function laravelApi(path: string, options: RequestInit = {}, token?: string) {
   const headers = new Headers(options.headers);
