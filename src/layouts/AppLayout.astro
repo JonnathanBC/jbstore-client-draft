@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 
+import { Toaster } from 'sileo';
+
 import Header from '@/components/shared/Header.astro';
 import Footer from '@/components/shared/Footer.astro';
 
@@ -27,6 +29,8 @@ const { title = 'Mi App' } = Astro.props;
         <slot />
       </div>
     </main>
+
+    <Toaster position="top-right" client:load />
 
     <Footer />
   </body>
