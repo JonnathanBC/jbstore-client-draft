@@ -8,14 +8,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (isPublic) return next();
 
   const token = context.cookies.get('auth_token')?.value;
-  if (!token) return context.redirect('/login');
 
-  const res = await laravelApi('/user', {}, token);
-  if (!res.ok) {
-    context.cookies.delete('auth_token', { path: '/' });
-    return context.redirect('/login');
-  }
+  console.log({ token });
+  // if (!token) return context.redirect('/login');
 
-  context.locals.user = await res.json();
+  // const res = await laravelApi('/user', {}, token);
+  // if (!res.ok) {
+  //   context.cookies.delete('auth_token', { path: '/' });
+  //   return context.redirect('/login');
+  // }
+
+  // context.locals.user = await res.json();
   return next();
 });
