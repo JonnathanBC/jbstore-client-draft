@@ -1,0 +1,36 @@
+---
+import { cn } from '@/libs/utils';
+
+interface Props {
+  breadcrumbs?: { label: string; href?: string }[];
+}
+
+const { breadcrumbs } = Astro.props;
+---
+
+{
+  breadcrumbs && (
+    <nav class="mb-4">
+      <ol class="flex flex-wrap">
+        {breadcrumbs.map((breadcrumb) => {
+          const isFirstItem = breadcrumbs.indexOf(breadcrumb) === 0;
+          return (
+            <li
+              class={cn('text-sm leading-normal text-slate-900', {
+                "pl-2 before:float-left before:pr-2 before:content-['/']": !isFirstItem,
+              })}
+            >
+              {breadcrumb.href ? (
+                <a href={breadcrumb.href} class="opacity-60">
+                  {breadcrumb.label}
+                </a>
+              ) : (
+                breadcrumb.label
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  )
+}

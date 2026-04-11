@@ -1,13 +1,16 @@
 ---
 // AdminLayout.astro
 import '../styles/global.css';
+
+import Breadcrumbs from '@/components/shared/Breadcrumbs.astro';
 import Sidebar from '@/components/admin/Sidebar.astro';
 
 interface Props {
   title?: string;
+  breadcrumbs?: { label: string; href?: string }[];
 }
 
-const { title = 'Panel de Administración | JB Store' } = Astro.props;
+const { title = 'Panel de Administración | JB Store', breadcrumbs = [] } = Astro.props;
 ---
 
 <!doctype html>
@@ -22,7 +25,9 @@ const { title = 'Panel de Administración | JB Store' } = Astro.props;
   <body>
     <Sidebar />
 
-    <div class="p-4 sm:ml-64 mt-14 min-h-screen">
+    <div class="p-4 sm:ml-64 min-h-screen pt-18">
+      <Breadcrumbs breadcrumbs={breadcrumbs} />
+
       <main class="p-4 border border-gray-200 border-dashed rounded-lg">
         <slot />
       </main>

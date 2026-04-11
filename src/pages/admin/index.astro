@@ -1,5 +1,31 @@
 ---
+import User from '@/icons/User.astro';
 import AdminLayout from '@/layouts/AdminLayout.astro';
+
+const breadcrumbs = [
+  {
+    label: 'Dashboard',
+    href: '/admin',
+  },
+];
 ---
 
-<AdminLayout> Administrador </AdminLayout>
+<AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex items-center">
+        <div class="flex items-center justify-center size-10 rounded-full bg-gray-200">
+          <User />
+        </div>
+        <div class="ml-4 flex-1">
+          <h2 class="text-lg">Bienvenido, User not logged in</h2>
+
+          <!-- Logout button -->
+        </div>
+      </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+      <h2 class="text-lg font-semibold">JB Store</h2>
+    </div>
+  </div>
+</AdminLayout>
