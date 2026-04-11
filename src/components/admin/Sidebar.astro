@@ -47,3 +47,28 @@ const menuItems = [
     </ul>
   </div>
 </aside>
+
+<div id="sidebar-overlay" class="fixed inset-0 z-30 bg-black/40 hidden sm:hidden"></div>
+
+<script>
+  import { isSidebarOpen } from '@/stores';
+
+  const sidebar = document.getElementById('top-bar-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+
+  // Cerrar sidebar
+  const closeSidebar = () => isSidebarOpen.set(false);
+
+  overlay?.addEventListener('click', closeSidebar);
+
+  isSidebarOpen.subscribe((open) => {
+    // Sidebar
+    sidebar?.classList.toggle('-translate-x-full', !open);
+    sidebar?.classList.toggle('translate-x-0', open);
+    sidebar?.classList.toggle('ease-out', open);
+    sidebar?.classList.toggle('ease-in', !open);
+
+    // Overlay
+    overlay?.classList.toggle('hidden', !open);
+  });
+</script>

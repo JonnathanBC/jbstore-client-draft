@@ -3,9 +3,7 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center justify-start rtl:justify-end">
         <button
-          data-drawer-target="top-bar-sidebar"
-          data-drawer-toggle="top-bar-sidebar"
-          aria-controls="top-bar-sidebar"
+          id="sidebar-toggle"
           type="button"
           class="sm:hidden text-gray-500 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm p-2 focus:outline-none"
         >
@@ -77,3 +75,11 @@
     </div>
   </div>
 </nav>
+
+<script>
+  import { isSidebarOpen } from '@/stores';
+
+  document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+    isSidebarOpen.set(!isSidebarOpen.get());
+  });
+</script>
