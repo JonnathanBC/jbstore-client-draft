@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/i18n';
+import Table from '@/components/shared/Table.astro';
 
 const breadcrumbs = [
   {
@@ -11,6 +12,38 @@ const breadcrumbs = [
     label: t('global.families'),
   },
 ];
+
+const columns = [
+  {
+    title: 'ID',
+    dataIndex: 'id',
+  },
+  {
+    title: 'Name',
+    dataIndex: 'name',
+  },
+];
+
+const dataSource = [
+  {
+    id: 1,
+    name: 'Electronics',
+  },
+  {
+    id: 2,
+    name: 'Clothing',
+  },
+  {
+    id: 3,
+    name: 'Home & Kitchen',
+  },
+  {
+    id: 4,
+    name: 'Sports',
+  },
+];
 ---
 
-<AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}> njnj </AdminLayout>
+<AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}>
+  <Table columns={columns} dataSource={dataSource} />
+</AdminLayout>
