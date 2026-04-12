@@ -1,0 +1,16 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/i18n';
+
+const breadcrumbs = [
+  {
+    label: t('global.dashboard'),
+    href: '/admin',
+  },
+  {
+    label: t('global.families'),
+  },
+];
+---
+
+<AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}> njnj </AdminLayout>
