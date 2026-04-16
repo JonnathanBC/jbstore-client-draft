@@ -7,7 +7,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const token = context.cookies.get('auth_token')?.value;
 
   if (token) {
-    const res = await laravelApi('api/auth/user', {}, token);
+    const res = await laravelApi('api/auth/me', {}, token);
     if (res.ok) {
       context.locals.user = await res.json();
     } else {
