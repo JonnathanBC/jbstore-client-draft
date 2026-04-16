@@ -1,15 +1,23 @@
 import { laravelApi } from '@/libs/api';
 import { defineMiddleware } from 'astro:middleware';
+import type { User } from './types/user';
 
 const PROTECTED_PREFIXES = ['/admin'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  context.locals.user = null;
+  context.locals.isAdmin = false;
+
   const token = context.cookies.get('auth_token')?.value;
 
   if (token) {
     try {
-      const { data } = await laravelApi(token).get('/api/auth/me');
-      context.locals.user = data;
+      const { data: user } = await laravelApi(token).get<User>('/api/auth/me');
+
+      if (user) {
+        context.locals.user = user;
+        context.locals.isAdmin = user.role === 'ROLE_ADMIN';
+      }
     } catch {
       context.cookies.delete('auth_token', { path: '/' });
     }

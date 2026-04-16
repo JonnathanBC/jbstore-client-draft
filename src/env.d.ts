@@ -1,12 +1,14 @@
 /// <reference path="../.astro/types.d.ts" />
 
-declare namespace App {
-  interface Locals {
-    user?: {
-      id: number;
-      name: string;
-      email: string;
-      avatar?: string;
-    };
+import type { User } from './types/user';
+
+declare global {
+  namespace App {
+    interface Locals {
+      user: User | null;
+      isAdmin: boolean;
+    }
   }
 }
+
+export {};

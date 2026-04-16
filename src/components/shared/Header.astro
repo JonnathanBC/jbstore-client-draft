@@ -1,5 +1,7 @@
 ---
-// src/components/Header.astro
+import Cart from '@/icons/Cart.astro';
+
+const { isAdmin } = Astro.locals;
 ---
 
 <header class="h-16 border-b bg-white flex items-center px-6">
@@ -11,7 +13,17 @@
     <nav class="flex items-center gap-6 text-sm">
       <a href="/" class="hover:text-black">Inicio</a>
       <a href="/products" class="hover:text-black">Productos</a>
-      <a href="/cart" class="hover:text-black">Carrito</a>
+      {
+        isAdmin && (
+          <a href="/admin" class="hover:text-black">
+            Admin
+          </a>
+        )
+      }
+
+      <a href="/cart" class="hover:text-black">
+        <Cart />
+      </a>
     </nav>
   </div>
 </header>
