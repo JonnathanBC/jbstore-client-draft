@@ -16,7 +16,7 @@ import Google from '@/icons/Google.astro';
       <Input label="Password" name="password" type="password" icon={Password} required />
       <Input
         label="Confirm Password"
-        name="confirm_password"
+        name="password_confirmation"
         type="password"
         icon={Password}
         required
@@ -87,6 +87,6 @@ import Google from '@/icons/Google.astro';
       return;
     }
 
-    window.location.replace('/');
+    window.location.replace('/admin');
   });
 </script>

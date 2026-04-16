@@ -1,3 +1,4 @@
+import { laravelApi } from '@/libs/api';
 import { ActionError, defineAction } from 'astro:actions';
 import { z } from 'astro/zod';
 
@@ -9,13 +10,7 @@ export const getFamiliesAction = defineAction({
   handler: async (input, { cookies }) => {
     const token = cookies.get('auth_token')?.value;
 
-    const res = await fetch('http://localhost:90/api/families', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+    const res = await laravelApi('api/families', {}, token);
 
     const data = await res.json().catch(() => null);
 

@@ -1,23 +1,24 @@
-import { defineMiddleware } from 'astro:middleware';
 import { laravelApi } from '@/libs/api';
+import { defineMiddleware } from 'astro:middleware';
 
-const PUBLIC_PATHS = ['/login', '/register', '/api/auth/'];
+const PROTECTED_PREFIXES = ['/admin'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const isPublic = PUBLIC_PATHS.some((p) => context.url.pathname.startsWith(p));
-  if (isPublic) return next();
-
   const token = context.cookies.get('auth_token')?.value;
 
-  console.log({ token });
-  // if (!token) return context.redirect('/login');
+  if (token) {
+    const res = await laravelApi('api/auth/user', {}, token);
+    if (res.ok) {
+      context.locals.user = await res.json();
+    } else {
+      context.cookies.delete('auth_token', { path: '/' });
+    }
+  }
 
-  // const res = await laravelApi('/user', {}, token);
-  // if (!res.ok) {
-  //   context.cookies.delete('auth_token', { path: '/' });
-  //   return context.redirect('/login');
-  // }
+  const isProtected = PROTECTED_PREFIXES.some((p) => context.url.pathname.startsWith(p));
+  if (isProtected && !context.locals.user) {
+    return context.redirect('/login');
+  }
 
-  // context.locals.user = await res.json();
   return next();
 });

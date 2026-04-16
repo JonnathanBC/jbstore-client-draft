@@ -1,7 +1,6 @@
-import { defineAction } from 'astro:actions';
-import { z } from 'astro/zod';
-
 import { laravelApi } from '@/libs/api';
+import { z } from 'astro/zod';
+import { ActionError, defineAction } from 'astro:actions';
 
 export const loginAction = defineAction({
   accept: 'json',
@@ -10,26 +9,28 @@ export const loginAction = defineAction({
     password: z.string().min(1),
   }),
   handler: async (input, context) => {
-    return { success: true };
-    // const res = await laravelApi('/login', {
-    //   method: 'POST',
-    //   body: JSON.stringify(input),
-    // });
+    const res = await laravelApi('api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
 
-    // const data = await res.json();
+    const data = await res.json().catch(() => null);
 
-    // if (!res.ok) {
-    //   throw new Error(data.message || 'Invalid credentials');
-    // }
+    if (!res.ok) {
+      throw new ActionError({
+        code: res.status === 422 ? 'BAD_REQUEST' : 'UNAUTHORIZED',
+        message: data?.message ?? 'Invalid credentials',
+      });
+    }
 
-    // context.cookies.set('auth_token', data.token, {
-    //   httpOnly: true,
-    //   secure: import.meta.env.PROD,
-    //   sameSite: 'lax',
-    //   path: '/',
-    //   maxAge: 60 * 60 * 24 * 7,
-    // });
+    context.cookies.set('auth_token', data.token, {
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
 
-    // return { user: data.user };
+    return { user: data.user };
   },
 });

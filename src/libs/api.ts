@@ -4,8 +4,6 @@ export async function laravelApi(path: string, options: RequestInit = {}, token?
   const headers = new Headers(options.headers);
   headers.set('Accept', 'application/json');
 
-  console.log({ options, API_URL });
-
   if (!(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }

@@ -90,16 +90,16 @@ import Google from '@/icons/Google.astro';
       password: formData.get('password') as string,
     });
 
-    //   if (error) {
-    //     if (isInputError(error)) {
-    //       const messages = Object.values(error.fields).flat();
-    //       errorDiv.textContent = messages.join('. ');
-    //     } else {
-    //       errorDiv.textContent = error.message || 'Something went wrong';
-    //     }
-    //     errorDiv.classList.remove('hidden');
-    //   } else {
-    //     window.location.href = '/';
-    //   }
+    if (error) {
+      if (isInputError(error)) {
+        const messages = Object.values(error.fields).flat();
+        errorDiv.textContent = messages.join('. ');
+      } else {
+        errorDiv.textContent = error.message || 'Something went wrong';
+      }
+      errorDiv.classList.remove('hidden');
+    } else {
+      window.location.href = '/admin';
+    }
   });
 </script>
