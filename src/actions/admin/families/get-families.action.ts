@@ -1,8 +1,8 @@
-import { laravelApi } from '@/libs/api';
+import { laravelApi, toActionError } from '@/libs/api';
 import type { ApiResponse } from '@/types/api';
 import type { Family } from '@/types/family';
 import { z } from 'astro/zod';
-import { ActionError, defineAction } from 'astro:actions';
+import { defineAction } from 'astro:actions';
 
 export const getFamiliesAction = defineAction({
   accept: 'json',
@@ -13,23 +13,15 @@ export const getFamiliesAction = defineAction({
   }),
   handler: async (input, { cookies }) => {
     const token = cookies.get('auth_token')?.value;
+    const api = laravelApi(token);
 
-    const qs = new URLSearchParams();
-    if (input.page) qs.set('page', String(input.page));
-    if (input.per_page) qs.set('per_page', String(input.per_page));
-    if (input.name) qs.set('name', input.name);
-
-    const path = `api/families${qs.toString() ? `?${qs}` : ''}`;
-    const res = await laravelApi(path, {}, token);
-    const body = await res.json().catch(() => null);
-
-    if (!res.ok) {
-      throw new ActionError({
-        code: res.status === 401 ? 'UNAUTHORIZED' : 'BAD_REQUEST',
-        message: body?.message ?? `Laravel respondió ${res.status}`,
+    try {
+      const { data } = await api.get<ApiResponse<Family>>('/api/families', {
+        params: input,
       });
+      return data;
+    } catch (err) {
+      throw toActionError(err);
     }
-
-    return body as ApiResponse<Family>;
   },
 });

@@ -7,7 +7,9 @@ export const logoutAction = defineAction({
     const token = context.cookies.get('auth_token')?.value;
 
     if (token) {
-      await laravelApi('api/auth/logout', { method: 'POST' }, token).catch(() => null);
+      await laravelApi(token)
+        .post('/api/auth/logout')
+        .catch(() => null);
     }
 
     context.cookies.delete('auth_token', { path: '/' });
