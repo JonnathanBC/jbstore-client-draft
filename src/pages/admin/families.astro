@@ -2,6 +2,7 @@
 import AdminLayout from '@/layouts/AdminLayout.astro';
 import Table from '@/components/shared/Table.astro';
 import { t } from '@/i18n';
+import { actions } from 'astro:actions';
 
 const breadcrumbs = [
   {
@@ -42,8 +43,15 @@ const dataSource = [
     name: 'Sports',
   },
 ];
+
+const { error, data: families } = await Astro.callAction(actions.getFamilies, {
+  name: 'Example Family Name',
+});
+console.log('Families:', families);
+console.log('Error:', error?.message);
 ---
 
 <AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}>
+  {error && <p class="text-red-500">{error.message}</p>}
   <Table columns={columns} dataSource={dataSource} />
 </AdminLayout>
