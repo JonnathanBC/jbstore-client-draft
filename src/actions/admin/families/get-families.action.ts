@@ -1,17 +1,26 @@
 import { laravelApi } from '@/libs/api';
-import { familiesPaginatedSchema } from '@/schemas/family.schema';
+import type { ApiResponse } from '@/types/api';
+import type { Family } from '@/types/family';
 import { z } from 'astro/zod';
 import { ActionError, defineAction } from 'astro:actions';
 
 export const getFamiliesAction = defineAction({
   accept: 'json',
   input: z.object({
+    page: z.number().int().min(1).optional(),
+    per_page: z.number().int().min(1).max(100).optional(),
     name: z.string().optional(),
   }),
-  handler: async (_input, { cookies }) => {
+  handler: async (input, { cookies }) => {
     const token = cookies.get('auth_token')?.value;
 
-    const res = await laravelApi('api/families', {}, token);
+    const qs = new URLSearchParams();
+    if (input.page) qs.set('page', String(input.page));
+    if (input.per_page) qs.set('per_page', String(input.per_page));
+    if (input.name) qs.set('name', input.name);
+
+    const path = `api/families${qs.toString() ? `?${qs}` : ''}`;
+    const res = await laravelApi(path, {}, token);
     const body = await res.json().catch(() => null);
 
     if (!res.ok) {
@@ -21,14 +30,6 @@ export const getFamiliesAction = defineAction({
       });
     }
 
-    const parsed = familiesPaginatedSchema.safeParse(body);
-    if (!parsed.success) {
-      throw new ActionError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Respuesta inesperada de Laravel: ${parsed.error.message}`,
-      });
-    }
-
-    return parsed.data;
+    return body as ApiResponse<Family>;
   },
 });

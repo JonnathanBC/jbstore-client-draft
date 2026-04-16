@@ -1,39 +1,35 @@
 ---
 import { actions } from 'astro:actions';
 import Table from '@/components/shared/Table.astro';
+import Pagination from '@/components/shared/Pagination.astro';
 import { t } from '@/i18n';
 import AdminLayout from '@/layouts/AdminLayout.astro';
 
+const page = Number(Astro.url.searchParams.get('page') ?? 1);
+const perPage = Number(Astro.url.searchParams.get('per_page') ?? 10);
+
 const { error, data: families } = await Astro.callAction(actions.getFamilies, {
-  name: 'Example Family Name',
+  page,
+  per_page: perPage,
 });
 
 const breadcrumbs = [
-  {
-    label: t('admin.dashboard'),
-    href: '/admin',
-  },
-  {
-    label: t('admin.families'),
-  },
+  { label: t('admin.dashboard'), href: '/admin' },
+  { label: t('admin.families') },
 ];
 
 const columns = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-  },
-  {
-    title: 'Name',
-    dataIndex: 'name',
-  },
+  { title: 'ID', dataIndex: 'id' },
+  { title: 'Name', dataIndex: 'name' },
 ];
 
-const dataSource = families?.data?.map((f) => ({ id: f.id, name: f.name }));
+const dataSource = families?.data?.map((f) => ({ id: f.id, name: f.name })) ?? [];
 ---
 
 <AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}>
   {error && <p class="text-red-500">{error.message}</p>}
 
   <Table columns={columns} dataSource={dataSource} />
+
+  {families && <Pagination meta={families} />}
 </AdminLayout>

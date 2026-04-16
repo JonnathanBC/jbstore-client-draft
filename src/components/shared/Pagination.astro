@@ -1,0 +1,43 @@
+---
+import type { ApiResponse } from '@/types/api';
+
+interface Props {
+  meta: ApiResponse<unknown>;
+}
+
+const { meta } = Astro.props;
+
+function hrefFor(page: number): string {
+  const params = new URLSearchParams(Astro.url.searchParams);
+  params.set('page', String(page));
+  return `?${params.toString()}`;
+}
+---
+
+<nav class="flex items-center justify-between mt-4 text-sm">
+  <span class="text-slate-600">
+    Mostrando {meta.from ?? 0}–{meta.to ?? 0} de {meta.total}
+  </span>
+
+  <div class="flex gap-1">
+    {
+      meta.links.map((link) =>
+        link.url === null || link.page === null ? (
+          <span
+            class="px-3 py-1 border rounded text-slate-300 cursor-not-allowed"
+            set:html={link.label}
+          />
+        ) : (
+          <a
+            href={hrefFor(link.page)}
+            class:list={[
+              'px-3 py-1 border rounded hover:bg-slate-50',
+              link.active && 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700',
+            ]}
+            set:html={link.label}
+          />
+        )
+      )
+    }
+  </div>
+</nav>
