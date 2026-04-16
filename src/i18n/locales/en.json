@@ -1,5 +1,14 @@
 {
+  "admin": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "families": "Families",
+    "settings": "Settings",
+    "orders": "Orders",
+    "categories": "Categories"
+  },
   "global": {
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "products": "Products"
   }
 }
