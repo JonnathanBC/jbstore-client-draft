@@ -29,14 +29,11 @@ const columns = [
   },
 ];
 
-const dataSource = families?.data?.map((f: any) => ({ id: f.id, name: f.name }));
+const dataSource = families?.data?.map((f) => ({ id: f.id, name: f.name }));
 ---
 
 <AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}>
   {error && <p class="text-red-500">{error.message}</p>}
 
-  <Table
-    columns={columns}
-    dataSource={dataSource}
-  />
+  <Table columns={columns} dataSource={dataSource} />
 </AdminLayout>
