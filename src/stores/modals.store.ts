@@ -1,17 +1,18 @@
 import { modalRegistry } from '@/config/modalsRegistry';
 import { atom } from 'nanostores';
+import type { ComponentType } from 'react';
 
 type ModalType = keyof typeof modalRegistry;
 
-export const $modals = atom<{ _key: ModalType; Component: any; props: any }[]>([]);
+export const $modals = atom<{ _key: ModalType; Component: ComponentType<any>; props: any }[]>([]);
 
 export const openModal = (modalKey: ModalType, props: any = {}) => {
-  const Component = modalRegistry[modalKey]?.Component;
-  if (!Component) {
+  const modalConfig = modalRegistry[modalKey];
+  if (!modalConfig) {
     console.warn(`Modal ${modalKey} not found in registry`);
     return;
   }
-  $modals.set([...$modals.get(), { _key: modalKey, Component, props }]);
+  $modals.set([...$modals.get(), { _key: modalKey, Component: modalConfig.Component, props }]);
 };
 
 export const closeModal = (index: number) => {
