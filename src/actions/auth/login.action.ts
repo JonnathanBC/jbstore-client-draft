@@ -1,4 +1,4 @@
-import { laravelApi, toActionError } from '@/libs/api';
+import { apiClient, toActionError } from '@/services/api';
 import { z } from 'astro/zod';
 import { defineAction } from 'astro:actions';
 
@@ -10,7 +10,7 @@ export const loginAction = defineAction({
   }),
   handler: async (input, context) => {
     try {
-      const { data } = await laravelApi().post<{ user: unknown; token: string }>(
+      const { data } = await apiClient().post<{ user: unknown; token: string }>(
         '/api/auth/login',
         input,
       );

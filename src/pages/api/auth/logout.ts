@@ -1,11 +1,11 @@
 import type { APIRoute } from 'astro';
-import { laravelApi } from '@/libs/api';
+import { apiClient } from '@/services/api';
 
 export const POST: APIRoute = async ({ cookies }) => {
   const token = cookies.get('auth_token')?.value;
 
   if (token) {
-    await laravelApi('/logout', { method: 'POST' }, token);
+    await apiClient('/logout', { method: 'POST' }, token);
   }
 
   cookies.delete('auth_token', { path: '/' });

@@ -3,7 +3,7 @@ import { ActionError } from 'astro:actions';
 
 const API_URL = import.meta.env.PUBLIC_LARAVEL_API_URL;
 
-export function laravelApi(token?: string): AxiosInstance {
+export function apiClient(token?: string): AxiosInstance {
   return axios.create({
     baseURL: API_URL,
     headers: {

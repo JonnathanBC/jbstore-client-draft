@@ -1,4 +1,4 @@
-import { laravelApi } from '@/libs/api';
+import { apiClient } from '@/services/api';
 import { defineAction } from 'astro:actions';
 
 export const logoutAction = defineAction({
@@ -7,7 +7,7 @@ export const logoutAction = defineAction({
     const token = context.cookies.get('auth_token')?.value;
 
     if (token) {
-      await laravelApi(token)
+      await apiClient(token)
         .post('/api/auth/logout')
         .catch(() => null);
     }

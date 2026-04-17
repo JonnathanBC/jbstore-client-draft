@@ -1,4 +1,4 @@
-import { laravelApi } from '@/libs/api';
+import { apiClient } from '@/services/api';
 import { defineMiddleware } from 'astro:middleware';
 import type { User } from './types/user';
 
@@ -12,7 +12,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   if (token) {
     try {
-      const { data: user } = await laravelApi(token).get<User>('/api/auth/me');
+      const { data: user } = await apiClient(token).get<User>('/api/auth/me');
 
       if (user) {
         context.locals.user = user;

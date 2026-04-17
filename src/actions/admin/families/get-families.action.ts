@@ -1,4 +1,4 @@
-import { laravelApi, toActionError } from '@/libs/api';
+import { apiClient, toActionError } from '@/services/api';
 import type { ApiResponse } from '@/types/api';
 import type { Family } from '@/types/family';
 import { z } from 'astro/zod';
@@ -13,7 +13,7 @@ export const getFamiliesAction = defineAction({
   }),
   handler: async (input, { cookies }) => {
     const token = cookies.get('auth_token')?.value;
-    const api = laravelApi(token);
+    const api = apiClient(token);
 
     try {
       const { data } = await api.get<ApiResponse<Family>>('/api/families', {
