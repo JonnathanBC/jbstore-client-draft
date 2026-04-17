@@ -11,14 +11,16 @@ const { icon: Icon, label, name, placeholder, required, type = 'text' } = Astro.
 ---
 
 <div>
-  <label class="text-slate-900 text-sm font-medium mb-2 block">
-    {label}
+  <label class="text-slate-900 text-sm font-medium block">
+    <p class="mb-1">
+      {label}
+    </p>
     <div class="relative flex items-center">
       <input
         name={name}
         type={type}
         required
-        class="w-full text-sm text-slate-900 border border-slate-300 pl-4 pr-10 py-3 rounded-lg outline-blue-600"
+        class="w-full text-sm text-slate-900 border border-slate-300 pl-4 pr-10 py-3 rounded outline-purple-600"
         placeholder={placeholder}
       />
       {Icon && <Icon class="absolute right-4" />}

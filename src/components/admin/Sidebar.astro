@@ -3,6 +3,8 @@ import Dashboard from '@/icons/Dashboard.astro';
 import Navbar from './Navbar.astro';
 import { cn } from '@/libs/utils';
 
+const pathname = Astro.url.pathname;
+
 const menuItems = [
   {
     key: 'dashboard',
@@ -30,7 +32,8 @@ const menuItems = [
     <ul class="space-y-2 flex-1">
       {
         menuItems.map((menu) => {
-          const isActive = menu.href === Astro.url.pathname;
+          const isActive =
+            menu.href === '/admin' ? pathname === '/admin' : pathname.startsWith(menu.href);
 
           return (
             <li>

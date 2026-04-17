@@ -29,6 +29,10 @@ const dataSource = families?.data?.map((f) => ({ id: f.id, name: f.name })) ?? [
 <AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}>
   {error && <p class="text-red-500">{error.message}</p>}
 
+  <div class="text-right mb-4">
+    <a href="/admin/families/create" class="btn btn-primary"> Nuevo </a>
+  </div>
+
   <Table columns={columns} dataSource={dataSource} />
 
   {families && <Pagination meta={families} />}
