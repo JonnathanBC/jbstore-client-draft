@@ -1,9 +1,9 @@
 ---
-// AdminLayout.astro
 import '../styles/global.css';
 
 import Breadcrumbs from '@/components/shared/Breadcrumbs.astro';
 import Sidebar from '@/components/admin/Sidebar.astro';
+import { ModalsRender } from '@/context/ModalsRender';
 
 interface Props {
   title?: string;
@@ -31,6 +31,7 @@ const { title = 'Panel de Administración | JB Store', breadcrumbs = [] } = Astr
       <main class="p-4 border border-gray-200 border-dashed rounded-lg">
         <slot />
       </main>
+      <ModalsRender client:load />
     </div>
   </body>
 </html>
