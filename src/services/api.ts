@@ -6,6 +6,7 @@ const API_URL = import.meta.env.PUBLIC_LARAVEL_API_URL;
 export function apiClient(token?: string): AxiosInstance {
   return axios.create({
     baseURL: API_URL,
+    withCredentials: true,
     headers: {
       Accept: 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

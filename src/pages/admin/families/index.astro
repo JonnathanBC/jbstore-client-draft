@@ -11,6 +11,7 @@ const perPage = Number(Astro.url.searchParams.get('per_page') ?? 10);
 const { error, data: families } = await Astro.callAction(actions.getFamilies, {
   page,
   per_page: perPage,
+  order: { updated_at: 'desc' },
 });
 
 const breadcrumbs = [

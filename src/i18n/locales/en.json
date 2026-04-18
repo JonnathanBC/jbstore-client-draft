@@ -9,6 +9,8 @@
   },
   "global": {
     "welcome": "Welcome",
-    "products": "Products"
+    "products": "Products",
+    "new": "New",
+    "delete": "Delete"
   }
 }

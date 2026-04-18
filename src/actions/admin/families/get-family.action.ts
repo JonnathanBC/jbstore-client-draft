@@ -4,24 +4,22 @@ import type { Family } from '@/types/family';
 import { z } from 'astro/zod';
 import { defineAction } from 'astro:actions';
 
-export const getFamiliesAction = defineAction({
+export const getFamily = defineAction({
   accept: 'json',
   input: z.object({
-    page: z.number().int().min(1).optional(),
-    per_page: z.number().int().min(1).max(100).optional(),
-    name: z.string().optional(),
-    order: z.object({
-      updated_at: z.enum(['asc', 'desc']).optional(),
-    }),
+    id: z.number().int().min(1).optional(),
   }),
   handler: async (input, { cookies }) => {
     const token = cookies.get('auth_token')?.value;
     const api = apiClient(token);
 
+    const url = `/api/families/${input.id}`;
+
+    console.log('ID', input.id);
+    console.log('Calling URL:', url);
+
     try {
-      const { data } = await api.get<ApiResponse<Family>>('/api/families', {
-        params: input,
-      });
+      const { data } = await api.get<Family>(url);
       return data;
     } catch (err) {
       throw toActionError(err);
