@@ -21,6 +21,10 @@ const breadcrumbs = [
 const columns = [
   { title: 'ID', dataIndex: 'id' },
   { title: 'Name', dataIndex: 'name' },
+  {
+    title: 'Acciones',
+    dataIndex: 'acciones',
+  },
 ];
 
 const token = Astro.cookies.get('auth_token')?.value ?? '';
