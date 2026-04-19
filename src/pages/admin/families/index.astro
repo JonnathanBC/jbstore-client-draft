@@ -1,7 +1,6 @@
 ---
 import { actions } from 'astro:actions';
-import Table from '@/components/shared/Table.astro';
-import Pagination from '@/components/shared/Pagination.astro';
+import { CrudPageDetail } from '@/components/react/CrudPageDetail';
 import { t } from '@/i18n';
 import AdminLayout from '@/layouts/AdminLayout.astro';
 
@@ -24,7 +23,7 @@ const columns = [
   { title: 'Name', dataIndex: 'name' },
 ];
 
-const dataSource = families?.data?.map((f) => ({ id: f.id, name: f.name })) ?? [];
+const token = Astro.cookies.get('auth_token')?.value ?? '';
 ---
 
 <AdminLayout title="Dashboard" breadcrumbs={breadcrumbs}>
@@ -34,7 +33,11 @@ const dataSource = families?.data?.map((f) => ({ id: f.id, name: f.name })) ?? [
     <a href="/admin/families/create" class="btn btn-primary"> Nuevo </a>
   </div>
 
-  <Table columns={columns} dataSource={dataSource} />
-
-  {families && <Pagination meta={families} />}
+  <CrudPageDetail
+    token={token}
+    columns={columns}
+    apiResource="/api/families"
+    detailPath="/admin/families"
+    client:load
+  />
 </AdminLayout>
