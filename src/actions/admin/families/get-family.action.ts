@@ -13,13 +13,8 @@ export const getFamily = defineAction({
     const token = cookies.get('auth_token')?.value;
     const api = apiClient(token);
 
-    const url = `/api/families/${input.id}`;
-
-    console.log('ID', input.id);
-    console.log('Calling URL:', url);
-
     try {
-      const { data } = await api.get<Family>(url);
+      const { data } = await api.get<Family>(`/api/families/${input.id}`);
       return data;
     } catch (err) {
       throw toActionError(err);
