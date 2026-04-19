@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Table } from './Table';
 import { apiClient } from '@/services/api';
 import { toast } from 'sonner';
-import { showToast } from '@/lib/showNotifications';
 import type { ApiResponse } from '@/types/api';
 
 interface Column {
@@ -23,7 +22,7 @@ export const CrudPageDetail = ({ columns, apiResource, detailPath, token }: Prop
   const [page, setPage] = useState(1);
 
   const handleDelete = () => {
-    showToast.error('Deleted successfully');
+    toast.error('Toast funcionando');
   };
 
   const finalColumns = [{ dataIndex: 'id', title: 'ID' }].some(
@@ -87,17 +86,14 @@ export const CrudPageDetail = ({ columns, apiResource, detailPath, token }: Prop
     const fetchData = async () => {
       try {
         const res = await apiClient(token).get<ApiResponse<unknown>>(`${apiResource}?page=${page}`);
-        console.log(data);
         setData(res.data);
       } catch (error) {
-        toast.error('Something went wrong');
+        console.error('Something went wrong');
       }
     };
 
     fetchData();
   }, [columns, page]);
-
-  console.log({ page });
 
   return (
     <Table meta={data} columns={finalColumns} dataSource={data?.data} onPageChange={setPage} />
