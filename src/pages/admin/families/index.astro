@@ -22,6 +22,10 @@ const breadcrumbs = [
 const columns = [
   { title: 'ID', dataIndex: 'id' },
   { title: 'Name', dataIndex: 'name' },
+  {
+    title: 'Acciones',
+    dataIndex: 'acciones',
+  },
 ];
 
 const dataSource = families?.data?.map((f) => ({ id: f.id, name: f.name })) ?? [];

@@ -1,5 +1,5 @@
 ---
-import Input from '@/components/shared/Input.astro';
+import FamilyForm from '@/components/admin/families/FamilyForm.astro';
 import { t } from '@/i18n';
 import AdminLayout from '@/layouts/AdminLayout.astro';
 
@@ -12,29 +12,6 @@ const breadcrumbs = [
 
 <AdminLayout breadcrumbs={breadcrumbs}>
   <div class="card">
-    <form>
-      <Input name="name" label="Nombre" required placeholder="Ingrrese el nombre de la familia" />
-      <button class="btn btn-primary mt-4">Guardar</button>
-    </form>
+    <FamilyForm />
   </div>
 </AdminLayout>
-
-<script>
-  import { actions } from 'astro:actions';
-
-  const form = document.querySelector('form');
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
-
-    try {
-      await actions.createFamily(formData);
-      //  form.reset();
-      // window.location.href = '/admin/families';
-    } catch (error) {
-      alert(error);
-      console.log(error);
-    }
-  });
-</script>

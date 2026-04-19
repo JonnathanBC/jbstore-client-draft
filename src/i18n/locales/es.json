@@ -11,6 +11,7 @@
     "welcome": "Bienvenido",
     "products": "Productos",
     "new": "Nuevo",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+	  "edit": "Modificar"
   }
 }
