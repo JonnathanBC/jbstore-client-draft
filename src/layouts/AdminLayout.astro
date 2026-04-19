@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { Toaster } from 'sonner';
 
 import Breadcrumbs from '@/components/shared/Breadcrumbs.astro';
 import Sidebar from '@/components/admin/Sidebar.astro';
@@ -32,6 +33,7 @@ const { title = 'Panel de Administración | JB Store', breadcrumbs = [] } = Astr
         <slot />
       </main>
       <ModalsRender client:load />
+      <Toaster client:load position="bottom-right" />
     </div>
   </body>
 </html>
