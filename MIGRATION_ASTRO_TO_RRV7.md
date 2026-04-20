@@ -31,6 +31,7 @@ El objetivo: que entiendas el modelo mental de **React Router v7 en modo framewo
 21. [Trampas frecuentes](#21-trampas-frecuentes)
 22. [Deployment](#22-deployment)
 23. [TL;DR mental](#23-tldr-mental)
+24. [Estado de la migración](#24-estado-de-la-migración)
 
 ---
 
@@ -932,3 +933,111 @@ También hay adapters oficiales para Cloudflare, Vercel, Netlify, AWS Lambda, et
 - **Todo es React hidratado** → adiós bugs raros de islands.
 
 Ganas: tipado end-to-end automático, hot reload de datos tras mutaciones, errores localizados por ruta, y un único modelo mental para toda la app.
+
+---
+
+## 24. Estado de la migración
+
+Branch activa: **`migration_rr7`**. La migración se hizo **in-place** dentro de `jb-store-client-draft/`: `src/`, `astro.config.mjs`, `.astro/` y `src/env.d.ts` están eliminados; toda la app vive en `app/`.
+
+### Commits de referencia
+
+| Commit | Fase | Qué entró |
+|---|---|---|
+| `b62535c` | Fase 1 | Scaffold RR v7, sesión/auth, login/register/logout, layout admin protegido, listado de familias, Google OAuth. |
+| `bbb8ccf` | Fase 2 | CRUD de familias (create/edit + 404 real + flash toasts), layout público `_app` con Header/Footer auth-aware. |
+
+### Mapa Astro → RR v7 (archivo por archivo)
+
+| Origen (Astro) | Destino (RR v7) | Estado |
+|---|---|---|
+| `src/pages/index.astro` | `app/routes/_app._index.tsx` (bajo layout público) | ✅ |
+| `src/pages/login.astro` + `components/login/Login.astro` + `actions/auth/login.action.ts` | `app/routes/_auth.login.tsx` | ✅ |
+| `src/pages/register.astro` + `components/register/RegisterForm.astro` + `actions/auth/register.action.ts` | `app/routes/_auth.register.tsx` | ✅ |
+| `src/pages/api/auth/logout.ts` + `actions/auth/logout.action.ts` | `app/routes/logout.tsx` | ✅ |
+| `src/pages/api/auth/google/index.ts` | `app/routes/api.auth.google._index.tsx` | ✅ (scaffold; backend Google no configurado) |
+| `src/pages/api/auth/google/callback.ts` | `app/routes/api.auth.google.callback.tsx` | ✅ (scaffold) |
+| `src/pages/admin/index.astro` | `app/routes/admin._index.tsx` | ✅ |
+| `src/pages/admin/families/index.astro` + `actions/admin/families/get-families.action.ts` | `app/routes/admin.families._index.tsx` + `server/api.server.ts::getFamilies` | ✅ |
+| `src/pages/admin/families/create.astro` + `actions/admin/families/create-family.action.ts` | `app/routes/admin.families.create.tsx` + `server/api.server.ts::createFamily` | ✅ |
+| `src/pages/admin/families/[id].astro` + `actions/admin/families/{get-family,update-family}.action.ts` | `app/routes/admin.families.$id.tsx` + `server/api.server.ts::{getFamily,updateFamily}` | ✅ |
+| `src/pages/admin/families/_components/FamilyForm.astro` | `app/components/admin/families/FamilyForm.tsx` | ✅ (React reutilizable para create/edit) |
+| `src/layouts/AppLayout.astro` | `app/routes/_app.tsx` + `components/shared/{Header,Footer}.tsx` | ✅ |
+| `src/layouts/AuthLayout.astro` | `app/routes/_auth.tsx` | ✅ |
+| `src/layouts/AdminLayout.astro` | `app/routes/admin.tsx` | ✅ |
+| `src/middleware.ts` | `requireAuth()` en `app/server/auth.server.ts` (llamado desde loaders) | ✅ (ya no hay middleware global) |
+| `src/components/shared/Header.astro` | `app/components/shared/Header.tsx` | ✅ (auth-aware, logout via `<Form>`) |
+| `src/components/shared/Footer.astro` | `app/components/shared/Footer.tsx` | ✅ |
+| `src/components/shared/Breadcrumbs.astro` | `app/components/shared/Breadcrumbs.tsx` (`useMatches()` + `handle.breadcrumb`) | ✅ |
+| `src/components/shared/Input.astro` | `app/components/shared/Input.tsx` | ✅ (React, acepta `icon` como `ComponentType<SVGProps>`) |
+| `src/icons/Google.astro` | `app/components/icons/GoogleIcon.tsx` | ✅ |
+| `src/icons/Deliveries.astro` | `public/assets/deliveries.svg` | ✅ (servido como asset, consumido con `<img>`) |
+| `src/icons/{User,Password,Dashboard,Cart,ShoppingApp}.astro` | `lucide-react` (`User`, `Lock`, `LayoutDashboard`, `ShoppingCart`…) | ✅ (reemplazados por iconos de lucide-react) |
+| `src/components/admin/Sidebar.astro` | `app/components/admin/Sidebar.tsx` | ✅ (React + nanostores) |
+| `src/components/admin/Navbar.astro` | `app/components/admin/Navbar.tsx` | ✅ |
+| `src/components/react/{Table,Pagination,AppToaster}.tsx` | `app/components/{Table,Pagination,AppToaster}.tsx` | ✅ (AppToaster reescrito con **sileo**) |
+| `src/components/react/CrudPageDetail.tsx` | — | ❌ eliminado (reemplazado por loader + `useSearchParams` en la ruta) |
+| `src/components/ui/{button,dialog}.tsx` | `app/components/ui/{button,dialog}.tsx` | ✅ |
+| `src/components/CrudDialog.tsx` | — | ❌ no se usa en fase 1/2 (create/edit son rutas dedicadas) |
+| `src/services/api.ts` | `app/lib/apiClient.ts` (`axios`) + `app/lib/apiClient.ts::toApiError` | ✅ |
+| `src/lib/utils.ts` | `app/lib/utils.ts` | ✅ |
+| `src/stores/sidebar.store.ts` | `app/stores/sidebar.store.ts` | ✅ |
+| `src/stores/modals.store.ts` + `context/{ModalContext,ModalsRender}.tsx` + `config/modalsRegistry.ts` + `screens/families/FamilyForm.tsx` | — | ❌ **no migrados** (sistema de modales global; innecesario porque las pantallas CRUD ahora son rutas) |
+| `src/i18n/**` | `app/i18n/**` | ✅ (copia directa) |
+| `src/types/{api,family}.ts`, `src/types/user.d.ts` | `app/types/{api,family,user}.ts` | ✅ |
+| `src/env.d.ts` (Astro locals) | — | ❌ eliminado (tipos cubiertos por `~/types/route.ts`) |
+| `src/styles/global.css` | `app/styles/global.css` | ✅ |
+| `astro.config.mjs` | `react-router.config.ts` + `vite.config.ts` | ✅ |
+| `src/middleware.ts` (session seeding en `locals`) | `_app.tsx` loader resuelve `user`/`isAdmin` por request | ✅ |
+| `.env` `PUBLIC_LARAVEL_API_URL` | `.env` `API_URL` + `SESSION_SECRET` | ✅ |
+
+### Arquitectura cubierta (checklist)
+
+- [x] SSR con React Router v7 + Vite + `@tailwindcss/vite`.
+- [x] File-based routing vía `@react-router/fs-routes` (`app/routes.ts` llama `flatRoutes()`).
+- [x] Sesión con `createCookieSessionStorage` en cookie `auth_token` (compat backend Laravel) y `SESSION_SECRET` obligatorio.
+- [x] Guardas: `requireAuth` en loader del layout protegido + guard inverso (`getOptionalAuth`) en `_auth.tsx`.
+- [x] Loaders server-side con token (`apiClient(token)`), errores normalizados vía `toApiError` y convertidos a `Response` cuando corresponde (p. ej. 404 en `admin.families.$id`).
+- [x] Forms con `<Form method="post">` + `action` + `useNavigation` + `useActionData`; validación server con mensajes al usuario.
+- [x] Flash toasts via `session.flash('toast', {...})` consumidos en loader del layout y renderizados con **sileo** en `AppToaster`.
+- [x] Breadcrumbs dinámicos con `useMatches()` + `handle.breadcrumb`.
+- [x] Paginación server-driven vía `useSearchParams()` (el loader re-corre al cambiar `?page=`).
+- [x] ErrorBoundary global en `root.tsx` + `throw new Response(..., 404)` por ruta.
+- [x] Header público auth-aware (links condicionales Admin / Iniciar sesión / Cerrar sesión).
+- [x] Build y typecheck limpios (`bun run build`, `bun run typecheck`).
+
+### Rutas activas hoy
+
+```
+/                             _app._index.tsx     (home público)
+/cart                         _app.cart.tsx       (placeholder con data fake)
+/login                        _auth.login.tsx
+/register                     _auth.register.tsx
+/logout (POST)                logout.tsx
+/admin                        admin._index.tsx    (protegida)
+/admin/families               admin.families._index.tsx
+/admin/families/create        admin.families.create.tsx
+/admin/families/:id           admin.families.$id.tsx
+/api/auth/google              api.auth.google._index.tsx
+/api/auth/google/callback     api.auth.google.callback.tsx
+```
+
+### Features futuras
+
+Auth avanzado que no existía en Astro y conviene agregar cuando el core esté estable:
+
+- **Password reset / forgot password** — endpoint backend + rutas `_auth.forgot.tsx` y `_auth.reset.$token.tsx`.
+- **Email verification** — flujo con token al registrarse.
+- **Profile / cambio de contraseña** — ruta protegida bajo `admin` (o una pathless `_account`) para que el user actualice sus datos.
+- **Google OAuth real** — hoy está scaffoldeado (`/api/auth/google*`) pero el backend Laravel no tiene `client_id` configurado, así que no completa el flujo.
+
+### Pendiente (fases siguientes)
+
+- **Delete de familias**: UI (botón en la tabla o en edit) + endpoint backend (hoy no existe).
+- **`/products` y `/cart`**: hoy el Header linkea a ellas pero no están implementadas (van a dar 404).
+- **Otros recursos CRUD** si se suman (categorías, productos, pedidos) — el patrón ya está establecido.
+- **Google OAuth** realmente funcional: el cliente está scaffoldeado pero el backend no tiene `client_id` configurado (no es bloqueo del cliente).
+- **Modales globales**: dejados fuera a propósito. Si en el futuro hace falta un modal compartido (confirmación de delete, búsqueda global, etc.), reintroducir una versión simple con `ModalContext` + `ModalsRender` sobre nanostores.
+- **Tests**: no hay tests automatizados todavía (ni los había en Astro).
+- **Merge de `migration_rr7` → `main`** cuando la cobertura funcional sea total y el equipo valide el comportamiento.
+
