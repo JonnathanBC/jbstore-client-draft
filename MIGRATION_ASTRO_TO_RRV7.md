@@ -31,6 +31,7 @@ El objetivo: que entiendas el modelo mental de **React Router v7 en modo framewo
 21. [Trampas frecuentes](#21-trampas-frecuentes)
 22. [Deployment](#22-deployment)
 23. [TL;DR mental](#23-tldr-mental)
+24. [Estado de la migración](#24-estado-de-la-migración)
 
 ---
 
@@ -932,3 +933,37 @@ También hay adapters oficiales para Cloudflare, Vercel, Netlify, AWS Lambda, et
 - **Todo es React hidratado** → adiós bugs raros de islands.
 
 Ganas: tipado end-to-end automático, hot reload de datos tras mutaciones, errores localizados por ruta, y un único modelo mental para toda la app.
+
+---
+
+## 24. Estado de la migración
+
+### Fase 1 — completada
+
+Branch: `migration_rr7`. Migración in-place: `src/` eliminado, `astro.config.mjs` eliminado, `app/` contiene toda la app.
+
+**Migrado**:
+
+- Infraestructura base: `app/root.tsx`, `react-router.config.ts`, `vite.config.ts`, `tsconfig.json`, `package.json` (fuera `astro*`, dentro `@react-router/*`), `app/routes.ts` con `flatRoutes()`.
+- Sesión y auth: `app/server/session.server.ts` (cookie `auth_token` con `createCookieSessionStorage`, `SESSION_SECRET` obligatorio), `app/server/auth.server.ts` (`requireAuth`, `getOptionalAuth`, `fetchMe`, `login`, `register`, `logoutBackend`, `fetchGoogleOAuthUrl`).
+- Toasts con sileo: `app/components/AppToaster.tsx` (reemplaza sonner; consume `session.flash('toast', ...)`).
+- Rutas públicas de auth: `_auth.tsx` (guard inverso), `_auth.login.tsx`, `_auth.register.tsx`, `logout.tsx`.
+- Admin protegido: `admin.tsx` (loader con `requireAuth` + `fetchMe`), `admin._index.tsx` (dashboard), `admin.families._index.tsx` (listado con paginación vía `useSearchParams`).
+- Google OAuth: `api.auth.google._index.tsx` y `api.auth.google.callback.tsx`.
+- Componentes: `admin/Sidebar.tsx`, `admin/Navbar.tsx` (con nanostores), `shared/Breadcrumbs.tsx` (usa `useMatches` + `handle.breadcrumb`), `Table.tsx`, `Pagination.tsx`, `ui/button.tsx`, `ui/dialog.tsx`.
+- Tipos, i18n, `lib/{utils,apiClient}.ts`, `stores/sidebar.store.ts`, `styles/global.css`: copiados al nuevo árbol.
+- Env: renombre `PUBLIC_LARAVEL_API_URL` → `API_URL`; agregado `SESSION_SECRET`.
+
+**Verificado**:
+
+- `bun run typecheck` limpio.
+- `bun run build` produce `build/` sin errores.
+- Dev server: `/` renderiza placeholder, `/login` renderiza form, `/admin` redirige a `/login?redirectTo=%2Fadmin`.
+
+### Pendiente para fase 2
+
+- Rutas de familias: `admin.families.create.tsx`, `admin.families.$id.tsx` (con `action` multi-intent y `useFetcher` para delete).
+- Home pública `/` con Header/Footer y layout público.
+- Modales globales (`ModalContext` + `ModalsRender` + `modalsRegistry` + `stores/modals.store.ts`).
+- Merge de `migration_rr7` → `main` cuando la cobertura sea total.
+
