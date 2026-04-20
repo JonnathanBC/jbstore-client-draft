@@ -29,9 +29,17 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { families };
 }
 
-const columns: { title: string; dataIndex: keyof Family & string }[] = [
-  { title: 'ID', dataIndex: 'id' },
-  { title: 'Name', dataIndex: 'name' },
+const columns = [
+  { title: 'ID', dataIndex: 'id' as const },
+  { title: 'Name', dataIndex: 'name' as const },
+  {
+    title: 'Acciones',
+    render: (row: Family) => (
+      <Link to={`/admin/families/${row.id}`} className="text-blue-600 hover:underline text-sm">
+        {t('global.edit')}
+      </Link>
+    ),
+  },
 ];
 
 export default function FamiliesIndex({ loaderData }: Route.ComponentProps) {

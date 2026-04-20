@@ -960,10 +960,38 @@ Branch: `migration_rr7`. Migración in-place: `src/` eliminado, `astro.config.mj
 - `bun run build` produce `build/` sin errores.
 - Dev server: `/` renderiza placeholder, `/login` renderiza form, `/admin` redirige a `/login?redirectTo=%2Fadmin`.
 
-### Pendiente para fase 2
+### Fase 2 — completada
 
-- Rutas de familias: `admin.families.create.tsx`, `admin.families.$id.tsx` (con `action` multi-intent y `useFetcher` para delete).
-- Home pública `/` con Header/Footer y layout público.
-- Modales globales (`ModalContext` + `ModalsRender` + `modalsRegistry` + `stores/modals.store.ts`).
+**Migrado**:
+
+- CRUD de familias:
+  - `app/server/api.server.ts` extendido con `getFamily`, `createFamily`, `updateFamily`.
+  - `app/components/admin/families/FamilyForm.tsx` — form reutilizable (create + edit), usa `<Form method="post">` y `useNavigation` para loading.
+  - `app/routes/admin.families.create.tsx` — `action` crea + `session.flash('toast')` + redirect a listado.
+  - `app/routes/admin.families.$id.tsx` — `loader` obtiene familia (404 propio cuando el backend responde 404), `action` actualiza + toast + redirect.
+  - Listado (`admin.families._index.tsx`) con columna "Acciones" que linkea a edit.
+- Home público con shell:
+  - `app/routes/_app.tsx` — layout pathless con loader que resuelve `user`/`isAdmin` (via `getOptionalAuth` + `fetchMe`). Render: `Header` + `<Outlet/>` + `Footer`.
+  - `app/routes/_app._index.tsx` — `/` renderiza dentro del layout.
+  - `app/components/shared/Header.tsx` — auth-aware con `<Form method="post" action="/logout">` para cerrar sesión, link condicional a `/admin` cuando es admin.
+  - `app/components/shared/Footer.tsx`.
+
+**Verificado**:
+
+- `bun run typecheck` limpio.
+- `bun run build` produce `build/` sin errores.
+- Dev server end-to-end contra Laravel:
+  - `/` guest muestra Header con "Iniciar sesión"; logueado muestra "Cerrar sesión" + link "Admin".
+  - `POST /admin/families/create` con nombre → 302 a `/admin/families`, familia aparece, flash toast ("Familia creada / … se creó correctamente.") llega al loader de admin.tsx y se consume.
+  - `GET /admin/families/:id` precarga `value="..."` en el input; `POST` renombra y verifica en el listado.
+  - `GET /admin/families/99999` → 404 con mensaje "Familia no encontrada".
+  - `POST /admin/families/create` con nombre vacío → error "El nombre es obligatorio".
+
+### Pendiente para fases siguientes
+
+- Delete de familias (UI + backend endpoint cuando exista).
+- Resto del CRUD si se suman más recursos (categorías, productos, pedidos).
+- Página `/products` y `/cart` vacías/placeholder (el Header ya linkea).
+- Modales globales (`ModalContext` + `ModalsRender` + `modalsRegistry`) — por ahora innecesarios porque create/edit son rutas dedicadas.
 - Merge de `migration_rr7` → `main` cuando la cobertura sea total.
 
