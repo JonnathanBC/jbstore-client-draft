@@ -938,60 +938,93 @@ Ganas: tipado end-to-end automático, hot reload de datos tras mutaciones, error
 
 ## 24. Estado de la migración
 
-### Fase 1 — completada
+Branch activa: **`migration_rr7`**. La migración se hizo **in-place** dentro de `jb-store-client-draft/`: `src/`, `astro.config.mjs`, `.astro/` y `src/env.d.ts` están eliminados; toda la app vive en `app/`.
 
-Branch: `migration_rr7`. Migración in-place: `src/` eliminado, `astro.config.mjs` eliminado, `app/` contiene toda la app.
+### Commits de referencia
 
-**Migrado**:
+| Commit | Fase | Qué entró |
+|---|---|---|
+| `b62535c` | Fase 1 | Scaffold RR v7, sesión/auth, login/register/logout, layout admin protegido, listado de familias, Google OAuth. |
+| `bbb8ccf` | Fase 2 | CRUD de familias (create/edit + 404 real + flash toasts), layout público `_app` con Header/Footer auth-aware. |
 
-- Infraestructura base: `app/root.tsx`, `react-router.config.ts`, `vite.config.ts`, `tsconfig.json`, `package.json` (fuera `astro*`, dentro `@react-router/*`), `app/routes.ts` con `flatRoutes()`.
-- Sesión y auth: `app/server/session.server.ts` (cookie `auth_token` con `createCookieSessionStorage`, `SESSION_SECRET` obligatorio), `app/server/auth.server.ts` (`requireAuth`, `getOptionalAuth`, `fetchMe`, `login`, `register`, `logoutBackend`, `fetchGoogleOAuthUrl`).
-- Toasts con sileo: `app/components/AppToaster.tsx` (reemplaza sonner; consume `session.flash('toast', ...)`).
-- Rutas públicas de auth: `_auth.tsx` (guard inverso), `_auth.login.tsx`, `_auth.register.tsx`, `logout.tsx`.
-- Admin protegido: `admin.tsx` (loader con `requireAuth` + `fetchMe`), `admin._index.tsx` (dashboard), `admin.families._index.tsx` (listado con paginación vía `useSearchParams`).
-- Google OAuth: `api.auth.google._index.tsx` y `api.auth.google.callback.tsx`.
-- Componentes: `admin/Sidebar.tsx`, `admin/Navbar.tsx` (con nanostores), `shared/Breadcrumbs.tsx` (usa `useMatches` + `handle.breadcrumb`), `Table.tsx`, `Pagination.tsx`, `ui/button.tsx`, `ui/dialog.tsx`.
-- Tipos, i18n, `lib/{utils,apiClient}.ts`, `stores/sidebar.store.ts`, `styles/global.css`: copiados al nuevo árbol.
-- Env: renombre `PUBLIC_LARAVEL_API_URL` → `API_URL`; agregado `SESSION_SECRET`.
+### Mapa Astro → RR v7 (archivo por archivo)
 
-**Verificado**:
+| Origen (Astro) | Destino (RR v7) | Estado |
+|---|---|---|
+| `src/pages/index.astro` | `app/routes/_app._index.tsx` (bajo layout público) | ✅ |
+| `src/pages/login.astro` + `components/login/Login.astro` + `actions/auth/login.action.ts` | `app/routes/_auth.login.tsx` | ✅ |
+| `src/pages/register.astro` + `components/register/RegisterForm.astro` + `actions/auth/register.action.ts` | `app/routes/_auth.register.tsx` | ✅ |
+| `src/pages/api/auth/logout.ts` + `actions/auth/logout.action.ts` | `app/routes/logout.tsx` | ✅ |
+| `src/pages/api/auth/google/index.ts` | `app/routes/api.auth.google._index.tsx` | ✅ (scaffold; backend Google no configurado) |
+| `src/pages/api/auth/google/callback.ts` | `app/routes/api.auth.google.callback.tsx` | ✅ (scaffold) |
+| `src/pages/admin/index.astro` | `app/routes/admin._index.tsx` | ✅ |
+| `src/pages/admin/families/index.astro` + `actions/admin/families/get-families.action.ts` | `app/routes/admin.families._index.tsx` + `server/api.server.ts::getFamilies` | ✅ |
+| `src/pages/admin/families/create.astro` + `actions/admin/families/create-family.action.ts` | `app/routes/admin.families.create.tsx` + `server/api.server.ts::createFamily` | ✅ |
+| `src/pages/admin/families/[id].astro` + `actions/admin/families/{get-family,update-family}.action.ts` | `app/routes/admin.families.$id.tsx` + `server/api.server.ts::{getFamily,updateFamily}` | ✅ |
+| `src/pages/admin/families/_components/FamilyForm.astro` | `app/components/admin/families/FamilyForm.tsx` | ✅ (React reutilizable para create/edit) |
+| `src/layouts/AppLayout.astro` | `app/routes/_app.tsx` + `components/shared/{Header,Footer}.tsx` | ✅ |
+| `src/layouts/AuthLayout.astro` | `app/routes/_auth.tsx` | ✅ |
+| `src/layouts/AdminLayout.astro` | `app/routes/admin.tsx` | ✅ |
+| `src/middleware.ts` | `requireAuth()` en `app/server/auth.server.ts` (llamado desde loaders) | ✅ (ya no hay middleware global) |
+| `src/components/shared/Header.astro` | `app/components/shared/Header.tsx` | ✅ (auth-aware, logout via `<Form>`) |
+| `src/components/shared/Footer.astro` | `app/components/shared/Footer.tsx` | ✅ |
+| `src/components/shared/Breadcrumbs.astro` | `app/components/shared/Breadcrumbs.tsx` (`useMatches()` + `handle.breadcrumb`) | ✅ |
+| `src/components/shared/Input.astro` | Inline en los forms RR v7 | ✅ (no necesita componente compartido) |
+| `src/components/admin/Sidebar.astro` | `app/components/admin/Sidebar.tsx` | ✅ (React + nanostores) |
+| `src/components/admin/Navbar.astro` | `app/components/admin/Navbar.tsx` | ✅ |
+| `src/components/react/{Table,Pagination,AppToaster}.tsx` | `app/components/{Table,Pagination,AppToaster}.tsx` | ✅ (AppToaster reescrito con **sileo**) |
+| `src/components/react/CrudPageDetail.tsx` | — | ❌ eliminado (reemplazado por loader + `useSearchParams` en la ruta) |
+| `src/components/ui/{button,dialog}.tsx` | `app/components/ui/{button,dialog}.tsx` | ✅ |
+| `src/components/CrudDialog.tsx` | — | ❌ no se usa en fase 1/2 (create/edit son rutas dedicadas) |
+| `src/services/api.ts` | `app/lib/apiClient.ts` (`axios`) + `app/lib/apiClient.ts::toApiError` | ✅ |
+| `src/lib/utils.ts` | `app/lib/utils.ts` | ✅ |
+| `src/stores/sidebar.store.ts` | `app/stores/sidebar.store.ts` | ✅ |
+| `src/stores/modals.store.ts` + `context/{ModalContext,ModalsRender}.tsx` + `config/modalsRegistry.ts` + `screens/families/FamilyForm.tsx` | — | ❌ **no migrados** (sistema de modales global; innecesario porque las pantallas CRUD ahora son rutas) |
+| `src/i18n/**` | `app/i18n/**` | ✅ (copia directa) |
+| `src/types/{api,family}.ts`, `src/types/user.d.ts` | `app/types/{api,family,user}.ts` | ✅ |
+| `src/env.d.ts` (Astro locals) | — | ❌ eliminado (tipos cubiertos por `~/types/route.ts`) |
+| `src/styles/global.css` | `app/styles/global.css` | ✅ |
+| `astro.config.mjs` | `react-router.config.ts` + `vite.config.ts` | ✅ |
+| `src/middleware.ts` (session seeding en `locals`) | `_app.tsx` loader resuelve `user`/`isAdmin` por request | ✅ |
+| `.env` `PUBLIC_LARAVEL_API_URL` | `.env` `API_URL` + `SESSION_SECRET` | ✅ |
 
-- `bun run typecheck` limpio.
-- `bun run build` produce `build/` sin errores.
-- Dev server: `/` renderiza placeholder, `/login` renderiza form, `/admin` redirige a `/login?redirectTo=%2Fadmin`.
+### Arquitectura cubierta (checklist)
 
-### Fase 2 — completada
+- [x] SSR con React Router v7 + Vite + `@tailwindcss/vite`.
+- [x] File-based routing vía `@react-router/fs-routes` (`app/routes.ts` llama `flatRoutes()`).
+- [x] Sesión con `createCookieSessionStorage` en cookie `auth_token` (compat backend Laravel) y `SESSION_SECRET` obligatorio.
+- [x] Guardas: `requireAuth` en loader del layout protegido + guard inverso (`getOptionalAuth`) en `_auth.tsx`.
+- [x] Loaders server-side con token (`apiClient(token)`), errores normalizados vía `toApiError` y convertidos a `Response` cuando corresponde (p. ej. 404 en `admin.families.$id`).
+- [x] Forms con `<Form method="post">` + `action` + `useNavigation` + `useActionData`; validación server con mensajes al usuario.
+- [x] Flash toasts via `session.flash('toast', {...})` consumidos en loader del layout y renderizados con **sileo** en `AppToaster`.
+- [x] Breadcrumbs dinámicos con `useMatches()` + `handle.breadcrumb`.
+- [x] Paginación server-driven vía `useSearchParams()` (el loader re-corre al cambiar `?page=`).
+- [x] ErrorBoundary global en `root.tsx` + `throw new Response(..., 404)` por ruta.
+- [x] Header público auth-aware (links condicionales Admin / Iniciar sesión / Cerrar sesión).
+- [x] Build y typecheck limpios (`bun run build`, `bun run typecheck`).
 
-**Migrado**:
+### Rutas activas hoy
 
-- CRUD de familias:
-  - `app/server/api.server.ts` extendido con `getFamily`, `createFamily`, `updateFamily`.
-  - `app/components/admin/families/FamilyForm.tsx` — form reutilizable (create + edit), usa `<Form method="post">` y `useNavigation` para loading.
-  - `app/routes/admin.families.create.tsx` — `action` crea + `session.flash('toast')` + redirect a listado.
-  - `app/routes/admin.families.$id.tsx` — `loader` obtiene familia (404 propio cuando el backend responde 404), `action` actualiza + toast + redirect.
-  - Listado (`admin.families._index.tsx`) con columna "Acciones" que linkea a edit.
-- Home público con shell:
-  - `app/routes/_app.tsx` — layout pathless con loader que resuelve `user`/`isAdmin` (via `getOptionalAuth` + `fetchMe`). Render: `Header` + `<Outlet/>` + `Footer`.
-  - `app/routes/_app._index.tsx` — `/` renderiza dentro del layout.
-  - `app/components/shared/Header.tsx` — auth-aware con `<Form method="post" action="/logout">` para cerrar sesión, link condicional a `/admin` cuando es admin.
-  - `app/components/shared/Footer.tsx`.
+```
+/                             _app._index.tsx     (home público)
+/login                        _auth.login.tsx
+/register                     _auth.register.tsx
+/logout (POST)                logout.tsx
+/admin                        admin._index.tsx    (protegida)
+/admin/families               admin.families._index.tsx
+/admin/families/create        admin.families.create.tsx
+/admin/families/:id           admin.families.$id.tsx
+/api/auth/google              api.auth.google._index.tsx
+/api/auth/google/callback     api.auth.google.callback.tsx
+```
 
-**Verificado**:
+### Pendiente (fases siguientes)
 
-- `bun run typecheck` limpio.
-- `bun run build` produce `build/` sin errores.
-- Dev server end-to-end contra Laravel:
-  - `/` guest muestra Header con "Iniciar sesión"; logueado muestra "Cerrar sesión" + link "Admin".
-  - `POST /admin/families/create` con nombre → 302 a `/admin/families`, familia aparece, flash toast ("Familia creada / … se creó correctamente.") llega al loader de admin.tsx y se consume.
-  - `GET /admin/families/:id` precarga `value="..."` en el input; `POST` renombra y verifica en el listado.
-  - `GET /admin/families/99999` → 404 con mensaje "Familia no encontrada".
-  - `POST /admin/families/create` con nombre vacío → error "El nombre es obligatorio".
-
-### Pendiente para fases siguientes
-
-- Delete de familias (UI + backend endpoint cuando exista).
-- Resto del CRUD si se suman más recursos (categorías, productos, pedidos).
-- Página `/products` y `/cart` vacías/placeholder (el Header ya linkea).
-- Modales globales (`ModalContext` + `ModalsRender` + `modalsRegistry`) — por ahora innecesarios porque create/edit son rutas dedicadas.
-- Merge de `migration_rr7` → `main` cuando la cobertura sea total.
+- **Delete de familias**: UI (botón en la tabla o en edit) + endpoint backend (hoy no existe).
+- **`/products` y `/cart`**: hoy el Header linkea a ellas pero no están implementadas (van a dar 404).
+- **Otros recursos CRUD** si se suman (categorías, productos, pedidos) — el patrón ya está establecido.
+- **Google OAuth** realmente funcional: el cliente está scaffoldeado pero el backend no tiene `client_id` configurado (no es bloqueo del cliente).
+- **Modales globales**: dejados fuera a propósito. Si en el futuro hace falta un modal compartido (confirmación de delete, búsqueda global, etc.), reintroducir una versión simple con `ModalContext` + `ModalsRender` sobre nanostores.
+- **Tests**: no hay tests automatizados todavía (ni los había en Astro).
+- **Merge de `migration_rr7` → `main`** cuando la cobertura funcional sea total y el equipo valide el comportamiento.
 
