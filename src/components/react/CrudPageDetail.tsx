@@ -34,9 +34,9 @@ export const CrudPageDetail = ({ columns, apiResource, detailPath, token }: Prop
         {
           title: 'Actions',
           dataIndex: '_actions',
-          render: () => (
+          render: (row: any) => (
             <div className="flex items-center gap-4">
-              <a href={detailPath}>
+              <a href={detailPath.replace(':id', String(row.id))}>
                 <svg
                   width="24px"
                   height="24px"

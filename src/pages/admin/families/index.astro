@@ -37,7 +37,7 @@ const token = Astro.cookies.get('auth_token')?.value ?? '';
     token={token}
     columns={columns}
     apiResource="/api/families"
-    detailPath="/admin/families"
+    detailPath="/admin/families/:id"
     client:load
   />
 </AdminLayout>
