@@ -11,7 +11,10 @@ export default defineConfig({
   adapter: node({ mode: 'standalone' }),
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    resolve: {
+      dedupe: ['sonner', 'react', 'react-dom'],
+    },
   },
 
   integrations: [react()]

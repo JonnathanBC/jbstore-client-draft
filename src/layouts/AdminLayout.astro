@@ -1,10 +1,10 @@
 ---
 import '../styles/global.css';
-import { Toaster } from 'sonner';
 
 import Breadcrumbs from '@/components/shared/Breadcrumbs.astro';
 import Sidebar from '@/components/admin/Sidebar.astro';
 import { ModalsRender } from '@/context/ModalsRender';
+import { AppToaster } from '@/components/react/AppToaster';
 
 interface Props {
   title?: string;
@@ -33,7 +33,7 @@ const { title = 'Panel de Administración | JB Store', breadcrumbs = [] } = Astr
         <slot />
       </main>
       <ModalsRender client:load />
-      <Toaster client:load position="bottom-right" />
+      <AppToaster client:only="react" />
     </div>
   </body>
 </html>
