@@ -2,6 +2,7 @@ import { Form, Link, redirect, useActionData, useNavigation, useSearchParams } f
 import type { Route } from './+types/_auth.login';
 import { login } from '~/server/auth.server';
 import { commitSession, getSession } from '~/server/session.server';
+import { GoogleIcon } from '~/components/icons/GoogleIcon';
 
 export const meta: Route.MetaFunction = () => [{ title: 'Iniciar sesión | JB Store' }];
 
@@ -109,6 +110,7 @@ export default function LoginPage() {
               href="/api/auth/google"
               className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
             >
+              <GoogleIcon className="w-5 h-5" />
               <span className="text-sm font-medium text-slate-700">Sign in with Google</span>
             </a>
 
@@ -123,7 +125,7 @@ export default function LoginPage() {
       </div>
 
       <div className="hidden lg:flex w-1/2 items-center justify-center bg-slate-50">
-        <div className="text-slate-400">Jb Store</div>
+        <img src="/assets/deliveries.svg" alt="Deliveries" className="w-4/5 max-w-lg" />
       </div>
     </div>
   );
