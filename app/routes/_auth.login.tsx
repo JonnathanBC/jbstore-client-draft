@@ -1,8 +1,10 @@
 import { Form, Link, redirect, useActionData, useNavigation, useSearchParams } from 'react-router';
+import { Lock, User } from 'lucide-react';
 import type { Route } from './+types/_auth.login';
 import { login } from '~/server/auth.server';
 import { commitSession, getSession } from '~/server/session.server';
 import { GoogleIcon } from '~/components/icons/GoogleIcon';
+import { Input } from '~/components/shared/Input';
 
 export const meta: Route.MetaFunction = () => [{ title: 'Iniciar sesión | JB Store' }];
 
@@ -48,31 +50,8 @@ export default function LoginPage() {
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input label="Email" name="email" type="email" icon={User} required />
+          <Input label="Password" name="password" type="password" icon={Lock} required />
 
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center">

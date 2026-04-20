@@ -969,7 +969,10 @@ Branch activa: **`migration_rr7`**. La migración se hizo **in-place** dentro de
 | `src/components/shared/Header.astro` | `app/components/shared/Header.tsx` | ✅ (auth-aware, logout via `<Form>`) |
 | `src/components/shared/Footer.astro` | `app/components/shared/Footer.tsx` | ✅ |
 | `src/components/shared/Breadcrumbs.astro` | `app/components/shared/Breadcrumbs.tsx` (`useMatches()` + `handle.breadcrumb`) | ✅ |
-| `src/components/shared/Input.astro` | Inline en los forms RR v7 | ✅ (no necesita componente compartido) |
+| `src/components/shared/Input.astro` | `app/components/shared/Input.tsx` | ✅ (React, acepta `icon` como `ComponentType<SVGProps>`) |
+| `src/icons/Google.astro` | `app/components/icons/GoogleIcon.tsx` | ✅ |
+| `src/icons/Deliveries.astro` | `public/assets/deliveries.svg` | ✅ (servido como asset, consumido con `<img>`) |
+| `src/icons/{User,Password,Dashboard,Cart,ShoppingApp}.astro` | `lucide-react` (`User`, `Lock`, `LayoutDashboard`, `ShoppingCart`…) | ✅ (reemplazados por iconos de lucide-react) |
 | `src/components/admin/Sidebar.astro` | `app/components/admin/Sidebar.tsx` | ✅ (React + nanostores) |
 | `src/components/admin/Navbar.astro` | `app/components/admin/Navbar.tsx` | ✅ |
 | `src/components/react/{Table,Pagination,AppToaster}.tsx` | `app/components/{Table,Pagination,AppToaster}.tsx` | ✅ (AppToaster reescrito con **sileo**) |
@@ -1007,6 +1010,7 @@ Branch activa: **`migration_rr7`**. La migración se hizo **in-place** dentro de
 
 ```
 /                             _app._index.tsx     (home público)
+/cart                         _app.cart.tsx       (placeholder con data fake)
 /login                        _auth.login.tsx
 /register                     _auth.register.tsx
 /logout (POST)                logout.tsx
@@ -1017,6 +1021,15 @@ Branch activa: **`migration_rr7`**. La migración se hizo **in-place** dentro de
 /api/auth/google              api.auth.google._index.tsx
 /api/auth/google/callback     api.auth.google.callback.tsx
 ```
+
+### Features futuras
+
+Auth avanzado que no existía en Astro y conviene agregar cuando el core esté estable:
+
+- **Password reset / forgot password** — endpoint backend + rutas `_auth.forgot.tsx` y `_auth.reset.$token.tsx`.
+- **Email verification** — flujo con token al registrarse.
+- **Profile / cambio de contraseña** — ruta protegida bajo `admin` (o una pathless `_account`) para que el user actualice sus datos.
+- **Google OAuth real** — hoy está scaffoldeado (`/api/auth/google*`) pero el backend Laravel no tiene `client_id` configurado, así que no completa el flujo.
 
 ### Pendiente (fases siguientes)
 

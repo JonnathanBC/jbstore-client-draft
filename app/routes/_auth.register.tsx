@@ -1,8 +1,10 @@
 import { Form, Link, redirect, useActionData, useNavigation } from 'react-router';
+import { Lock, User } from 'lucide-react';
 import type { Route } from './+types/_auth.register';
 import { register } from '~/server/auth.server';
 import { commitSession, getSession } from '~/server/session.server';
 import { GoogleIcon } from '~/components/icons/GoogleIcon';
+import { Input } from '~/components/shared/Input';
 
 export const meta: Route.MetaFunction = () => [{ title: 'Crear cuenta | JB Store' }];
 
@@ -58,62 +60,17 @@ export default function RegisterPage() {
             <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{actionData.error}</div>
           )}
 
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-              Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password_confirmation"
-              className="block text-sm font-medium text-slate-700 mb-1"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="password_confirmation"
-              name="password_confirmation"
-              type="password"
-              required
-              minLength={8}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input label="Name" name="name" icon={User} required />
+          <Input label="Email" name="email" type="email" icon={User} required />
+          <Input label="Password" name="password" type="password" icon={Lock} required minLength={8} />
+          <Input
+            label="Confirm Password"
+            name="password_confirmation"
+            type="password"
+            icon={Lock}
+            required
+            minLength={8}
+          />
 
           <div className="mt-12">
             <button
