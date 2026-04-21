@@ -1,16 +1,16 @@
-import axios, { AxiosError, type AxiosInstance } from 'axios';
+import axios, { AxiosError } from 'axios';
+import { getSession } from '~/server/session.server';
 
 const API_URL = process.env.API_URL;
 
-export function apiClient(token?: string): AxiosInstance {
-  return axios.create({
-    baseURL: API_URL,
-    headers: {
-      Accept: 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
+export const apiClient = axios.create({
+  baseURL: API_URL || '/',
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+  withCredentials: true,
+});
 
 export type ApiErrorCode =
   | 'BAD_REQUEST'

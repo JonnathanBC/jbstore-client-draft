@@ -15,7 +15,7 @@ export async function getFamilies({
   ...params
 }: GetFamiliesParams): Promise<ApiResponse<Family>> {
   try {
-    const { data } = await apiClient(token).get<ApiResponse<Family>>('/api/families', {
+    const { data } = await apiClient.get<ApiResponse<Family>>('/api/families', {
       params,
     });
     return data;
@@ -24,9 +24,9 @@ export async function getFamilies({
   }
 }
 
-export async function getFamily(id: number, token: string): Promise<Family> {
+export async function getFamily(id: number): Promise<Family> {
   try {
-    const { data } = await apiClient(token).get<Family>(`/api/families/${id}`);
+    const { data } = await apiClient.get<Family>(`/api/families/${id}`);
     return data;
   } catch (err) {
     throw toApiError(err);
@@ -38,7 +38,7 @@ export async function createFamily(
   token: string,
 ): Promise<Family | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).post<Family>('/api/families', payload);
+    const { data } = await apiClient.post<Family>('/api/families', payload);
     return data;
   } catch (err) {
     return { error: toApiError(err) };
@@ -51,7 +51,7 @@ export async function updateFamily(
   token: string,
 ): Promise<Family | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).patch<Family>(`/api/families/${id}`, payload);
+    const { data } = await apiClient.patch<Family>(`/api/families/${id}`, payload);
     return data;
   } catch (err) {
     return { error: toApiError(err) };

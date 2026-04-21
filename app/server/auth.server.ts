@@ -26,8 +26,8 @@ export async function requireAuth(request: Request): Promise<AuthTokens> {
   return auth;
 }
 
-export async function fetchMe(token: string): Promise<User> {
-  const { data } = await apiClient(token).get<User>('/api/auth/me');
+export async function fetchMe(): Promise<User> {
+  const { data } = await apiClient.get<User>('/api/auth/me');
   return data;
 }
 
@@ -41,7 +41,7 @@ export async function login(
   password: string,
 ): Promise<LoginResult | { error: ApiError }> {
   try {
-    const { data } = await apiClient().post<{ token: string; user: User }>('/api/auth/login', {
+    const { data } = await apiClient.post<{ token: string; user: User }>('/api/auth/login', {
       email,
       password,
     });
@@ -58,11 +58,9 @@ export interface RegisterInput {
   password_confirmation: string;
 }
 
-export async function register(
-  input: RegisterInput,
-): Promise<LoginResult | { error: ApiError }> {
+export async function register(input: RegisterInput): Promise<LoginResult | { error: ApiError }> {
   try {
-    const { data } = await apiClient().post<{ token: string; user: User }>(
+    const { data } = await apiClient.post<{ token: string; user: User }>(
       '/api/auth/register',
       input,
     );
@@ -74,13 +72,13 @@ export async function register(
 
 export async function logoutBackend(token: string): Promise<void> {
   try {
-    await apiClient(token).post('/api/auth/logout');
+    await apiClient.post('/api/auth/logout');
   } catch {
     // Best-effort: if backend logout fails, we still destroy the local session.
   }
 }
 
 export async function fetchGoogleOAuthUrl(): Promise<string> {
-  const { data } = await apiClient().get<{ url: string }>('/api/auth/google');
+  const { data } = await apiClient.get<{ url: string }>('/api/auth/google');
   return data.url;
 }
