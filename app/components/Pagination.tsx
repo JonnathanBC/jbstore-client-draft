@@ -58,64 +58,86 @@ const ArrowRight = () => (
 );
 
 export const Pagination = ({ meta, onPageChange }: Props) => {
-  const lastIndex = meta.links.length - 1;
+  const prevLink = meta.links[0];
+  const nextLink = meta.links[meta.links.length - 1];
+  
+  // Extraemos solo los números de página
+  const pageLinks = meta.links.slice(1, -1);
 
   return (
-    <nav className="flex items-center justify-between mt-4 text-sm">
-      <span className="text-slate-600">
-        Mostrando {meta.from ?? 0}–{meta.to ?? 0} de {meta.total}
+    <nav className="flex items-center justify-between mt-4 text-sm font-medium">
+      {/* Texto informativo */}
+      <span className="text-slate-500">
+        Mostrando <span className="text-slate-800">{meta.from ?? 0}</span>–
+        <span className="text-slate-800">{meta.to ?? 0}</span> de{" "}
+        <span className="text-slate-800">{meta.total}</span>
       </span>
 
-      <ul className="flex items-center gap-1">
-        {meta.links.map((link, i) => {
-          const isPrev = i === 0;
-          const isNext = i === lastIndex;
-          const disabled = link.url === null || link.page === null;
+      <div className="flex items-center gap-4">
+        {/* Botón Anterior */}
+        <button
+          type="button"
+          onClick={() => prevLink.page && onPageChange(prevLink.page)}
+          disabled={!prevLink.url}
+          className={`flex items-center justify-center transition-colors ${
+            prevLink.url 
+              ? "text-slate-600 hover:text-primary cursor-pointer" 
+              : "text-slate-300 cursor-not-allowed"
+          }`}
+          aria-label="Página anterior"
+        >
+          <ArrowLeft />
+        </button>
 
-          const baseClass =
-            'inline-flex items-center justify-center min-w-8 h-8 px-3 rounded text-stroke-weak transition-colors';
+        {/* Listado de Números */}
+        <ul className="flex items-center gap-1">
+          {pageLinks.map((link, i) => {
+            const isEllipsis = link.url === null;
+            const baseClass = "inline-flex items-center justify-center min-w-8 h-8 px-3 rounded transition-all";
 
-          const content = isPrev ? (
-            <ArrowLeft />
-          ) : isNext ? (
-            <ArrowRight />
-          ) : (
-            <span dangerouslySetInnerHTML={{ __html: link.label }} />
-          );
+            if (isEllipsis) {
+              return (
+                <li key={i} className={`${baseClass} text-slate-400`}>
+                  <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                </li>
+              );
+            }
 
-          if (disabled) {
             return (
               <li key={i}>
-                <span className={`${baseClass} opacity-40 cursor-not-allowed`} aria-disabled="true">
-                  {content}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => onPageChange(link.page!)}
+                  aria-current={link.active ? "page" : undefined}
+                  className={[
+                    baseClass,
+                    link.active
+                      ? "bg-primary text-white"
+                      : "text-slate-600 hover:bg-primary-hover hover:text-white cursor-pointer",
+                  ].join(" ")}
+                >
+                  <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                </button>
               </li>
             );
-          }
+          })}
+        </ul>
 
-          return (
-            <li key={i}>
-              <button
-                type="button"
-                onClick={() => onPageChange(link.page!)}
-                aria-label={
-                  isPrev ? 'Página anterior' : isNext ? 'Página siguiente' : `Página ${link.label}`
-                }
-                aria-current={link.active ? 'page' : undefined}
-                className={[
-                  baseClass,
-                  'cursor-pointer hover:bg-primary-hover hover:text-white',
-                  link.active
-                    ? 'bg-primary text-white hover:bg-primary-hover'
-                    : '',
-                ].join(' ')}
-              >
-                {content}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+        {/* Botón Siguiente */}
+        <button
+          type="button"
+          onClick={() => nextLink.page && onPageChange(nextLink.page)}
+          disabled={!nextLink.url}
+          className={`flex items-center justify-center transition-colors ${
+            nextLink.url 
+              ? "text-slate-600 hover:text-primary cursor-pointer" 
+              : "text-slate-300 cursor-not-allowed"
+          }`}
+          aria-label="Página siguiente"
+        >
+          <ArrowRight />
+        </button>
+      </div>
     </nav>
   );
 };
