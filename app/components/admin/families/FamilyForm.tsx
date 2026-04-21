@@ -16,7 +16,7 @@ export function FamilyForm({ family, error }: Props) {
       {error && <p className="bg-red-50 text-red-600 py-2 px-4 rounded">{error}</p>}
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-medium text-strong-weak mb-1">
           Nombre
         </label>
         <input
@@ -26,7 +26,7 @@ export function FamilyForm({ family, error }: Props) {
           required
           defaultValue={family?.name ?? ''}
           placeholder="Ingrese el nombre de la familia"
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-weak rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
 

@@ -17,7 +17,7 @@ export default function AdminDashboard() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center">
-          <div className="flex items-center justify-center size-10 rounded-full bg-gray-200">
+          <div className="flex items-center justify-center size-10 rounded-full bg-weak">
             <UserIcon />
           </div>
           <div className="ml-4 flex-1">

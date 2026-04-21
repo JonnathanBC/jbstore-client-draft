@@ -34,7 +34,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
       <Sidebar />
       <div className="p-4 sm:ml-64 min-h-screen pt-18">
         <Breadcrumbs />
-        <main className="p-4 border border-gray-200 border-dashed rounded-lg">
+        <main className="p-4 border border-weak border-dashed rounded-lg">
           <Outlet />
         </main>
         <AppToaster toast={toast} />

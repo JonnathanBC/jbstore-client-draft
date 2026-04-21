@@ -27,7 +27,7 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          'fixed top-0 left-0 z-40 w-64 h-dvh pt-20 transition-transform bg-white border-r border-gray-100 sm:translate-x-0',
+          'fixed top-0 left-0 z-40 w-64 h-dvh pt-20 transition-transform bg-white border-r border-weak sm:translate-x-0',
           open ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
         )}
         aria-label="Sidebar"
@@ -45,11 +45,11 @@ export function Sidebar() {
                     to={menu.href}
                     onClick={closeSidebar}
                     className={cn(
-                      'flex items-center p-2 hover:text-purple-600 rounded-lg hover:bg-purple-100 group',
-                      isActive && 'text-purple-600 bg-purple-100',
+                      'flex items-center p-2 hover:text-primary rounded-lg hover:bg-primary-light group',
+                      isActive && 'text-primary bg-primary-light',
                     )}
                   >
-                    <Icon className="group-hover:text-purple-600 w-5 h-5" />
+                    <Icon className="group-hover:text-primary w-5 h-5" />
                     <span className="ms-3">{menu.label}</span>
                   </Link>
                 </li>
@@ -57,7 +57,7 @@ export function Sidebar() {
             })}
           </ul>
 
-          <Form method="post" action="/logout" className="mt-4 border-t border-gray-100 pt-4">
+          <Form method="post" action="/logout" className="mt-4 border-t border-weak pt-4">
             <button
               type="submit"
               className="w-full flex items-center p-2 text-red-600 rounded-lg hover:bg-red-50 cursor-pointer"

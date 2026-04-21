@@ -35,7 +35,7 @@ const columns = [
   {
     title: 'Acciones',
     render: (row: Family) => (
-      <Link to={`/admin/families/${row.id}`} className="text-blue-600 hover:underline text-sm">
+      <Link to={`/admin/families/${row.id}`} className="text-primary hover:underline text-sm">
         {t('global.edit')}
       </Link>
     ),

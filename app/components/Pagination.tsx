@@ -73,7 +73,7 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
           const disabled = link.url === null || link.page === null;
 
           const baseClass =
-            'inline-flex items-center justify-center min-w-8 h-8 px-3 rounded text-slate-500 transition-colors';
+            'inline-flex items-center justify-center min-w-8 h-8 px-3 rounded text-stroke-weak transition-colors';
 
           const content = isPrev ? (
             <ArrowLeft />
@@ -104,9 +104,9 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
                 aria-current={link.active ? 'page' : undefined}
                 className={[
                   baseClass,
-                  'cursor-pointer hover:bg-slate-50 hover:text-slate-900',
+                  'cursor-pointer hover:bg-primary-hover hover:text-white',
                   link.active
-                    ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white'
+                    ? 'bg-primary text-white hover:bg-primary-hover'
                     : '',
                 ].join(' ')}
               >
