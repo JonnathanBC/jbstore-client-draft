@@ -1,15 +1,15 @@
 import axios, { AxiosError } from 'axios';
-import { getSession } from '~/server/session.server';
 
 const API_URL = process.env.API_URL;
 
-export const apiClient = axios.create({
+export const apiClient = (token?: string) => axios.create({
   baseURL: API_URL || '/',
   headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-  withCredentials: true,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  // withCredentials: true,
 });
 
 export type ApiErrorCode =
