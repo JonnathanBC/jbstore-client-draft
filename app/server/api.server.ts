@@ -24,7 +24,7 @@ export async function getFamilies({
   }
 }
 
-export async function getFamily(token: string, id: number): Promise<Family> {
+export async function getFamily(id: number, token: string): Promise<Family> {
   try {
     const { data } = await apiClient(token).get<Family>(`/api/families/${id}`);
     return data;
@@ -52,6 +52,18 @@ export async function updateFamily(
 ): Promise<Family | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).patch<Family>(`/api/families/${id}`, payload);
+    return data;
+  } catch (err) {
+    return { error: toApiError(err) };
+  }
+}
+
+export async function deleteFamily(
+  id: number,
+  token: string,
+): Promise<any | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).delete(`/api/families/${id}`);
     return data;
   } catch (err) {
     return { error: toApiError(err) };

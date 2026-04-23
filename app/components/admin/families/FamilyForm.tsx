@@ -1,20 +1,19 @@
-import { Form, Link, useNavigation } from 'react-router';
+import { Form, useNavigation } from 'react-router';
 import type { Family } from '~/types/family';
+import { t } from '@/i18n'
 
 interface Props {
   family?: Family;
   error?: string | null;
 }
 
-export function FamilyForm({ family, error }: Props) {
+export function FamilyForm({ family }: Props) {
   const nav = useNavigation();
   const submitting = nav.state === 'submitting';
   const isEdit = Boolean(family);
 
   return (
     <Form method="post" className="space-y-4">
-      {error && <p className="bg-red-50 text-red-600 py-2 px-4 rounded">{error}</p>}
-
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-strong-weak mb-1">
           Nombre
@@ -35,12 +34,14 @@ export function FamilyForm({ family, error }: Props) {
           type="submit"
           disabled={submitting}
           className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          name="_action"
+          value="update"
         >
           {submitting ? 'Guardando...' : 'Guardar'}
         </button>
-        <Link to="/admin/families" className="btn btn-outline-primary">
-          Cancelar
-        </Link>
+        <button type='submit' className="btn btn-danger" name="_action" value="delete">
+          {t('global.delete')}
+        </button>
       </div>
 
       {isEdit ? <input type="hidden" name="id" value={family!.id} /> : null}

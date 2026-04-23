@@ -1,11 +1,12 @@
 import { redirect } from 'react-router';
 import type { Route } from './+types/admin.families.$id';
 import { requireAuth } from '~/server/auth.server';
-import { getFamily, updateFamily } from '~/server/api.server';
-import { commitSession, getSession } from '~/server/session.server';
+import { deleteFamily, getFamily, updateFamily } from '~/server/api.server';
+// import { commitSession, getSession } from '~/server/session.server';
 import { FamilyForm } from '~/components/admin/families/FamilyForm';
 import { t } from '~/i18n';
 import type { RouteHandle } from '~/types/route';
+import { useEffect } from 'react';
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -13,7 +14,7 @@ export const meta: Route.MetaFunction = ({ data }) => [
   },
 ];
 
-export const handle: RouteHandle = { breadcrumb: t('global.edit') };
+export const handle: RouteHandle = { breadcrumb: t('admin.families')};
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { token } = await requireAuth(request);
@@ -38,39 +39,38 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request);
   const id = Number(params.id);
-  if (!Number.isFinite(id) || id < 1) {
-    return { error: 'ID inválido' };
-  }
+  if (!Number.isFinite(id) || id < 1) return { error: 'ID inválido' };
 
   const form = await request.formData();
-  const name = String(form.get('name') ?? '').trim();
-  if (!name) {
-    return { error: 'El nombre es obligatorio' };
+  const intent = form.get('_action');
+
+  if (intent === 'delete') {
+    const result = await deleteFamily(id, token);
+    if ('error' in result) return { error: result.error.message };
+    return redirect('/admin/families');
   }
+
+  const name = String(form.get('name') ?? '').trim();
+  if (!name) return { error: 'El nombre es obligatorio' };
 
   const result = await updateFamily(id, { name }, token);
-  if ('error' in result) {
-    return { error: result.error.message };
-  }
+  if ('error' in result) return { error: result.error.message };
 
-  const session = await getSession(request.headers.get('Cookie'));
-  session.flash('toast', {
-    kind: 'success',
-    title: 'Familia actualizada',
-    message: `"${result.name}" se guardó correctamente.`,
-  });
-
-  return redirect('/admin/families', {
-    headers: { 'Set-Cookie': await commitSession(session) },
-  });
+  return redirect(`/admin/families/${id}`);
 }
 
 export default function FamilyEdit({ loaderData, actionData }: Route.ComponentProps) {
   const { family } = loaderData;
+
+  useEffect(() => {
+    if (actionData?.error) {
+      alert(actionData.error);
+    }
+  }, [actionData]);
+
   return (
     <div className="card">
-      <h1 className="text-xl font-semibold mb-4">Editar familia</h1>
-      <FamilyForm family={family} error={actionData?.error} />
+      <FamilyForm family={family} />
     </div>
   );
 }
