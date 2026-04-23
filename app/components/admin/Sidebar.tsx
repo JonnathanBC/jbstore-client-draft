@@ -15,6 +15,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { key: 'dashboard', label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { key: 'families', label: 'Familias', href: '/admin/families', icon: LayoutDashboard },
+  { key: 'categories', label: 'Categorias', href: '/admin/categories', icon: LayoutDashboard },
 ];
 
 export function Sidebar() {

@@ -1,36 +1,36 @@
 import { redirect } from 'react-router';
-import type { Route } from './+types/admin.families.$id';
+import type { Route } from './+types/admin.categories.$id';
 import { requireAuth } from '~/server/auth.server';
-import { deleteFamily, getFamily, updateFamily } from '~/server/api.server';
-import { commitSession, getSession } from '~/server/session.server';
-import { FamilyForm } from '~/components/admin/families/FamilyForm';
 import { t } from '~/i18n';
+import { commitSession, getSession } from '~/server/session.server';
 import type { RouteHandle } from '~/types/route';
 import { useEffect } from 'react';
+import { deleteCategory, getCategory, updateCategory } from '~/server/categories.server';
+import { CategoryForm } from '~/components/admin/categories/CategoryForm';
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
-    title: data?.family ? `${data.family.name} | JB Store` : `${t('global.edit')} | JB Store`,
+    title: data?.category ? `${data.category.name} | JB Store` : `${t('global.edit')} | JB Store`,
   },
 ];
 
-export const handle: RouteHandle = { breadcrumb: t('admin.families') };
+export const handle: RouteHandle = { breadcrumb: t('admin.categories') };
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { token } = await requireAuth(request);
   const id = Number(params.id);
   if (!Number.isFinite(id) || id < 1) {
-    throw new Response('Familia no encontrada', { status: 404 });
+    throw new Response('Categoria no encontrada', { status: 404 });
   }
   try {
-    const family = await getFamily(id, token);
-    return { family };
+    const category = await getCategory(id, token);
+    return { category };
   } catch (err) {
     const status =
       typeof err === 'object' && err !== null && 'status' in err
         ? (err as { status: number }).status
         : 500;
-    throw new Response(status === 404 ? 'Familia no encontrada' : 'Error del servidor', {
+    throw new Response(status === 404 ? 'Categoria no encontrada' : 'Error del servidor', {
       status,
     });
   }
@@ -46,16 +46,16 @@ export async function action({ request, params }: Route.ActionArgs) {
   const session = await getSession(request.headers.get('Cookie'));
 
   if (intent === 'delete') {
-    const result = await deleteFamily(id, token);
+    const result = await deleteCategory(id, token);
     if ('error' in result) return { error: result.error.message };
 
     session.flash('toast', {
       kind: 'success',
-      title: 'Familia eliminada',
-      message: 'La familia se eliminó correctamente.',
+      title: 'Categoría eliminada',
+      message: 'La categoría se eliminó correctamente.',
     });
 
-    return redirect('/admin/families', {
+    return redirect('/admin/categories', {
       headers: { 'Set-Cookie': await commitSession(session) },
     });
   }
@@ -63,22 +63,22 @@ export async function action({ request, params }: Route.ActionArgs) {
   const name = String(form.get('name') ?? '').trim();
   if (!name) return { error: 'El nombre es obligatorio' };
 
-  const result = await updateFamily(id, { name }, token);
+  const result = await updateCategory(id, { name }, token);
   if ('error' in result) return { error: result.error.message };
 
   session.flash('toast', {
     kind: 'success',
-    title: 'Familia actualizada',
+    title: 'Categoría actualizada',
     message: `"${result.name}" se actualizó correctamente.`,
   });
 
-  return redirect('/admin/families', {
+  return redirect('/admin/categories', {
     headers: { 'Set-Cookie': await commitSession(session) },
   });
 }
 
-export default function FamilyEdit({ loaderData, actionData }: Route.ComponentProps) {
-  const { family } = loaderData;
+export default function CategoryEdit({ loaderData, actionData }: Route.ComponentProps) {
+  const { category } = loaderData;
 
   useEffect(() => {
     if (actionData?.error) {
@@ -88,7 +88,11 @@ export default function FamilyEdit({ loaderData, actionData }: Route.ComponentPr
 
   return (
     <div className="card">
-      <FamilyForm family={family} />
+      <CategoryForm
+        key={category.id + category.name}
+        category={category}
+        error={actionData?.error}
+      />
     </div>
   );
 }

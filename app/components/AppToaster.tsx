@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { Toaster, sileo } from 'sileo';
-import 'sileo/styles.css';
+import { Toaster, toast as sonner } from 'sonner';
 
 export type ToastFlash = {
   kind: 'success' | 'error' | 'info' | 'warning';
@@ -15,23 +14,24 @@ interface Props {
 export const AppToaster = ({ toast }: Props) => {
   useEffect(() => {
     if (!toast) return;
-    const options = { title: toast.title, description: toast.message };
+    const options = { description: toast.message };
+    const title = toast.title ?? toast.message;
     switch (toast.kind) {
       case 'success':
-        sileo.success(options);
+        sonner.success(title, options);
         break;
       case 'error':
-        sileo.error(options);
+        sonner.error(title, options);
         break;
       case 'warning':
-        sileo.warning(options);
+        sonner.warning(title, options);
         break;
       case 'info':
       default:
-        sileo.info(options);
+        sonner.info(title, options);
         break;
     }
   }, [toast]);
 
-  return <Toaster position="bottom-right" />;
+  return <Toaster position="bottom-right" richColors closeButton />;
 };
