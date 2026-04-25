@@ -7,6 +7,7 @@ import { FamilyForm } from '~/components/admin/families/FamilyForm';
 import { t } from '~/i18n';
 import type { RouteHandle } from '~/types/route';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -64,12 +65,16 @@ export async function action({ request, params }: Route.ActionArgs) {
   if (!name) return { error: 'El nombre es obligatorio' };
 
   const result = await updateFamily(id, { name }, token);
-  if ('error' in result) return { error: result.error.message };
+  
+   // Ejemplo de notifiaciones para el cliente sin usar session.flash
+  if ('error' in result) {
+    return { toast: { kind: 'error', message: result.error.message } };
+  }
 
   session.flash('toast', {
     kind: 'success',
-    title: 'Familia actualizada',
-    message: `"${result.name}" se actualizó correctamente.`,
+    title: 'Éxito',
+    message: 'Familia actualizada',
   });
 
   return redirect('/admin/families', {
@@ -81,8 +86,8 @@ export default function FamilyEdit({ loaderData, actionData }: Route.ComponentPr
   const { family } = loaderData;
 
   useEffect(() => {
-    if (actionData?.error) {
-      alert(actionData.error);
+    if (actionData?.toast) {
+      toast.error(actionData.toast.message);
     }
   }, [actionData]);
 
