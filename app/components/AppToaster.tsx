@@ -3,8 +3,8 @@ import { Toaster, toast as sonner } from 'sonner';
 
 export type ToastFlash = {
   kind: 'success' | 'error' | 'info' | 'warning';
-  title?: string;
-  message: string;
+  title: string;
+  description?: string;
 };
 
 interface Props {
@@ -14,8 +14,8 @@ interface Props {
 export const AppToaster = ({ toast }: Props) => {
   useEffect(() => {
     if (!toast) return;
-    const options = { description: toast.message };
-    const title = toast.title ?? toast.message;
+    const options = { description: toast.description };
+    const title = toast.title;
     switch (toast.kind) {
       case 'success':
         sonner.success(title, options);

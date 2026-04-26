@@ -23,7 +23,7 @@ export interface ApiError {
   code: ApiErrorCode;
   message: string;
   status: number;
-  validationErrors?: Record<string, string[]>;
+  errors?: Record<string, string[]>;
 
 }
 
@@ -47,7 +47,7 @@ export function toApiError(err: unknown): ApiError {
       code: STATUS_TO_CODE[status] ?? 'INTERNAL_SERVER_ERROR',
       message: data?.message ?? err.message,
       status,
-      validationErrors: data?.errors,
+      errors: data?.errors,
     };
   }
   return {

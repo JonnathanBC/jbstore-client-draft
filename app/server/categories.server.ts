@@ -34,7 +34,7 @@ export async function getCategory(id: number, token: string): Promise<Category> 
 }
 
 export async function createCategory(
-  payload: { name: string },
+  payload: { name: string, family_id: number },
   token: string,
 ): Promise<Category | { error: ApiError }> {
   try {

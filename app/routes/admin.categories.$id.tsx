@@ -1,12 +1,14 @@
-import { redirect } from 'react-router';
+import { useEffect } from 'react';
+import { data, redirect } from 'react-router';
+import { toast } from 'sonner';
+
 import type { Route } from './+types/admin.categories.$id';
-import { requireAuth } from '~/server/auth.server';
+import { CategoryForm } from '~/components/admin/categories/CategoryForm';
 import { t } from '~/i18n';
+import { requireAuth } from '~/server/auth.server';
 import { commitSession, getSession } from '~/server/session.server';
 import type { RouteHandle } from '~/types/route';
-import { useEffect } from 'react';
 import { deleteCategory, getCategory, updateCategory } from '~/server/categories.server';
-import { CategoryForm } from '~/components/admin/categories/CategoryForm';
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -39,7 +41,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request);
   const id = Number(params.id);
-  if (!Number.isFinite(id) || id < 1) return { error: 'ID inválido' };
+  if (!Number.isFinite(id) || id < 1) return { error: 'ID inválido', errors: [] };
 
   const form = await request.formData();
   const intent = form.get('_action');
@@ -47,12 +49,16 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   if (intent === 'delete') {
     const result = await deleteCategory(id, token);
-    if ('error' in result) return { error: result.error.message };
+    if ('error' in result) {
+      return data(
+        { error: result.error.message, errors: [] },
+        { status: result.error.status }
+      );
+    }
 
     session.flash('toast', {
       kind: 'success',
-      title: 'Categoría eliminada',
-      message: 'La categoría se eliminó correctamente.',
+      title: 'Eliminado correctamente',
     });
 
     return redirect('/admin/categories', {
@@ -61,15 +67,18 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const name = String(form.get('name') ?? '').trim();
-  if (!name) return { error: 'El nombre es obligatorio' };
 
   const result = await updateCategory(id, { name }, token);
-  if ('error' in result) return { error: result.error.message };
+  if ('error' in result) {
+    return data(
+      { error: result.error.message, errors: result.error.errors },
+      { status: result.error.status }
+    );
+  }
 
   session.flash('toast', {
     kind: 'success',
-    title: 'Categoría actualizada',
-    message: `"${result.name}" se actualizó correctamente.`,
+    title: 'Categoría actualizada con èxito',
   });
 
   return redirect('/admin/categories', {
@@ -82,17 +91,13 @@ export default function CategoryEdit({ loaderData, actionData }: Route.Component
 
   useEffect(() => {
     if (actionData?.error) {
-      alert(actionData.error);
+      toast.error(actionData.error);
     }
   }, [actionData]);
 
   return (
     <div className="card">
-      <CategoryForm
-        key={category.id + category.name}
-        category={category}
-        error={actionData?.error}
-      />
+      <CategoryForm category={category} validationErrors={actionData?.errors} />
     </div>
   );
 }
