@@ -19,11 +19,11 @@ export function Header({ user, isAdmin }: Props) {
           <Link to="/products" className="hover:text-black">
             Productos
           </Link>
-          {isAdmin ? (
+          {isAdmin && (
             <Link to="/admin" className="hover:text-black">
               Admin
             </Link>
-          ) : null}
+          )}
 
           {user ? (
             <Form method="post" action="/logout">

@@ -38,7 +38,7 @@ export default function App() {
 }
 
 export function ErrorBoundary() {
-  const error = useRouteError();
+  const error = useRouteError() as Error;
 
   if (isRouteErrorResponse(error)) {
     return (
@@ -53,12 +53,13 @@ export function ErrorBoundary() {
     );
   }
 
-  const message = error instanceof Error ? error.message : 'Unknown error';
+  const message = error ? error.message : 'Unknown error';
+
   return (
     <main className="min-h-screen flex items-center justify-center p-8">
       <div className="max-w-md text-center space-y-2">
         <h1 className="text-2xl font-bold">Algo salió mal</h1>
-        <p className="text-sm text-slate-600">{message}</p>
+        <p className="text-slate-700">{message}</p>
       </div>
     </main>
   );
