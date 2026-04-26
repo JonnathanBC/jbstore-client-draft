@@ -23,6 +23,8 @@ export interface ApiError {
   code: ApiErrorCode;
   message: string;
   status: number;
+  validationErrors?: Record<string, string[]>;
+
 }
 
 const STATUS_TO_CODE: Record<number, ApiErrorCode> = {
@@ -36,11 +38,16 @@ const STATUS_TO_CODE: Record<number, ApiErrorCode> = {
 export function toApiError(err: unknown): ApiError {
   if (err instanceof AxiosError) {
     const status = err.response?.status ?? 500;
-    const data = err.response?.data as { message?: string } | undefined;
+    const data = err.response?.data as {
+      message?: string;
+      errors?: Record<string, string[]>;
+    } | undefined;
+
     return {
       code: STATUS_TO_CODE[status] ?? 'INTERNAL_SERVER_ERROR',
       message: data?.message ?? err.message,
       status,
+      validationErrors: data?.errors,
     };
   }
   return {
