@@ -4,7 +4,7 @@ import { getOptionalAuth } from '~/server/auth.server';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const auth = await getOptionalAuth(request);
-  if (auth) throw redirect('/admin');
+  if (auth) throw redirect('/');
   return null;
 }
 

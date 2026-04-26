@@ -7,15 +7,25 @@ import { Navbar } from '~/components/admin/Navbar';
 import { Breadcrumbs } from '~/components/shared/Breadcrumbs';
 import { AppToaster, type ToastFlash } from '~/components/AppToaster';
 import type { RouteHandle } from '~/types/route';
+import { UserRole } from '~/types/user';
 
 export const handle: RouteHandle = { breadcrumb: 'Dashboard' };
 
 export const meta: Route.MetaFunction = () => [{ title: 'Panel de Administración | JB Store' }];
 
-export async function loader({ request }: Route.LoaderArgs) {
+async function requireAdmin(request: Request) {
   const { token } = await requireAuth(request);
   const user = await fetchMe(token);
 
+  if (user.role !== UserRole.ADMIN) {
+    throw new Response('This action is unauthorized.', { status: 403, statusText: 'FORBIDDEN' });
+  }
+
+  return user;
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const user = await requireAdmin(request);
   const session = await getSession(request.headers.get('Cookie'));
   const toast = (session.get('toast') as ToastFlash | undefined) ?? null;
 
