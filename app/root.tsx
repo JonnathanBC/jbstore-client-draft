@@ -44,10 +44,10 @@ export function ErrorBoundary() {
     return (
       <main className="min-h-screen flex items-center justify-center p-8">
         <div className="max-w-md text-center space-y-2">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-3xl font-bold">
             {error.status} {error.statusText}
           </h1>
-          {error.data ? <p className="text-sm text-slate-600">{String(error.data)}</p> : null}
+          {error.data ? <p className="text-slate-700">{String(error.data)}</p> : null}
         </div>
       </main>
     );
