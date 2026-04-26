@@ -53,7 +53,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     session.flash('toast', {
       kind: 'success',
       title: 'Familia eliminada',
-      message: 'La familia se eliminó correctamente.',
     });
 
     return redirect('/admin/families', {
@@ -62,7 +61,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const name = String(form.get('name') ?? '').trim();
-  if (!name) return { error: 'El nombre es obligatorio' };
 
   const result = await updateFamily(id, { name }, token);
   
@@ -74,7 +72,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   session.flash('toast', {
     kind: 'success',
     title: 'Éxito',
-    message: 'Familia actualizada',
   });
 
   return redirect('/admin/families', {

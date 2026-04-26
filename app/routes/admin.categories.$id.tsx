@@ -67,8 +67,9 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const name = String(form.get('name') ?? '').trim();
+  const familyId = Number(form.get('family_id'));
 
-  const result = await updateCategory(id, { name }, token);
+  const result = await updateCategory(id, { name, family_id: familyId }, token);
   if ('error' in result) {
     return data(
       { error: result.error.message, errors: result.error.errors },

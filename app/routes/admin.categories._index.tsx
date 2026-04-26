@@ -33,6 +33,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 const columns = [
   { title: 'ID', dataIndex: 'id' as const },
   { title: 'Name', dataIndex: 'name' as const },
+  { title: 'Familia', dataIndex: 'family' as const, render: (row: any) => (
+    <p>{row?.family?.name}</p>
+  )},
   {
     title: 'Acciones',
     render: (row: Category) => (
