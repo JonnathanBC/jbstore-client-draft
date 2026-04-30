@@ -7,7 +7,7 @@ import { SubCategory } from '~/types/subcategory'
 
 interface Props {
   subcategory?: SubCategory
-  validationErrors?: { [key: string]: string[] } | null
+  validationErrors?: Record<string, string[]> | null
 }
 
 export function SubCategoryForm({ subcategory, validationErrors }: Props) {
@@ -16,7 +16,7 @@ export function SubCategoryForm({ subcategory, validationErrors }: Props) {
   const isEdit = Boolean(subcategory)
 
   const [familyId, setFamilyId] = useState(
-    subcategory?.category?.family?.id.toString() ?? '',
+    subcategory?.category?.family_id?.toString() ?? '',
   )
 
   return (

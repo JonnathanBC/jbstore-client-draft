@@ -3,12 +3,14 @@ import { Family } from './family'
 export interface SubCategory {
   id: number
   name: string
-  category_id?: number
-  category?: {
+  category_id: number
+  created_at: string
+  updated_at: string
+  category: {
     id: number
     name: string
-    family: Family
+    family_id: number
+    created_at: string
+    updated_at: string
   }
-  created_at?: string | null
-  updated_at?: string | null
 }

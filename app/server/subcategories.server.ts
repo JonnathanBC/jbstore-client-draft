@@ -75,7 +75,7 @@ export async function updateSubCategory(
 export async function deleteSubCategory(
   id: number,
   token: string,
-): Promise<void | { error: ApiError }> {
+): Promise<{ error: ApiError }> {
   try {
     const { data } = await apiClient(token).delete(`/api/subcategories/${id}`)
     return data
