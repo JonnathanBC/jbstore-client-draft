@@ -6,11 +6,11 @@ export async function loader({ request }: any) {
   const families = await getFamilies({
     token,
     page: 1,
-    per_page: 20,
+    pagination: false,
   });
 
   return {
-    items: families.data.map((f) => ({
+    items: families?.data?.map((f) => ({
       value: String(f.id),
       label: f.name,
     })),

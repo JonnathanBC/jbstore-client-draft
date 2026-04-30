@@ -13,7 +13,7 @@ import type { RouteHandle } from '~/types/route';
 export const handle: RouteHandle = { breadcrumb: t('global.new') };
 
 export const meta: Route.MetaFunction = () => [
-  { title: `${t('global.new')} ${t('admin.subcategory')} | JB Store` },
+  { title: `${t('admin.new_subcategory')} | JB Store` },
 ];
 
 export async function action({ request }: Route.ActionArgs) {

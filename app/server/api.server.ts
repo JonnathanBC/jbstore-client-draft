@@ -8,6 +8,7 @@ export interface GetFamiliesParams {
   per_page?: number;
   name?: string;
   order?: { updated_at?: 'asc' | 'desc' };
+  pagination?: boolean;
 }
 
 export async function getFamilies({

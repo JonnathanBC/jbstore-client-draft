@@ -23,7 +23,7 @@ export function CategoryForm({ category, validationErrors }: Props) {
           name='family_id'
           value={category?.family_id?.toString() ?? ''}
           source='/resources/families'
-          placeholder='Selecciona una categoria'
+          placeholder='Selecciona una familia'
         />
         {validationErrors?.family_id?.[0] && (
           <p className="text-red-500 text-sm mt-1">{validationErrors.family_id[0]}</p>

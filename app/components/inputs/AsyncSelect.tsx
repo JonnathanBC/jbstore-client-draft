@@ -9,9 +9,10 @@ type Props = {
   onChange?: (value: string) => void;
   source: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
-export const AsyncSelect = ({ value: initialValue = '', onChange, source, name, placeholder = "Selecciona..." }: Props) => {
+export const AsyncSelect = ({ value: initialValue = '', onChange, source, name, placeholder = "Selecciona...", disabled }: Props) => {
   const fetcher = useFetcher();
   const [value, setValue] = useState(initialValue);
 
@@ -36,8 +37,9 @@ export const AsyncSelect = ({ value: initialValue = '', onChange, source, name, 
         items={items}
         value={value}
         onChange={handleChange}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         placeholder={isLoading ? "Cargando..." : placeholder}
+        
       />
     </>
   );
