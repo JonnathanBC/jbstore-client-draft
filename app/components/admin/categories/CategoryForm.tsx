@@ -1,6 +1,8 @@
 import { Form, useNavigation } from 'react-router';
+import { AsyncSelect } from '~/components/inputs/AsyncSelect';
 import { t } from '~/i18n'
 import type { Category } from '~/types/category';
+
 
 interface Props {
   category?: Category;
@@ -18,14 +20,21 @@ export function CategoryForm({ category, validationErrors }: Props) {
         <label htmlFor="family_id" className="block text-sm font-medium text-strong-weak mb-1">
           Familia
         </label>
-        <input
+
+        <AsyncSelect
+          name='family_id'
+          value={category?.family_id?.toString() ?? ''}
+          source='/resources/families'
+        />
+        
+        {/* <input
           id="family_id"
           name="family_id"
           type="number"
           defaultValue={category?.name ?? ''}
           placeholder="Selecciona una familia"
-          className="w-full px-3 py-2 border border-weak rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        />
+          className=""
+        /> */}
         {validationErrors?.family_id?.[0] && (
           <p className="text-red-500 text-sm mt-1">{validationErrors.family_id[0]}</p>
         )}
