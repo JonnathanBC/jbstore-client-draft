@@ -5,7 +5,8 @@
     "families": "Families",
     "settings": "Settings",
     "orders": "Orders",
-    "categories": "Categories"
+    "categories": "Categories",
+    "subcategories": "SubCategories"
   },
   "global": {
     "welcome": "Welcome",

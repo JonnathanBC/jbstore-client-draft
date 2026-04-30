@@ -5,7 +5,8 @@
     "families": "Familias",
     "settings": "Configuraciones",
     "orders": "Pedidos",
-    "categories": "Categorías"
+    "categories": "Categorías",
+    "subcategories": "Subcategorias"
   },
   "global": {
     "welcome": "Bienvenido",
