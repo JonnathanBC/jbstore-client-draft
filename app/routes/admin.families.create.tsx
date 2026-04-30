@@ -31,7 +31,6 @@ export async function action({ request }: Route.ActionArgs) {
   session.flash('toast', {
     kind: 'success',
     title: 'Familia creada',
-    message: `"${result.name}" se creó correctamente.`,
   })
 
   return redirect('/admin/families', {
