@@ -3,7 +3,6 @@ import { AsyncSelect } from '~/components/inputs/AsyncSelect';
 import { t } from '~/i18n'
 import type { Category } from '~/types/category';
 
-
 interface Props {
   category?: Category;
   validationErrors?: any | null;
@@ -20,21 +19,12 @@ export function CategoryForm({ category, validationErrors }: Props) {
         <label htmlFor="family_id" className="block text-sm font-medium text-strong-weak mb-1">
           Familia
         </label>
-
         <AsyncSelect
           name='family_id'
           value={category?.family_id?.toString() ?? ''}
           source='/resources/families'
+          placeholder='Selecciona una categoria'
         />
-        
-        {/* <input
-          id="family_id"
-          name="family_id"
-          type="number"
-          defaultValue={category?.name ?? ''}
-          placeholder="Selecciona una familia"
-          className=""
-        /> */}
         {validationErrors?.family_id?.[0] && (
           <p className="text-red-500 text-sm mt-1">{validationErrors.family_id[0]}</p>
         )}

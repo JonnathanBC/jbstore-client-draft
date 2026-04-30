@@ -26,6 +26,7 @@ export function SubCategoryForm({ subcategory, validationErrors }: Props) {
           name='category_id'
           value={subcategory?.category_id?.toString() ?? ''}
           source='/resources/categories'
+          placeholder='Selecciona categoria'
         />
         
         {validationErrors?.category_id?.[0] && (

@@ -1,5 +1,6 @@
 import { useFetcher } from "react-router";
 import { useEffect, useState } from "react";
+
 import { Select } from '~/components/inputs/Select';
 
 type Props = {
@@ -7,9 +8,10 @@ type Props = {
   value?: string;
   onChange?: (value: string) => void;
   source: string;
+  placeholder?: string;
 }
 
-export const AsyncSelect = ({ value: initialValue = '', onChange, source, name }: Props) => {
+export const AsyncSelect = ({ value: initialValue = '', onChange, source, name, placeholder = "Selecciona..." }: Props) => {
   const fetcher = useFetcher();
   const [value, setValue] = useState(initialValue);
 
@@ -35,7 +37,7 @@ export const AsyncSelect = ({ value: initialValue = '', onChange, source, name }
         value={value}
         onChange={handleChange}
         disabled={isLoading}
-        placeholder={isLoading ? "Cargando..." : "Selecciona"}
+        placeholder={isLoading ? "Cargando..." : placeholder}
       />
     </>
   );
