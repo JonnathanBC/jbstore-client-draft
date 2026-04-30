@@ -35,7 +35,7 @@ export const AsyncSelect = ({ value: initialValue = '', onChange, source, name }
         value={value}
         onChange={handleChange}
         disabled={isLoading}
-        placeholder={isLoading ? "Cargando familias..." : "Selecciona una familia"}
+        placeholder={isLoading ? "Cargando..." : "Selecciona"}
       />
     </>
   );

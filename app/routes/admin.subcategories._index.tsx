@@ -35,8 +35,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 const columns: Column<SubCategory>[] = [
   { title: 'ID', dataIndex: 'id' },
   { title: 'Name', dataIndex: 'name' },
-  { title: 'Categoria', dataIndex: 'category', render: (row: Category) => (
-    <p>{row?.name}</p>
+  { title: 'Categoria', dataIndex: 'category', render: (row: SubCategory) => (
+    <p>{row?.category?.name}</p>
   )},
   {
     title: 'Familia',

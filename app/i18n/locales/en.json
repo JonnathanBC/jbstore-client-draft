@@ -6,7 +6,9 @@
     "settings": "Settings",
     "orders": "Orders",
     "categories": "Categories",
-    "subcategories": "SubCategories"
+    "subcategories": "SubCategories",
+    "subcategory": "SubCategory",
+    "new_subcategory": "New SubCategory"
   },
   "global": {
     "welcome": "Welcome",

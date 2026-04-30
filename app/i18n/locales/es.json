@@ -6,7 +6,9 @@
     "settings": "Configuraciones",
     "orders": "Pedidos",
     "categories": "Categorías",
-    "subcategories": "Subcategorias"
+    "subcategories": "Subcategorias",
+    "subcategory": "Subcategoria",
+    "new_subcategory": "Nueva Subcategoria"
   },
   "global": {
     "welcome": "Bienvenido",
