@@ -1,25 +1,12 @@
-import type { ApiResponse } from '~/types/api';
+import { TableProps } from '~/types/table';
 import { Pagination } from './Pagination';
-
-interface Column<T> {
-  title: string;
-  dataIndex?: keyof T & string;
-  render?: (row: T) => React.ReactNode;
-}
-
-interface Props<T> {
-  dataSource?: T[];
-  columns?: Column<T>[];
-  meta?: ApiResponse<unknown>;
-  onPageChange?: (page: number) => void;
-}
 
 export const Table = <T,>({
   meta,
   dataSource = [],
   columns = [],
   onPageChange,
-}: Props<T>) => {
+}: TableProps<T>) => {
   return (
     <>
       <div className="relative overflow-x-auto rounded-base border border-default shadow-xs">
