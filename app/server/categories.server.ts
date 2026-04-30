@@ -1,14 +1,14 @@
-import { apiClient, toApiError, type ApiError } from '~/lib/apiClient';
-import type { ApiResponse } from '~/types/api';
-import type { Category } from '~/types/category';
+import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
+import type { ApiResponse } from '~/types/api'
+import type { Category } from '~/types/category'
 
 export interface GetCategoriesParams {
-  token: string;
-  page?: number;
-  per_page?: number;
-  name?: string;
-  order?: { updated_at?: 'asc' | 'desc' };
-  family_id?: string;
+  token: string
+  page?: number
+  per_page?: number
+  name?: string
+  order?: { updated_at?: 'asc' | 'desc' }
+  family_id?: string
 }
 
 export async function getCategories({
@@ -16,57 +16,71 @@ export async function getCategories({
   ...params
 }: GetCategoriesParams): Promise<ApiResponse<Category>> {
   try {
-    const { data } = await apiClient(token).get<ApiResponse<Category>>('/api/categories', {
-      params,
-    });
-    return data;
+    const { data } = await apiClient(token).get<ApiResponse<Category>>(
+      '/api/categories',
+      {
+        params,
+      },
+    )
+    return data
   } catch (err) {
-    throw toApiError(err);
+    throw toApiError(err)
   }
 }
 
-export async function getCategory(id: number, token: string): Promise<Category> {
+export async function getCategory(
+  id: number,
+  token: string,
+): Promise<Category> {
   try {
-    const { data } = await apiClient(token).get<Category>(`/api/categories/${id}`);
-    return data;
+    const { data } = await apiClient(token).get<Category>(
+      `/api/categories/${id}`,
+    )
+    return data
   } catch (err) {
-    throw toApiError(err);
+    throw toApiError(err)
   }
 }
 
 export async function createCategory(
-  payload: { name: string, family_id: number },
+  payload: { name: string; family_id: number },
   token: string,
 ): Promise<Category | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).post<Category>('/api/categories', payload);
-    return data;
+    const { data } = await apiClient(token).post<Category>(
+      '/api/categories',
+      payload,
+    )
+    return data
   } catch (err) {
-    return { error: toApiError(err) };
+    return { error: toApiError(err) }
   }
 }
 
 export async function updateCategory(
   id: number,
-  payload: { name: string, family_id: number; },
+  payload: { name: string; family_id: number },
   token: string,
 ): Promise<Category | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).patch<Category>(`/api/categories/${id}`, payload);
-    return data;
+    const { data } = await apiClient(token).patch<Category>(
+      `/api/categories/${id}`,
+      payload,
+    )
+    return data
   } catch (err) {
-    return { error: toApiError(err) };
+    return { error: toApiError(err) }
   }
 }
 
 export async function deleteCategory(
   id: number,
   token: string,
-): Promise<any | { error: ApiError }> {
+): Promise<void | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/categories/${id}`);
-    return data;
+    const { data } = await apiClient(token).delete(`/api/categories/${id}`)
+    return data
   } catch (err) {
-    return { error: toApiError(err) };
+    return { error: toApiError(err) }
   }
 }

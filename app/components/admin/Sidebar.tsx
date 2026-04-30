@@ -1,45 +1,67 @@
-import { useStore } from '@nanostores/react';
-import { Form, Link, useLocation } from 'react-router';
-import { LayoutDashboard } from 'lucide-react';
-import type { ComponentType, SVGProps } from 'react';
-import { cn } from '~/lib/utils';
-import { isSidebarOpen } from '~/stores/sidebar.store';
+import { useStore } from '@nanostores/react'
+import { Form, Link, useLocation } from 'react-router'
+import { LayoutDashboard } from 'lucide-react'
+import type { ComponentType, SVGProps } from 'react'
+import { cn } from '~/lib/utils'
+import { isSidebarOpen } from '~/stores/sidebar.store'
 
 interface MenuItem {
-  key: string;
-  label: string;
-  href: string;
-  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  key: string
+  label: string
+  href: string
+  icon: ComponentType<SVGProps<SVGSVGElement>>
 }
 
 const menuItems: MenuItem[] = [
-  { key: 'dashboard', label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { key: 'families', label: 'Familias', href: '/admin/families', icon: LayoutDashboard },
-  { key: 'categories', label: 'Categorias', href: '/admin/categories', icon: LayoutDashboard },
-  { key: 'subcategories', label: 'Subcategorias', href: '/admin/subcategories', icon: LayoutDashboard },
-];
+  {
+    key: 'dashboard',
+    label: 'Dashboard',
+    href: '/admin',
+    icon: LayoutDashboard,
+  },
+  {
+    key: 'families',
+    label: 'Familias',
+    href: '/admin/families',
+    icon: LayoutDashboard,
+  },
+  {
+    key: 'categories',
+    label: 'Categorias',
+    href: '/admin/categories',
+    icon: LayoutDashboard,
+  },
+  {
+    key: 'subcategories',
+    label: 'Subcategorias',
+    href: '/admin/subcategories',
+    icon: LayoutDashboard,
+  },
+]
 
 export function Sidebar() {
-  const open = useStore(isSidebarOpen);
-  const { pathname } = useLocation();
+  const open = useStore(isSidebarOpen)
+  const { pathname } = useLocation()
 
-  const closeSidebar = () => isSidebarOpen.set(false);
+  const closeSidebar = () => isSidebarOpen.set(false)
 
   return (
     <>
       <aside
         className={cn(
-          'fixed top-0 left-0 z-40 w-64 h-dvh pt-20 transition-transform bg-white border-r border-weak sm:translate-x-0',
+          'border-weak fixed top-0 left-0 z-40 h-dvh w-64 border-r bg-white pt-20 transition-transform sm:translate-x-0',
           open ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
         )}
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 pb-4 overflow-y-auto bg-white flex flex-col">
-          <ul className="space-y-2 flex-1">
+        <div className="flex h-full flex-col overflow-y-auto bg-white px-3 pb-4">
+          <ul className="flex-1 space-y-2">
             {menuItems.map((menu) => {
-              const Icon = menu.icon;
+              const Icon = menu.icon
               const isActive =
-                menu.href === '/admin' ? pathname === '/admin' : pathname.startsWith(menu.href);
+                menu.href === '/admin'
+                  ? pathname === '/admin'
+                  : pathname.startsWith(menu.href)
 
               return (
                 <li key={menu.key}>
@@ -47,22 +69,26 @@ export function Sidebar() {
                     to={menu.href}
                     onClick={closeSidebar}
                     className={cn(
-                      'flex items-center p-2 hover:text-primary rounded-lg hover:bg-primary-light group',
+                      'hover:text-primary hover:bg-primary-light group flex items-center rounded-lg p-2',
                       isActive && 'text-primary bg-primary-light',
                     )}
                   >
-                    <Icon className="group-hover:text-primary w-5 h-5" />
+                    <Icon className="group-hover:text-primary h-5 w-5" />
                     <span className="ms-3">{menu.label}</span>
                   </Link>
                 </li>
-              );
+              )
             })}
           </ul>
 
-          <Form method="post" action="/logout" className="mt-4 border-t border-weak pt-4">
+          <Form
+            method="post"
+            action="/logout"
+            className="border-weak mt-4 border-t pt-4"
+          >
             <button
               type="submit"
-              className="w-full flex items-center p-2 text-red-600 rounded-lg hover:bg-red-50 cursor-pointer"
+              className="flex w-full cursor-pointer items-center rounded-lg p-2 text-red-600 hover:bg-red-50"
             >
               <span className="ms-3">Cerrar sesión</span>
             </button>
@@ -70,10 +96,15 @@ export function Sidebar() {
         </div>
       </aside>
 
-      <div
-        className={cn('fixed inset-0 z-30 bg-black/40 sm:hidden', open ? 'block' : 'hidden')}
+      <button
+        type="button"
+        aria-label="Cerrar menú"
+        className={cn(
+          'fixed inset-0 z-30 bg-black/40 sm:hidden',
+          open ? 'block' : 'hidden',
+        )}
         onClick={closeSidebar}
       />
     </>
-  );
+  )
 }

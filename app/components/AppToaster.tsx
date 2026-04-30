@@ -1,37 +1,37 @@
-import { useEffect } from 'react';
-import { Toaster, toast as sonner } from 'sonner';
+import { useEffect } from 'react'
+import { Toaster, toast as sonner } from 'sonner'
 
 export type ToastFlash = {
-  kind: 'success' | 'error' | 'info' | 'warning';
-  title: string;
-  description?: string;
-};
+  kind: 'success' | 'error' | 'info' | 'warning'
+  title: string
+  description?: string
+}
 
 interface Props {
-  toast?: ToastFlash | null;
+  toast?: ToastFlash | null
 }
 
 export const AppToaster = ({ toast }: Props) => {
   useEffect(() => {
-    if (!toast) return;
-    const options = { description: toast.description };
-    const title = toast.title;
+    if (!toast) return
+    const options = { description: toast.description }
+    const title = toast.title
     switch (toast.kind) {
       case 'success':
-        sonner.success(title, options);
-        break;
+        sonner.success(title, options)
+        break
       case 'error':
-        sonner.error(title, options);
-        break;
+        sonner.error(title, options)
+        break
       case 'warning':
-        sonner.warning(title, options);
-        break;
+        sonner.warning(title, options)
+        break
       case 'info':
       default:
-        sonner.info(title, options);
-        break;
+        sonner.info(title, options)
+        break
     }
-  }, [toast]);
+  }, [toast])
 
-  return <Toaster position="bottom-right" richColors closeButton />;
-};
+  return <Toaster position="bottom-right" richColors closeButton />
+}

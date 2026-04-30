@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from 'react'
 
 export function GoogleIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -20,5 +20,5 @@ export function GoogleIcon(props: SVGProps<SVGSVGElement>) {
         fill="#EA4335"
       />
     </svg>
-  );
+  )
 }

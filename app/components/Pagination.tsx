@@ -1,8 +1,8 @@
-import type { ApiResponse } from '~/types/api';
+import type { ApiResponse } from '~/types/api'
 
 interface Props {
-  meta: ApiResponse<unknown>;
-  onPageChange: (page: number) => void;
+  meta: ApiResponse<unknown>
+  onPageChange: (page: number) => void
 }
 
 const ArrowLeft = () => (
@@ -29,7 +29,7 @@ const ArrowLeft = () => (
       strokeLinejoin="round"
     />
   </svg>
-);
+)
 
 const ArrowRight = () => (
   <svg
@@ -55,21 +55,21 @@ const ArrowRight = () => (
       strokeLinejoin="round"
     />
   </svg>
-);
+)
 
 export const Pagination = ({ meta, onPageChange }: Props) => {
-  const prevLink = meta.links[0];
-  const nextLink = meta.links[meta.links.length - 1];
-  
+  const prevLink = meta.links[0]
+  const nextLink = meta.links[meta.links.length - 1]
+
   // Extraemos solo los números de página
-  const pageLinks = meta.links.slice(1, -1);
+  const pageLinks = meta.links.slice(1, -1)
 
   return (
-    <nav className="flex items-center justify-between mt-4 text-sm font-medium">
+    <nav className="mt-4 flex items-center justify-between text-sm font-medium">
       {/* Texto informativo */}
       <span className="text-slate-500">
         Mostrando <span className="text-slate-800">{meta.from ?? 0}</span>–
-        <span className="text-slate-800">{meta.to ?? 0}</span> de{" "}
+        <span className="text-slate-800">{meta.to ?? 0}</span> de{' '}
         <span className="text-slate-800">{meta.total}</span>
       </span>
 
@@ -80,9 +80,9 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
           onClick={() => prevLink.page && onPageChange(prevLink.page)}
           disabled={!prevLink.url}
           className={`flex items-center justify-center transition-colors ${
-            prevLink.url 
-              ? "text-slate-600 hover:text-primary cursor-pointer" 
-              : "text-slate-300 cursor-not-allowed"
+            prevLink.url
+              ? 'hover:text-primary cursor-pointer text-slate-600'
+              : 'cursor-not-allowed text-slate-300'
           }`}
           aria-label="Página anterior"
         >
@@ -92,15 +92,16 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
         {/* Listado de Números */}
         <ul className="flex items-center gap-1">
           {pageLinks.map((link, i) => {
-            const isEllipsis = link.url === null;
-            const baseClass = "inline-flex items-center justify-center min-w-8 h-8 px-3 rounded transition-all";
+            const isEllipsis = link.url === null
+            const baseClass =
+              'inline-flex items-center justify-center min-w-8 h-8 px-3 rounded transition-all'
 
             if (isEllipsis) {
               return (
                 <li key={i} className={`${baseClass} text-slate-400`}>
                   <span dangerouslySetInnerHTML={{ __html: link.label }} />
                 </li>
-              );
+              )
             }
 
             return (
@@ -108,18 +109,18 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
                 <button
                   type="button"
                   onClick={() => onPageChange(link.page!)}
-                  aria-current={link.active ? "page" : undefined}
+                  aria-current={link.active ? 'page' : undefined}
                   className={[
                     baseClass,
                     link.active
-                      ? "bg-primary text-white"
-                      : "text-slate-600 hover:bg-primary-hover hover:text-white cursor-pointer",
-                  ].join(" ")}
+                      ? 'bg-primary text-white'
+                      : 'hover:bg-primary-hover cursor-pointer text-slate-600 hover:text-white',
+                  ].join(' ')}
                 >
                   <span dangerouslySetInnerHTML={{ __html: link.label }} />
                 </button>
               </li>
-            );
+            )
           })}
         </ul>
 
@@ -129,9 +130,9 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
           onClick={() => nextLink.page && onPageChange(nextLink.page)}
           disabled={!nextLink.url}
           className={`flex items-center justify-center transition-colors ${
-            nextLink.url 
-              ? "text-slate-600 hover:text-primary cursor-pointer" 
-              : "text-slate-300 cursor-not-allowed"
+            nextLink.url
+              ? 'hover:text-primary cursor-pointer text-slate-600'
+              : 'cursor-not-allowed text-slate-300'
           }`}
           aria-label="Página siguiente"
         >
@@ -139,5 +140,5 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
         </button>
       </div>
     </nav>
-  );
-};
+  )
+}

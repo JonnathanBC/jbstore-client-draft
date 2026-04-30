@@ -1,33 +1,40 @@
-import { useFetcher } from "react-router";
-import { useEffect, useState } from "react";
+import { useFetcher } from 'react-router'
+import { useEffect, useState } from 'react'
 
-import { Select } from '~/components/inputs/Select';
+import { Select } from '~/components/inputs/Select'
 
 type Props = {
-  name: string;
-  value?: string;
-  onChange?: (value: string) => void;
-  source: string;
-  placeholder?: string;
-  disabled?: boolean;
+  name: string
+  value?: string
+  onChange?: (value: string) => void
+  source: string
+  placeholder?: string
+  disabled?: boolean
 }
 
-export const AsyncSelect = ({ value: initialValue = '', onChange, source, name, placeholder = "Selecciona...", disabled }: Props) => {
-  const fetcher = useFetcher();
-  const [value, setValue] = useState(initialValue);
+export const AsyncSelect = ({
+  value: initialValue = '',
+  onChange,
+  source,
+  name,
+  placeholder = 'Selecciona...',
+  disabled,
+}: Props) => {
+  const fetcher = useFetcher()
+  const [value, setValue] = useState(initialValue)
 
   useEffect(() => {
-    if (fetcher.state === "idle" && !fetcher.data) {
-      fetcher.load(source);
+    if (fetcher.state === 'idle' && !fetcher.data) {
+      fetcher.load(source)
     }
-  }, [fetcher, source]);
+  }, [fetcher, source])
 
-  const items = fetcher.data?.items ?? [];
-  const isLoading = fetcher.state === "loading";
+  const items = fetcher.data?.items ?? []
+  const isLoading = fetcher.state === 'loading'
 
   const handleChange = (newValue: string) => {
-    setValue(newValue);
-    onChange?.(newValue);
+    setValue(newValue)
+    onChange?.(newValue)
   }
 
   return (
@@ -38,9 +45,8 @@ export const AsyncSelect = ({ value: initialValue = '', onChange, source, name, 
         value={value}
         onChange={handleChange}
         disabled={isLoading || disabled}
-        placeholder={isLoading ? "Cargando..." : placeholder}
-        
+        placeholder={isLoading ? 'Cargando...' : placeholder}
       />
     </>
-  );
-};
+  )
+}

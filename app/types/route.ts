@@ -1,3 +1,3 @@
 export interface RouteHandle {
-  breadcrumb?: string;
+  breadcrumb?: string
 }
