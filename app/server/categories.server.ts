@@ -8,6 +8,7 @@ export interface GetCategoriesParams {
   per_page?: number;
   name?: string;
   order?: { updated_at?: 'asc' | 'desc' };
+  family_id?: string;
 }
 
 export async function getCategories({

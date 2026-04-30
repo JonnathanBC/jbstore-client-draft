@@ -8,13 +8,16 @@
     "categories": "Categories",
     "subcategories": "SubCategories",
     "subcategory": "SubCategory",
-    "new_subcategory": "New SubCategory"
+    "new_subcategory": "New SubCategory",
+    "family": "Family",
+    "category": "Category"
   },
   "global": {
     "welcome": "Welcome",
     "products": "Products",
     "new": "New",
     "delete": "Delete",
-    "edit": "Edit"
+    "edit": "Edit",
+    "name": "Name"
   }
 }

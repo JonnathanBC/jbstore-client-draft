@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Form, useNavigation } from 'react-router';
 
 import { AsyncSelect } from '~/components/inputs/AsyncSelect';
@@ -15,18 +16,36 @@ export function SubCategoryForm({ subcategory, validationErrors }: Props) {
   const submitting = nav.state === 'submitting';
   const isEdit = Boolean(subcategory);
 
+  const [familyId, setFamilyId] = useState(subcategory?.category?.family?.id.toString() ?? '');
+
   return (
     <Form method="post" className="space-y-4">
       <div className='space-y-4'>
-        <label htmlFor="category_id" className="block text-sm font-medium text-strong-weak mb-1">
-          Categoria
+        <label htmlFor="family_id" className="block text-sm font-medium text-strong-weak mb-1">
+          {t('admin.family')}
         </label>
 
         <AsyncSelect
+          name='family_id'
+          value={familyId}
+          onChange={(value) => {
+            setFamilyId(value);
+          }}
+          source='/resources/families'
+          placeholder='Selecciona una familia'
+        />
+
+        <label htmlFor="category_id" className="block text-sm font-medium text-strong-weak mb-1">
+          {t('admin.category')}
+        </label>
+
+        <AsyncSelect
+          key={familyId}
           name='category_id'
           value={subcategory?.category_id?.toString() ?? ''}
-          source='/resources/categories'
+          source={`/resources/categories?family_id=${familyId}`}
           placeholder='Selecciona categoria'
+          disabled={!familyId}
         />
         
         {validationErrors?.category_id?.[0] && (
@@ -34,7 +53,7 @@ export function SubCategoryForm({ subcategory, validationErrors }: Props) {
         )}
 
         <label htmlFor="name" className="block text-sm font-medium text-strong-weak mb-1">
-          Nombre
+          {t('global.name')}
         </label>
         <input
           id="name"
