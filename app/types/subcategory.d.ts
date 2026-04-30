@@ -10,6 +10,10 @@ export interface SubCategory {
     id: number
     name: string
     family_id: number
+    family: {
+      id: number
+      name: string
+    }
     created_at: string
     updated_at: string
   }
