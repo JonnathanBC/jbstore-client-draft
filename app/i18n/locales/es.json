@@ -17,7 +17,9 @@
     "products": "Productos",
     "new": "Nuevo",
     "delete": "Eliminar",
-	  "edit": "Editar",
-    "name": "Nombre"
+    "edit": "Editar",
+    "name": "Nombre",
+    "price": "Precio",
+    "actions": "Acciones"
   }
 }

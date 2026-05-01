@@ -31,12 +31,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 const columns: Column<Product>[] = [
-  { title: 'ID', dataIndex: 'id' },
-  { title: 'Name', dataIndex: 'name' },
-  { title: 'Sku', dataIndex: 'sku' },
-  { title: 'Price', dataIndex: 'price' },
+  { title: 'SKU', dataIndex: 'sku' },
+  { title: t('global.name'), dataIndex: 'name' },
+  { title: t('global.price'), dataIndex: 'price' },
   {
-    title: 'Acciones',
+    title: t('global.actions'),
     render: (row: Product) => (
       <Link
         to={`/admin/products/${row.id}`}

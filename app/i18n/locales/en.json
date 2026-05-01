@@ -18,6 +18,8 @@
     "new": "New",
     "delete": "Delete",
     "edit": "Edit",
-    "name": "Name"
+    "name": "Name",
+    "price": "Price",
+    "actions": "Actions"
   }
 }
