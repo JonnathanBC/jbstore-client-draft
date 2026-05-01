@@ -1,43 +1,9 @@
-import { useStore } from '@nanostores/react'
 import { Form, Link, useLocation } from 'react-router'
-import { LayoutDashboard } from 'lucide-react'
-import type { ComponentType, SVGProps } from 'react'
+import { useStore } from '@nanostores/react'
+
+import { menuItems } from '~/config/menuItems'
 import { cn } from '~/lib/utils'
 import { isSidebarOpen } from '~/stores/sidebar.store'
-
-interface MenuItem {
-  key: string
-  label: string
-  href: string
-  icon: ComponentType<SVGProps<SVGSVGElement>>
-}
-
-const menuItems: MenuItem[] = [
-  {
-    key: 'dashboard',
-    label: 'Dashboard',
-    href: '/admin',
-    icon: LayoutDashboard,
-  },
-  {
-    key: 'families',
-    label: 'Familias',
-    href: '/admin/families',
-    icon: LayoutDashboard,
-  },
-  {
-    key: 'categories',
-    label: 'Categorias',
-    href: '/admin/categories',
-    icon: LayoutDashboard,
-  },
-  {
-    key: 'subcategories',
-    label: 'Subcategorias',
-    href: '/admin/subcategories',
-    icon: LayoutDashboard,
-  },
-]
 
 export function Sidebar() {
   const open = useStore(isSidebarOpen)
