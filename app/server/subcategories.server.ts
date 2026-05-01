@@ -8,6 +8,7 @@ export interface GetSubCategoriesParams {
   per_page?: number
   name?: string
   order?: { updated_at?: 'asc' | 'desc' }
+  category_id?: string
 }
 
 export async function getSubCategories({

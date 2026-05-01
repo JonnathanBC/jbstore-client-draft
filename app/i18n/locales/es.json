@@ -10,7 +10,8 @@
     "subcategory": "Subcategoria",
     "new_subcategory": "Nueva Subcategoria",
     "family": "Familia",
-    "category": "Categoria"
+    "category": "Categoria",
+    "new_product": "Nuevo producto"
   },
   "global": {
     "welcome": "Bienvenido",
@@ -20,6 +21,7 @@
     "edit": "Editar",
     "name": "Nombre",
     "price": "Precio",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "code": "Código"
   }
 }

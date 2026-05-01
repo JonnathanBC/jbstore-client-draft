@@ -24,10 +24,11 @@ export const AsyncSelect = ({
   const [value, setValue] = useState(initialValue)
 
   useEffect(() => {
+    if (disabled) return
     if (fetcher.state === 'idle' && !fetcher.data) {
       fetcher.load(source)
     }
-  }, [fetcher, source])
+  }, [fetcher, source, disabled])
 
   const items = fetcher.data?.items ?? []
   const isLoading = fetcher.state === 'loading'

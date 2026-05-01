@@ -36,7 +36,7 @@ export async function getProduct(id: number, token: string): Promise<Product> {
 }
 
 export async function createProduct(
-  payload: { name: string },
+  payload: FormData,
   token: string,
 ): Promise<Product | { error: ApiError }> {
   try {
