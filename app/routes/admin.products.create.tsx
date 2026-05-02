@@ -19,28 +19,21 @@ export async function action({ request }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
   const formData = await request.formData()
 
-  // 2. Preparar el FormData que enviaremos a la API de Laravel
-  // No usamos un objeto plano {sku, name...} porque JSON no soporta archivos.
-  const apiFormData = new FormData()
-
-  apiFormData.append('sku', String(formData.get('sku') ?? '').trim())
-  apiFormData.append('name', String(formData.get('name') ?? '').trim())
-  apiFormData.append(
+  const payload = new FormData()
+  payload.append('sku', String(formData.get('sku') ?? '').trim())
+  payload.append('name', String(formData.get('name') ?? '').trim())
+  payload.append(
     'description',
     String(formData.get('description') ?? '').trim(),
   )
-  apiFormData.append('price', String(formData.get('price')))
+  payload.append('price', String(formData.get('price') ?? ''))
 
-  // 3. Capturar el archivo de imagen correctamente
-  const imageFile = formData.get('image')
-
-  // Validamos que sea un archivo real y no esté vacío
-  if (imageFile instanceof File && imageFile.size > 0) {
-    apiFormData.append('image', imageFile)
+  const image = formData.get('image') as File | null
+  if (image && image.size > 0) {
+    payload.append('image', image)
   }
 
-  // 4. Enviar a la función createProduct (ahora recibe FormData)
-  const result = await createProduct(apiFormData, token)
+  const result = await createProduct(payload, token)
 
   // 5. Manejo de errores de validación (vienen de Laravel)
   if ('error' in result) {

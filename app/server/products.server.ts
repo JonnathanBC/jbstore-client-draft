@@ -43,6 +43,11 @@ export async function createProduct(
     const { data } = await apiClient(token).post<Product>(
       '/api/products',
       payload,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
     )
     return data
   } catch (err) {

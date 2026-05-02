@@ -35,11 +35,20 @@ export function ProductForm({ product, validationErrors }: Props) {
       </figure>
 
       <div className="mb-4">
-        <label className="btn btn-primary inline-flex gap-2">
+        <label
+          htmlFor="image-upload"
+          className="btn btn-primary inline-flex cursor-pointer gap-2"
+        >
           <Upload />
           Actualizar imagen
-          <input type="file" className="hidden" accept="image/*" name="image" />
         </label>
+        <input
+          id="image-upload"
+          type="file"
+          className="hidden"
+          accept="image/*"
+          name="image"
+        />
         {validationErrors?.image?.[0] && (
           <p className="mt-1 text-sm text-red-500">
             {validationErrors.image[0]}
