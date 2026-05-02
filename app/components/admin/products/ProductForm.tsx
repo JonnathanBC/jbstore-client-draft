@@ -178,6 +178,11 @@ export function ProductForm({ product, validationErrors }: Props) {
         placeholder="Selecciona una subcategoría"
         disabled={!categoryId}
       />
+      {validationErrors?.subcategory_id?.[0] && (
+        <p className="mt-1 text-sm text-red-500">
+          {validationErrors.subcategory_id[0]}
+        </p>
+      )}
 
       <div className="flex items-center gap-2">
         <button
