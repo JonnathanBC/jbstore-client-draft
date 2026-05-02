@@ -4,6 +4,7 @@ import { Form, useNavigation } from 'react-router'
 
 import { AsyncSelect } from '~/components/inputs/AsyncSelect'
 import { t } from '~/i18n'
+import { createImagePreview } from '~/lib/helper'
 import type { Product } from '~/types/product'
 
 interface Props {
@@ -15,6 +16,15 @@ export function ProductForm({ product, validationErrors }: Props) {
   const nav = useNavigation()
   const submitting = nav.state === 'submitting'
   const isEdit = Boolean(product)
+
+  const [preview, setPreview] = useState<string>()
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files ? e.target.files[0] : null
+    if (!file) return
+    const img = createImagePreview(file)
+    setPreview(img?.url)
+  }
 
   const [familyId, setFamilyId] = useState(
     product?.subcategory?.category?.family_id?.toString() ?? undefined,
@@ -29,7 +39,11 @@ export function ProductForm({ product, validationErrors }: Props) {
       <figure className="">
         <img
           className="aspect-video object-cover object-center"
-          src="/assets/no_image_placeholder.webp"
+          src={
+            preview ??
+            product?.image_path ??
+            '/assets/no_image_placeholder.webp'
+          }
           alt=""
         />
       </figure>
@@ -48,6 +62,7 @@ export function ProductForm({ product, validationErrors }: Props) {
           className="hidden"
           accept="image/*"
           name="image"
+          onChange={handleChange}
         />
         {validationErrors?.image?.[0] && (
           <p className="mt-1 text-sm text-red-500">
