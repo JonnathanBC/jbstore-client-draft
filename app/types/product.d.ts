@@ -4,17 +4,13 @@ export interface Product {
   name: string
   price: number
   subcategory_id: number
-  subcategory: {
+
+  category: {
     id: number
     name: string
-    category: {
+    family: {
       id: number
       name: string
-      family_id: number
-      family: {
-        id: number
-        name: string
-      }
     }
   }
   created_at: string

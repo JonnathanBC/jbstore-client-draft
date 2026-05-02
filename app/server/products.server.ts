@@ -57,13 +57,18 @@ export async function createProduct(
 
 export async function updateProduct(
   id: number,
-  payload: { name: string },
+  payload: FormData,
   token: string,
 ): Promise<Product | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).patch<Product>(
       `/api/products/${id}`,
       payload,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
     )
     return data
   } catch (err) {

@@ -27,11 +27,11 @@ export function ProductForm({ product, validationErrors }: Props) {
   }
 
   const [familyId, setFamilyId] = useState(
-    product?.subcategory?.category?.family_id?.toString() ?? undefined,
+    product?.category?.family?.id?.toString() ?? undefined,
   )
 
   const [categoryId, setCategoryId] = useState(
-    product?.subcategory?.category?.id?.toString() ?? undefined,
+    product?.category?.id?.toString() ?? undefined,
   )
 
   return (
