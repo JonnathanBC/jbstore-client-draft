@@ -1,14 +1,13 @@
-import { useStore } from '@nanostores/react'
 import { Link } from 'react-router'
+import { useSidebarStore } from '~/stores/sidebar.store'
 import type { User } from '~/types/user'
-import { isSidebarOpen } from '~/stores/sidebar.store'
 
 interface Props {
   user?: User | null
 }
 
 export function Navbar({ user }: Props) {
-  const open = useStore(isSidebarOpen)
+  const closeSidebar = useSidebarStore((state) => state.closeSidebar)
 
   return (
     <nav className="border-weak fixed top-0 z-50 w-full border-b bg-white">
@@ -17,7 +16,7 @@ export function Navbar({ user }: Props) {
           <div className="flex items-center justify-start rtl:justify-end">
             <button
               type="button"
-              onClick={() => isSidebarOpen.set(!open)}
+              onClick={() => closeSidebar()}
               className="text-strong-weak hover:bg-weak focus:ring-weak rounded-lg p-2 text-sm font-medium focus:ring-4 focus:outline-none sm:hidden"
             >
               <span className="sr-only">Open sidebar</span>

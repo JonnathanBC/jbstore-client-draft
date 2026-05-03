@@ -1,3 +1,15 @@
-import { atom } from 'nanostores'
+import { create } from 'zustand'
 
-export const isSidebarOpen = atom(false)
+interface SidebarStore {
+  isOpen: boolean
+
+  openSidebar: () => void
+  closeSidebar: () => void
+}
+
+export const useSidebarStore = create<SidebarStore>()((set) => ({
+  isOpen: false,
+
+  openSidebar: () => set({ isOpen: true }),
+  closeSidebar: () => set({ isOpen: false }),
+}))
