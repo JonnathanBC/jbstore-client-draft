@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { useSidebarStore } from '~/stores/sidebar.store'
+import { useSidebarStore } from '~/store/sidebar.store'
 import type { User } from '~/types/user'
 
 interface Props {

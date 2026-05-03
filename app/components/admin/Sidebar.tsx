@@ -2,7 +2,7 @@ import { Form, Link, useLocation } from 'react-router'
 
 import { menuItems } from '~/config/menuItems'
 import { cn } from '~/lib/utils'
-import { useSidebarStore } from '~/stores/sidebar.store'
+import { useSidebarStore } from '~/store/sidebar.store'
 
 export function Sidebar() {
   const isOpen = useSidebarStore((state) => state.isOpen)
