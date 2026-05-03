@@ -11,7 +11,8 @@
     "new_subcategory": "New SubCategory",
     "family": "Family",
     "category": "Category",
-    "new_product": "New Product"
+    "new_product": "New Product",
+    "options": "Options"
   },
   "global": {
     "welcome": "Welcome",

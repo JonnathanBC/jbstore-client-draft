@@ -1,4 +1,4 @@
-import { LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard, Settings } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { t } from '~/i18n'
 
@@ -15,6 +15,12 @@ export const menuItems: MenuItem[] = [
     label: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
+  },
+  {
+    key: 'options',
+    label: t('admin.options'),
+    href: '/admin/options',
+    icon: Settings,
   },
   {
     key: 'families',
