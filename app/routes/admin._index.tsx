@@ -3,9 +3,6 @@ import { useRouteLoaderData } from 'react-router'
 import type { Route } from './+types/admin._index'
 import type { loader as adminLoader } from './admin'
 import { t } from '~/i18n'
-import type { RouteHandle } from '~/types/route'
-
-export const handle: RouteHandle = { breadcrumb: t('admin.dashboard') }
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.dashboard')} | JB Store` },

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings } from 'lucide-react'
+import { Boxes, LayoutDashboard, PackageOpen, Settings, Tag, Tags } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 import { t } from '~/i18n'
 
@@ -26,24 +26,24 @@ export const menuItems: MenuItem[] = [
     key: 'families',
     label: t('admin.families'),
     href: '/admin/families',
-    icon: LayoutDashboard,
+    icon: Boxes,
   },
   {
     key: 'categories',
     label: t('admin.categories'),
     href: '/admin/categories',
-    icon: LayoutDashboard,
+    icon: Tag,
   },
   {
     key: 'subcategories',
     label: t('admin.subcategories'),
     href: '/admin/subcategories',
-    icon: LayoutDashboard,
+    icon: Tags,
   },
   {
     key: 'products',
     label: t('global.products'),
     href: '/admin/products',
-    icon: LayoutDashboard,
+    icon: PackageOpen,
   },
 ]
