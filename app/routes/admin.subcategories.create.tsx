@@ -10,7 +10,12 @@ import { createSubCategory } from '~/server/subcategories.server'
 import type { Route } from './+types/admin.subcategories.create'
 import type { RouteHandle } from '~/types/route'
 
-export const handle: RouteHandle = { breadcrumb: t('global.new') }
+export const handle: RouteHandle = {
+  breadcrumb: [
+    { label: t('admin.subcategories'), to: '/admin/subcategories' },
+    { label: t('global.new') },
+  ],
+}
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.new_subcategory')} | JB Store` },

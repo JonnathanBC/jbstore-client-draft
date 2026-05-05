@@ -22,7 +22,16 @@ export const meta: Route.MetaFunction = ({ data }) => [
   },
 ]
 
-export const handle: RouteHandle = { breadcrumb: t('admin.subcategories') }
+export const handle: RouteHandle = {
+  breadcrumb: ({ match }) => {
+    const data =
+      (match as { data?: { subcategory?: { name: string } } }).data
+    return [
+      { label: t('admin.subcategories'), to: '/admin/subcategories' },
+      { label: data?.subcategory?.name ?? t('global.edit') },
+    ]
+  },
+}
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { token } = await requireAuth(request)

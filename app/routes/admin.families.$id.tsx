@@ -17,7 +17,15 @@ export const meta: Route.MetaFunction = ({ data }) => [
   },
 ]
 
-export const handle: RouteHandle = { breadcrumb: t('admin.families') }
+export const handle: RouteHandle = {
+  breadcrumb: ({ match }) => {
+    const data = (match as { data?: { family?: { name: string } } }).data
+    return [
+      { label: t('admin.families'), to: '/admin/families' },
+      { label: data?.family?.name ?? t('global.edit') },
+    ]
+  },
+}
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { token } = await requireAuth(request)

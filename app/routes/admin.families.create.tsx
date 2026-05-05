@@ -7,7 +7,12 @@ import { FamilyForm } from '~/components/admin/families/FamilyForm'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
 
-export const handle: RouteHandle = { breadcrumb: t('global.new') }
+export const handle: RouteHandle = {
+  breadcrumb: [
+    { label: t('admin.families'), to: '/admin/families' },
+    { label: t('global.new') },
+  ],
+}
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('global.new')} ${t('admin.families')} | JB Store` },

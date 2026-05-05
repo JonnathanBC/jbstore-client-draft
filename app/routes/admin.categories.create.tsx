@@ -10,7 +10,12 @@ import { requireAuth } from '~/server/auth.server'
 import { createCategory } from '~/server/categories.server'
 import { commitSession, getSession } from '~/server/session.server'
 
-export const handle: RouteHandle = { breadcrumb: t('global.new') }
+export const handle: RouteHandle = {
+  breadcrumb: [
+    { label: t('admin.categories'), to: '/admin/categories' },
+    { label: t('global.new') },
+  ],
+}
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('global.new')} ${t('admin.category')} | JB Store` },
