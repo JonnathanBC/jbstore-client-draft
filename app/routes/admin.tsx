@@ -3,7 +3,6 @@ import type { Route } from './+types/admin'
 import { requireAuth, fetchMe } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { Sidebar } from '~/components/admin/Sidebar'
-import { Navbar } from '~/components/admin/Navbar'
 import { Breadcrumbs } from '~/components/shared/Breadcrumbs'
 import { AppToaster, type ToastFlash } from '~/components/AppToaster'
 import type { RouteHandle } from '~/types/route'
@@ -41,13 +40,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function AdminLayout({ loaderData }: Route.ComponentProps) {
-  const { user, toast } = loaderData
+  const { toast } = loaderData
 
   return (
     <>
-      <Navbar user={user} />
       <Sidebar />
-      <div className="min-h-screen p-4 pt-18 sm:ml-64">
+      <div className="min-h-screen px-4 py-6 sm:ml-64">
         <Breadcrumbs />
         <main className="border-weak rounded-lg border border-dashed p-4">
           <Outlet />

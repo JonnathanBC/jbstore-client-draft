@@ -14,12 +14,21 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          'border-weak fixed top-0 left-0 z-40 h-dvh w-64 border-r bg-white pt-20 transition-transform sm:translate-x-0',
+          'border-weak fixed top-0 left-0 z-40 h-dvh w-64 border-r bg-white pt-4 transition-transform sm:translate-x-0',
           isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
         )}
         aria-label="Sidebar"
       >
         <div className="flex h-full flex-col overflow-y-auto bg-white px-3 pb-4">
+          <header className='mb-4'>
+            <Link
+              to="/admin"
+              className="text-strong ms-2 flex text-xl font-bold md:me-24"
+            >
+              JB Store
+            </Link>
+          </header>
+          
           <ul className="flex-1 space-y-2">
             {menuItems.map((menu) => {
               const Icon = menu.icon
