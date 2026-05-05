@@ -4,8 +4,8 @@ import { modalRegistry } from '~/config/modalRegistry'
 type ModalType = keyof typeof modalRegistry
 
 interface ModalStore {
-  modals: { _type: ModalType; [key: string]: string }[]
-  open: (key: ModalType, options?: Record<string, string | number>) => void
+  modals: { _type: ModalType; [key: string]: unknown }[]
+  open: (key: ModalType, options?: Record<string, unknown>) => void
   close: (index: number) => void
 }
 

@@ -1,28 +1,26 @@
 import { JSX } from 'react'
-import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
+import { useModalContext } from './ModalContext'
 
 interface Props {
-  open: boolean
-  setOpen: (isOpen: boolean) => void
-
+  open?: boolean
+  onClose?: () => void
   title: string
   children: JSX.Element
 }
 
-export function Modal({ title, children, open, setOpen }: Props) {
+export function Modal({ title, children, open = true, onClose }: Props) {
+  const ctx = useModalContext()
+  const close = onClose ?? ctx?.onClose
+
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => setOpen(!isOpen)}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Open Dialog</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) close?.() }}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
