@@ -22,7 +22,7 @@ export const meta: Route.MetaFunction = ({ data }) => [
   },
 ]
 
-export const handle: RouteHandle = { breadcrumb: t('glo.products') }
+export const handle: RouteHandle = { breadcrumb: t('global.products') }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { token } = await requireAuth(request)
