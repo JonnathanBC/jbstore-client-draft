@@ -1,4 +1,4 @@
-import { JSX } from 'react'
+import type { ReactNode } from 'react'
 import {
   Dialog,
   DialogClose,
@@ -12,7 +12,7 @@ interface Props {
   open?: boolean
   onClose?: () => void
   title: string
-  children: JSX.Element
+  children: ReactNode
 }
 
 export function Modal({ title, children, open = true, onClose }: Props) {
