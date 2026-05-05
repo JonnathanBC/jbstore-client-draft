@@ -9,7 +9,12 @@ import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.products.create'
 import { createProduct } from '~/server/products.server'
 
-export const handle: RouteHandle = { breadcrumb: t('global.new') }
+export const handle: RouteHandle = {
+  breadcrumb: [
+    { label: t('global.products'), to: '/admin/products' },
+    { label: t('global.new') },
+  ],
+}
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.new_product')} | JB Store` },

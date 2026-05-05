@@ -1,11 +1,8 @@
 import { Link, useMatches } from 'react-router'
 import { cn } from '~/lib/utils'
-import type { RouteHandle } from '~/types/route'
+import type { BreadcrumbItem, RouteHandle } from '~/types/route'
 
-interface Crumb {
-  label: string
-  href?: string
-}
+type Crumb = { label: string; to?: string }
 
 export function Breadcrumbs() {
   const matches = useMatches()
@@ -13,11 +10,26 @@ export function Breadcrumbs() {
   const crumbs: Crumb[] = matches.reduce<Crumb[]>((acc, match, i) => {
     const handle = match.handle as RouteHandle | undefined
     if (!handle?.breadcrumb) return acc
+
     const isLast = i === matches.length - 1
-    acc.push({
-      label: handle.breadcrumb,
-      href: isLast ? undefined : match.pathname,
-    })
+
+    const raw =
+      typeof handle.breadcrumb === 'function'
+        ? handle.breadcrumb({ match })
+        : handle.breadcrumb
+
+    if (typeof raw === 'string') {
+      acc.push({ label: raw, to: isLast ? undefined : match.pathname })
+      return acc
+    }
+
+    const items: BreadcrumbItem[] = Array.isArray(raw) ? raw : [raw]
+    for (const item of items) {
+      acc.push({
+        label: item.label,
+        to: item.to,
+      })
+    }
     return acc
   }, [])
 
@@ -28,6 +40,7 @@ export function Breadcrumbs() {
       <ol className="flex flex-wrap">
         {crumbs.map((crumb, i) => {
           const isFirst = i === 0
+          const isLast = i === crumbs.length - 1
           return (
             <li
               key={i}
@@ -36,8 +49,8 @@ export function Breadcrumbs() {
                   !isFirst,
               })}
             >
-              {crumb.href ? (
-                <Link to={crumb.href} className="opacity-60 hover:opacity-100">
+              {crumb.to && !isLast ? (
+                <Link to={crumb.to} className="opacity-60 hover:opacity-100">
                   {crumb.label}
                 </Link>
               ) : (

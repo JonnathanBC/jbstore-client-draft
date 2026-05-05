@@ -22,7 +22,15 @@ export const meta: Route.MetaFunction = ({ data }) => [
   },
 ]
 
-export const handle: RouteHandle = { breadcrumb: t('global.products') }
+export const handle: RouteHandle = {
+  breadcrumb: ({ match }) => {
+    const data = (match as { data?: { product?: { name: string } } }).data
+    return [
+      { label: t('global.products'), to: '/admin/products' },
+      { label: data?.product?.name ?? t('global.edit') },
+    ]
+  },
+}
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { token } = await requireAuth(request)
