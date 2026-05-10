@@ -23,6 +23,8 @@
     "name": "Name",
     "price": "Price",
     "actions": "Actions",
-    "code": "Code"
+    "code": "Code",
+    "value": "Value",
+    "description": "Description"
   }
 }

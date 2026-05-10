@@ -4,6 +4,7 @@ import { requireAuth } from '~/server/auth.server'
 import { getOptions } from '~/server/options.server'
 import { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.options._index'
+import { useModalStore } from '~/store/modal.store'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.options') }
 
@@ -29,12 +30,21 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
   const { options } = loaderData
+  const openModal = useModalStore((state) => state.open)
 
   return (
     <div>
       <section className="rounded-lg bg-white shadow-lg">
         <header className="border-b border-gray-200 px-6 py-3">
-          <h1 className="text-lg font-semibold">Opciones</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
+            <button
+              onClick={() => openModal('option')}
+              className="btn btn-primary"
+            >
+              Nuevo
+            </button>
+          </div>
         </header>
         <div className="p-6">
           <div className="space-y-4">

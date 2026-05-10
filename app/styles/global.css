@@ -61,16 +61,16 @@
 
 :root {
   /* ── Brand: purple ────────────────────────────────── */
-  --primary:            oklch(0.558 0.288 302); /* purple-600 */
-  --primary-hover:      oklch(0.491 0.270 302); /* purple-700 */
-  --primary-active:     oklch(0.416 0.248 302); /* purple-800 */
-  --primary-light:      oklch(0.962 0.059 302); /* purple-100 */
-  --primary-foreground: oklch(1 0 0);           /* white      */
+  --primary: oklch(0.558 0.288 302); /* purple-600 */
+  --primary-hover: oklch(0.491 0.27 302); /* purple-700 */
+  --primary-active: oklch(0.416 0.248 302); /* purple-800 */
+  --primary-light: oklch(0.962 0.059 302); /* purple-100 */
+  --primary-foreground: oklch(1 0 0); /* white      */
 
   /* ── Neutrals ─────────────────────────────────────── */
-  --strong:      #1B203E; /* dark navy   */
-  --strong-weak: #8086A6; /* medium slate*/
-  --weak:        #E6E7F0; /* light lavender-gray */
+  --strong: #1b203e; /* dark navy   */
+  --strong-weak: #8086a6; /* medium slate*/
+  --weak: #e6e7f0; /* light lavender-gray */
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -151,7 +151,7 @@
 }
 
 .btn {
-  @apply py-2 px-4 font-bold rounded;
+  @apply rounded px-4 py-2 font-bold;
 }
 
 .btn-primary {
@@ -167,10 +167,10 @@
 }
 
 .btn-outline-primary {
-  @apply border border-primary text-primary;
+  @apply border-primary text-primary border;
 
   &:hover {
-    @apply bg-primary border-transparent text-primary-foreground;
+    @apply bg-primary text-primary-foreground border-transparent;
   }
 }
 
@@ -179,9 +179,13 @@
 }
 
 .card {
-  @apply rounded-lg bg-white shadow p-6;
+  @apply rounded-lg bg-white p-6 shadow;
 }
 
-input, select {
-  @apply w-full px-3 py-2 border border-weak rounded-lg focus:outline-none focus:ring-2 focus:ring-primary;
+.input {
+  @apply border-weak focus:ring-primary h-10 w-full rounded-lg border px-2 py-1 focus:ring-0 focus:outline-none;
+}
+
+select {
+  @apply border-weak focus:ring-primary h-10 w-full rounded border px-2 py-1 focus:ring-0 focus:outline-none;
 }
