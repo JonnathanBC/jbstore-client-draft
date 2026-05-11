@@ -21,8 +21,10 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
-  const formData = await request.formData()
+  const [{ token }, formData] = await Promise.all([
+    requireAuth(request),
+    request.formData(),
+  ])
 
   const payload = new FormData()
   payload.append('sku', String(formData.get('sku') ?? '').trim())

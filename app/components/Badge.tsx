@@ -4,7 +4,7 @@ type Props = {
 
 export const Badge = ({ label }: Props) => {
   return (
-    <span className="text-heading rounded-full bg-gray-100 px-2 py-1 text-xs">
+    <span className="text-heading rounded-full bg-zinc-100 px-2 py-1 text-xs">
       {label}
     </span>
   )

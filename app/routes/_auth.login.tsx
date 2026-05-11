@@ -52,7 +52,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen">
       <div className="flex w-full items-center justify-center p-8 lg:w-1/2">
         <Form method="post" className="w-full max-w-sm space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">Sign in</h2>
+          <h2 className="text-2xl font-semibold text-zinc-900">Sign in</h2>
           {actionData?.error && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
               {actionData.error}
@@ -76,11 +76,11 @@ export default function LoginPage() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                className="size-4 shrink-0 rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
               />
               <label
                 htmlFor="remember-me"
-                className="ml-3 block text-sm text-slate-900"
+                className="ml-3 block text-sm text-zinc-900"
               >
                 Remember me
               </label>
@@ -98,10 +98,10 @@ export default function LoginPage() {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
+                <div className="w-full border-t border-zinc-200" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-4 text-slate-500">
+                <span className="bg-white px-4 text-zinc-500">
                   Or continue with
                 </span>
               </div>
@@ -109,15 +109,15 @@ export default function LoginPage() {
 
             <a
               href="/api/auth/google"
-              className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 px-4 py-2.5 transition-colors hover:bg-slate-50"
+              className="flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-300 px-4 py-2.5 transition-colors hover:bg-zinc-50"
             >
-              <GoogleIcon className="h-5 w-5" />
-              <span className="text-sm font-medium text-slate-700">
+              <GoogleIcon className="size-5" />
+              <span className="text-sm font-medium text-zinc-700">
                 Sign in with Google
               </span>
             </a>
 
-            <p className="mt-6 text-center text-sm text-slate-600">
+            <p className="mt-6 text-center text-sm text-zinc-600">
               Don&apos;t have an account?{' '}
               <Link
                 to="/register"
@@ -130,7 +130,7 @@ export default function LoginPage() {
         </Form>
       </div>
 
-      <div className="hidden w-1/2 items-center justify-center bg-slate-50 lg:flex">
+      <div className="hidden w-1/2 items-center justify-center bg-zinc-50 lg:flex">
         <img
           src="/assets/deliveries.svg"
           alt="Deliveries"

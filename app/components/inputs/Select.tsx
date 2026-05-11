@@ -7,11 +7,10 @@ import {
   SelectItem,
 } from '~/components/ui/select'
 
+const EMPTY_ITEMS: { value: string; label: string }[] = []
+
 type Props = {
-  items: {
-    value: string
-    label: string
-  }[]
+  items?: typeof EMPTY_ITEMS
   onChange?: (value: string) => void
   value?: string
   disabled?: boolean
@@ -19,7 +18,7 @@ type Props = {
 }
 
 export const Select = ({
-  items = [],
+  items = EMPTY_ITEMS,
   onChange,
   value,
   disabled,

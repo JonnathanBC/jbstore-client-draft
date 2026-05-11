@@ -25,9 +25,9 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">Carrito</h1>
+      <h1 className="mb-4 text-2xl font-semibold">Carrito</h1>
 
-      <p className="mb-4 text-slate-600">
+      <p className="mb-4 text-zinc-600">
         {user
           ? `Hola, ${user.name}.`
           : 'Iniciá sesión para guardar tu carrito.'}
@@ -38,7 +38,7 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
           <li key={it.id} className="flex items-center justify-between p-3">
             <div>
               <p className="font-medium">{it.name}</p>
-              <p className="text-xs text-slate-500">Cantidad: {it.qty}</p>
+              <p className="text-xs text-zinc-500">Cantidad: {it.qty}</p>
             </div>
             <span className="font-semibold">
               ${(it.price * it.qty).toFixed(2)}

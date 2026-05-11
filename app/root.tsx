@@ -46,11 +46,11 @@ export function ErrorBoundary() {
     return (
       <main className="flex min-h-screen items-center justify-center p-8">
         <div className="max-w-md space-y-2 text-center">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-semibold">
             {error.status} {error.statusText}
           </h1>
           {error.data ? (
-            <p className="text-slate-700">{String(error.data)}</p>
+            <p className="text-zinc-700">{String(error.data)}</p>
           ) : null}
         </div>
       </main>
@@ -62,8 +62,8 @@ export function ErrorBoundary() {
   return (
     <main className="flex min-h-screen items-center justify-center p-8">
       <div className="max-w-md space-y-2 text-center">
-        <h1 className="text-2xl font-bold">Algo salió mal</h1>
-        <p className="text-slate-700">{message}</p>
+        <h1 className="text-2xl font-semibold">Algo salió mal</h1>
+        <p className="text-zinc-700">{message}</p>
       </div>
     </main>
   )

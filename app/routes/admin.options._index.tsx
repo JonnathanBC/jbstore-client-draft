@@ -35,7 +35,7 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
   return (
     <div>
       <section className="rounded-lg bg-white shadow-lg">
-        <header className="border-b border-gray-200 px-6 py-3">
+        <header className="border-b border-zinc-200 px-6 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
             <button
@@ -52,7 +52,7 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
               return (
                 <div
                   key={option.id}
-                  className="relative rounded-lg border border-gray-200 bg-white p-6"
+                  className="relative rounded-lg border border-zinc-200 bg-white p-6"
                 >
                   <div className="absolute -top-3 bg-white px-4">
                     <span>{option.name}</span>

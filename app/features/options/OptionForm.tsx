@@ -91,7 +91,7 @@ export default function OptionForm() {
                   <label htmlFor="color" className="mb-0.5">
                     Color
                   </label>
-                  <div className="flex h-8 w-full items-center justify-between rounded-md border border-gray-300 px-2">
+                  <div className="flex h-8 w-full items-center justify-between rounded-md border border-zinc-300 px-2">
                     <span className="shrink-0">
                       {features[index].value || 'Selecciona'}
                     </span>

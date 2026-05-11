@@ -19,7 +19,7 @@ export function ProductForm({ product, validationErrors }: Props) {
 
   const [preview, setPreview] = useState<string>()
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files ? e.target.files[0] : null
     if (!file) return
     const img = createImagePreview(file)
@@ -62,7 +62,7 @@ export function ProductForm({ product, validationErrors }: Props) {
           className="hidden"
           accept="image/*"
           name="image"
-          onChange={handleChange}
+          onChange={handleImageUpload}
         />
         {validationErrors?.image?.[0] && (
           <p className="mt-1 text-sm text-red-500">

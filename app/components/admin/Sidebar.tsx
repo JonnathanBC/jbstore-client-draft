@@ -47,7 +47,7 @@ export function Sidebar() {
                       isActive && 'text-primary bg-primary-light',
                     )}
                   >
-                    <Icon className="group-hover:text-primary h-5 w-5" />
+                    <Icon className="group-hover:text-primary size-5" />
                     <span className="ms-3">{menu.label}</span>
                   </Link>
                 </li>

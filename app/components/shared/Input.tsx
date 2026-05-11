@@ -20,7 +20,7 @@ export function Input({
     <div>
       <label
         htmlFor={name}
-        className="block text-sm font-medium text-slate-900"
+        className="block text-sm font-medium text-zinc-900"
       >
         <p className="mb-1">{label}</p>
         <div className="relative flex items-center">
@@ -29,13 +29,13 @@ export function Input({
             name={name}
             type={type}
             className={cn(
-              'w-full rounded border border-slate-300 py-3 pr-10 pl-4 text-sm text-slate-900 outline-purple-600',
+              'w-full rounded border border-zinc-300 py-3 pr-10 pl-4 text-sm text-slate-900 outline-purple-600',
               className,
             )}
             {...rest}
           />
           {Icon ? (
-            <Icon className="absolute right-4 h-5 w-5 text-slate-400" />
+            <Icon className="absolute right-4 size-5 text-zinc-400" />
           ) : null}
         </div>
       </label>

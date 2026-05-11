@@ -1,10 +1,10 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, use, type ReactNode } from 'react'
 
 type ModalContextValue = {
   onClose: () => void
 }
 
-export const ModalContext = createContext<ModalContextValue | null>(null)
+const ModalContext = createContext<ModalContextValue | null>(null)
 
 export function ModalProvider({
   value,
@@ -19,6 +19,10 @@ export function ModalProvider({
 }
 
 export function useModalContext() {
-  return useContext(ModalContext)
+  const context = use(ModalContext)
+  if (!context) {
+    throw new Error('useModalContext must be used within ModalProvider')
+  }
+  return context
 }
 

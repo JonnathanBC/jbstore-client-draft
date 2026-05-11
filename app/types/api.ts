@@ -1,4 +1,4 @@
-export interface PaginationLink {
+interface PaginationLink {
   url: string | null
   label: string
   page: number | null

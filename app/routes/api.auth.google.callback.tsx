@@ -11,8 +11,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect('/login')
   }
 
-  const user = await fetchMe(token)
-  const session = await getSession(request.headers.get('Cookie'))
+  const [user, session] = await Promise.all([
+    fetchMe(token),
+    getSession(request.headers.get('Cookie')),
+  ])
   session.set('token', token)
   session.set('userId', user.id)
 

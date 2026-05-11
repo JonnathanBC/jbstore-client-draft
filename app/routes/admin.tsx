@@ -29,8 +29,10 @@ async function requireAdmin(request: Request) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await requireAdmin(request)
-  const session = await getSession(request.headers.get('Cookie'))
+  const [user, session] = await Promise.all([
+    requireAdmin(request),
+    getSession(request.headers.get('Cookie')),
+  ])
   const toast = (session.get('toast') as ToastFlash | undefined) ?? null
 
   return data(

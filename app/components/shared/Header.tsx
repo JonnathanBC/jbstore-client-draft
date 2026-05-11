@@ -38,7 +38,7 @@ export function Header({ user, isAdmin }: Props) {
           )}
 
           <Link to="/cart" className="hover:text-black" aria-label="Cart">
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="size-5" />
           </Link>
         </nav>
       </div>

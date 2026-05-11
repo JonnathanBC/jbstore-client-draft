@@ -13,7 +13,7 @@ type Props = {
 }
 
 export const AsyncSelect = ({
-  value: initialValue = '',
+  value: externalValue = '',
   onChange,
   source,
   name,
@@ -21,7 +21,7 @@ export const AsyncSelect = ({
   disabled,
 }: Props) => {
   const fetcher = useFetcher()
-  const [value, setValue] = useState(initialValue)
+  const [internalValue, setInternalValue] = useState('')
 
   useEffect(() => {
     if (disabled) return
@@ -33,8 +33,10 @@ export const AsyncSelect = ({
   const items = fetcher.data?.items ?? []
   const isLoading = fetcher.state === 'loading'
 
-  const handleChange = (newValue: string) => {
-    setValue(newValue)
+  const value = externalValue || internalValue
+
+  const handleSelect = (newValue: string) => {
+    setInternalValue(newValue)
     onChange?.(newValue)
   }
 
@@ -44,7 +46,7 @@ export const AsyncSelect = ({
       <Select
         items={items}
         value={value}
-        onChange={handleChange}
+        onChange={handleSelect}
         disabled={isLoading || disabled}
         placeholder={isLoading ? 'Cargando...' : placeholder}
       />

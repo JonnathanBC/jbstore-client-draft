@@ -3,7 +3,7 @@ export type BreadcrumbItem = {
   to?: string
 }
 
-export type Breadcrumb =
+type Breadcrumb =
   | string
   | BreadcrumbItem
   | BreadcrumbItem[]

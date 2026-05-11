@@ -41,10 +41,11 @@ export function Breadcrumbs() {
         {crumbs.map((crumb, i) => {
           const isFirst = i === 0
           const isLast = i === crumbs.length - 1
+          const crumbKey = crumb.to ?? crumb.label
           return (
             <li
-              key={i}
-              className={cn('text-sm leading-normal text-slate-900', {
+              key={crumbKey}
+              className={cn('text-sm leading-normal text-zinc-900', {
                 "pl-2 before:float-left before:pr-2 before:content-['/']":
                   !isFirst,
               })}

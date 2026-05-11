@@ -19,8 +19,10 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
-  const form = await request.formData()
+  const [{ token }, form] = await Promise.all([
+    requireAuth(request),
+    request.formData(),
+  ])
   const name = String(form.get('name') ?? '').trim()
 
   if (!name) {

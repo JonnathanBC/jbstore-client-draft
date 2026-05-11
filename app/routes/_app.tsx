@@ -19,10 +19,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function AppLayout({ loaderData }: Route.ComponentProps) {
   const { user, isAdmin } = loaderData
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
+    <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-900">
       <Header user={user} isAdmin={isAdmin} />
       <main className="w-full flex-1">
-        <div className="mx-auto max-w-7xl px-6 py-6">
+        <div className="mx-auto max-w-7xl p-6">
           <Outlet />
         </div>
       </main>
