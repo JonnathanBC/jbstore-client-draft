@@ -9,3 +9,9 @@ export interface Option {
   created_at: string
   updated_at: string
 }
+
+export interface CreateOption {
+  name: string
+  type: number
+  features: { value: string; description: string }[]
+}

@@ -1,13 +1,18 @@
-import { Modal } from '~/components/modals/Modal'
+import { useEffect } from 'react'
+import { useFetcher } from 'react-router'
+import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Controller,
   SubmitHandler,
   useFieldArray,
   useForm,
 } from 'react-hook-form'
+import { Modal } from '~/components/modals/Modal'
 import { Select } from '~/components/inputs/Select'
-import { Trash, Trash2 } from 'lucide-react'
 import { Input } from '~/components/inputs/Input'
+import { useModalContext } from '~/components/modals/ModalContext'
+import { t } from '~/i18n'
 
 type Inputs = {
   name: string
@@ -16,20 +21,16 @@ type Inputs = {
 }
 
 export default function OptionForm() {
-  const { register, handleSubmit, control, getValues, watch } = useForm<Inputs>(
-    {
-      values: {
-        name: '',
-        type: 1,
-        features: [
-          {
-            value: '',
-            description: '',
-          },
-        ],
-      },
+  const fetcher = useFetcher()
+  const { onClose } = useModalContext()
+
+  const { register, handleSubmit, control, watch } = useForm<Inputs>({
+    values: {
+      name: '',
+      type: 1,
+      features: [{ value: '', description: '' }],
     },
-  )
+  })
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'features',
@@ -38,7 +39,25 @@ export default function OptionForm() {
   const type = watch('type')
   const features = watch('features')
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    fetcher.submit(data, {
+      method: 'POST',
+      action: '/admin/options',
+      encType: 'application/json',
+    })
+  }
+
+  const isSubmitting = fetcher.state === 'submitting'
+
+  useEffect(() => {
+    if (fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    }
+    if (fetcher.data?.success) {
+      toast.success('Creado con éxito')
+      onClose()
+    }
+  }, [fetcher.data])
 
   return (
     <Modal
@@ -47,27 +66,36 @@ export default function OptionForm() {
         <button
           className="btn btn-primary"
           type="button"
+          disabled={isSubmitting}
           onClick={handleSubmit(onSubmit)}
         >
-          Guardar
+          {isSubmitting ? 'Guardando...' : 'Guardar'}
         </button>
       }
     >
-      <form className="grid grid-cols-2 gap-4" method="post">
-        <input type="text" placeholder="Nombre" {...register('name')} />
+      <form className="grid grid-cols-2 gap-4">
+        <Input
+          labelKey="global.name"
+          placeholder="Nombre"
+          {...register('name')}
+        />
 
         <Controller
           name="type"
           control={control}
           render={({ field }) => (
-            <Select
-              items={[
-                { value: '1', label: 'Texto' },
-                { value: '2', label: 'Color' },
-              ]}
-              value={String(field.value)}
-              onChange={(value) => field.onChange(Number(value))}
-            />
+            <div>
+              <label>{t('global.type')}</label>
+              <Select
+                items={[
+                  { value: '1', label: 'Texto' },
+                  { value: '2', label: 'Color' },
+                ]}
+                value={String(field.value)}
+                onChange={(value) => field.onChange(Number(value))}
+                className="mt-0.5"
+              />
+            </div>
           )}
         />
 
@@ -88,15 +116,15 @@ export default function OptionForm() {
 
               {type === 2 && (
                 <div className="flex w-full flex-col">
-                  <label htmlFor="color" className="mb-0.5">
+                  <label htmlFor={`color-${index}`} className="mb-0.5">
                     Color
                   </label>
-                  <div className="flex h-8 w-full items-center justify-between rounded-md border border-zinc-300 px-2">
+                  <div className="flex h-10 w-full items-center justify-between rounded-md border border-zinc-300 px-2">
                     <span className="shrink-0">
                       {features[index].value || 'Selecciona'}
                     </span>
                     <input
-                      id="color"
+                      id={`color-${index}`}
                       type="color"
                       {...register(`features.${index}.value`)}
                       className="border-none! focus:ring-0"

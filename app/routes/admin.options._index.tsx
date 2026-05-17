@@ -1,10 +1,11 @@
+import { data } from 'react-router'
 import { Badge } from '~/components/Badge'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import { getOptions } from '~/server/options.server'
+import { createOption, getOptions } from '~/server/options.server'
+import { useModalStore } from '~/store/modal.store'
 import { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.options._index'
-import { useModalStore } from '~/store/modal.store'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.options') }
 
@@ -26,6 +27,21 @@ export async function loader({ request }: Route.LoaderArgs) {
   })
 
   return { options }
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const { token } = await requireAuth(request)
+  const payload = await request.json()
+  const result = await createOption(payload, token)
+
+  if ('error' in result) {
+    return data(
+      { error: result.error.message, errors: [] },
+      { status: result.error.status },
+    )
+  }
+
+  return { success: true, data: result }
 }
 
 export default function OptionsIndex({ loaderData }: Route.ComponentProps) {

@@ -25,6 +25,7 @@
     "actions": "Actions",
     "code": "Code",
     "value": "Value",
-    "description": "Description"
+    "description": "Description",
+    "type": "Type"
   }
 }

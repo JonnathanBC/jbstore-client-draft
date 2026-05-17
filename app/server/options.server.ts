@@ -1,6 +1,6 @@
-import { apiClient, toApiError } from '~/lib/apiClient'
+import { apiClient, ApiError, toApiError } from '~/lib/apiClient'
 import { ApiResponse } from '~/types/api'
-import { Option } from '~/types/option'
+import { CreateOption, Option } from '~/types/option'
 
 export interface GetOptionsParams {
   token: string
@@ -23,5 +23,36 @@ export async function getOptions({
     return data
   } catch (err) {
     throw toApiError(err)
+  }
+}
+
+export async function createOption(
+  payload: CreateOption,
+  token: string,
+): Promise<Option | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).post<Option>(
+      '/api/options',
+      payload,
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
+export async function updateOption(
+  id: number,
+  payload: FormData,
+  token: string,
+): Promise<Option | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).patch<Option>(
+      `/api/options/${id}`,
+      payload,
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
   }
 }
