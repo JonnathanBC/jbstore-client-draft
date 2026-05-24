@@ -1,9 +1,11 @@
 import { data } from 'react-router'
 import { Badge } from '~/components/Badge'
+import { FeatureForm } from '~/features/FeatureForm'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
 import { createOption, getOptions } from '~/server/options.server'
 import { useModalStore } from '~/store/modal.store'
+import { createFeature } from '~/server/feature.server'
 import { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.options._index'
 
@@ -32,11 +34,19 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
   const payload = await request.json()
-  const result = await createOption(payload, token)
+
+  const { intent, ...cleanPayload } = payload
+  let result
+
+  if (intent === 'create-feature') {
+    result = await createFeature(cleanPayload, token)
+  } else {
+    result = await createOption(cleanPayload, token)
+  }
 
   if ('error' in result) {
     return data(
-      { error: result.error.message, errors: [] },
+      { error: result.error.message, errors: result.error.errors },
       { status: result.error.status },
     )
   }
@@ -75,7 +85,7 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
                   </div>
 
                   {/* Valores */}
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="mb-4 flex flex-wrap items-center gap-2">
                     {option?.features?.map((feature) => {
                       if (option.type === 1) {
                         return (
@@ -92,6 +102,8 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
                       )
                     })}
                   </div>
+
+                  <FeatureForm option={option} />
                 </div>
               )
             })}
