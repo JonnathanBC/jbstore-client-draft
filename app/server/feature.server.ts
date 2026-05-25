@@ -15,3 +15,15 @@ export async function createFeature(
     return { error: toApiError(err) }
   }
 }
+
+export async function deleteFeature(
+  id: number,
+  token: string,
+): Promise<void | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).delete(`/api/features/${id}`)
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}

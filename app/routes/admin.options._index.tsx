@@ -1,13 +1,16 @@
-import { data } from 'react-router'
+import { data, useFetcher } from 'react-router'
 import { Badge } from '~/components/Badge'
 import { FeatureForm } from '~/features/FeatureForm'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
 import { createOption, getOptions } from '~/server/options.server'
 import { useModalStore } from '~/store/modal.store'
-import { createFeature } from '~/server/feature.server'
+import { createFeature, deleteFeature } from '~/server/feature.server'
 import { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.options._index'
+import { X } from 'lucide-react'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.options') }
 
@@ -36,32 +39,61 @@ export async function action({ request }: Route.ActionArgs) {
   const payload = await request.json()
 
   const { intent, ...cleanPayload } = payload
+
   let result
 
   if (intent === 'create-feature') {
     result = await createFeature(cleanPayload, token)
+  } else if (intent === 'delete-feature') {
+    result = await deleteFeature(cleanPayload.id, token)
   } else {
     result = await createOption(cleanPayload, token)
   }
 
-  if ('error' in result) {
+  if (result && 'error' in result) {
     return data(
-      { error: result.error.message, errors: result.error.errors },
+      {
+        success: false,
+        error: result.error.message,
+        errors: result.error.errors,
+      },
       { status: result.error.status },
     )
   }
 
-  return { success: true, data: result }
+  return {
+    success: true,
+    result,
+  }
 }
 
 export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
   const { options } = loaderData
   const openModal = useModalStore((state) => state.open)
+  const fetcher = useFetcher()
+
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+
+    if (fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    } else if (fetcher.data?.success) {
+      toast.success('Eliminado con éxito')
+    }
+  }, [fetcher.data, fetcher.state])
+
+  const handleDelete = (id: string | number) => {
+    if (!confirm('¿Estás seguro de eliminar esto?')) return
+    fetcher.submit(
+      { intent: 'delete-feature', id },
+      { method: 'DELETE', encType: 'application/json' },
+    )
+  }
 
   return (
     <div>
       <section className="rounded-lg bg-white shadow-lg">
-        <header className="border-b border-zinc-200 px-6 py-3">
+        <header className="px-6 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
             <button
@@ -85,20 +117,32 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
                   </div>
 
                   {/* Valores */}
-                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                  <div className="mb-4 flex flex-wrap items-center gap-3">
                     {option?.features?.map((feature) => {
                       if (option.type === 1) {
                         return (
-                          <Badge key={feature.id} label={feature.description} />
+                          <Badge
+                            key={feature.id}
+                            label={feature.value}
+                            onClick={() => handleDelete(feature.id)}
+                          />
                         )
                       }
 
                       return (
-                        <span
-                          style={{ backgroundColor: feature.value }}
-                          className="inline-block size-6 rounded-full border-2 shadow-lg"
-                          key={feature.id}
-                        />
+                        <div key={feature.id} className="relative">
+                          <span
+                            style={{ backgroundColor: feature.value }}
+                            className="inline-block size-6 rounded-full border-2 shadow-lg"
+                          />
+
+                          <button
+                            className="absolute -top-1 left-4 z-10 flex size-3 items-center justify-center rounded-full bg-red-500 hover:bg-red-600"
+                            onClick={() => handleDelete(feature.id)}
+                          >
+                            <X className="size-3 text-white hover:cursor-pointer" />
+                          </button>
+                        </div>
                       )
                     })}
                   </div>

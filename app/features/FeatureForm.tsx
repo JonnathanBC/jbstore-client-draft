@@ -47,14 +47,15 @@ export const FeatureForm = ({ option }: Props) => {
   }
 
   useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+
     if (fetcher.data?.error) {
       toast.error(fetcher.data.error)
-    }
-    if (fetcher.data?.success) {
+    } else if (fetcher.data?.success) {
       toast.success('Creado con éxito')
       reset()
     }
-  }, [fetcher, reset])
+  }, [fetcher.data, fetcher.state])
 
   return (
     <form className="flex space-x-4" onSubmit={handleSubmit(onSubmit)}>
