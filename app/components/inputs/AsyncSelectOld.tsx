@@ -12,7 +12,7 @@ type Props = {
   disabled?: boolean
 }
 
-export const AsyncSelect = ({
+export const AsyncSelectOld = ({
   value: externalValue = '',
   onChange,
   source,

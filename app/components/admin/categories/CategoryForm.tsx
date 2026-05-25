@@ -1,5 +1,5 @@
 import { Form, useNavigation } from 'react-router'
-import { AsyncSelect } from '~/components/inputs/AsyncSelect'
+import { AsyncSelectOld } from '~/components/inputs/AsyncSelectOld'
 import { t } from '~/i18n'
 import type { Category } from '~/types/category'
 
@@ -22,7 +22,7 @@ export function CategoryForm({ category, validationErrors }: Props) {
         >
           Familia
         </label>
-        <AsyncSelect
+        <AsyncSelectOld
           name="family_id"
           value={category?.family_id?.toString() ?? ''}
           source="/resources/families"

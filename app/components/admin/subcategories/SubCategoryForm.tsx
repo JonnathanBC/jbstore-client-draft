@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Form, useNavigation } from 'react-router'
 
-import { AsyncSelect } from '~/components/inputs/AsyncSelect'
+import { AsyncSelectOld } from '~/components/inputs/AsyncSelectOld'
 import { t } from '~/i18n'
 import { SubCategory } from '~/types/subcategory'
 
@@ -29,7 +29,7 @@ export function SubCategoryForm({ subcategory, validationErrors }: Props) {
           {t('admin.family')}
         </label>
 
-        <AsyncSelect
+        <AsyncSelectOld
           name="family_id"
           value={familyId}
           onChange={(value) => {
@@ -46,7 +46,7 @@ export function SubCategoryForm({ subcategory, validationErrors }: Props) {
           {t('admin.category')}
         </label>
 
-        <AsyncSelect
+        <AsyncSelectOld
           key={familyId}
           name="category_id"
           value={subcategory?.category_id?.toString() ?? ''}
