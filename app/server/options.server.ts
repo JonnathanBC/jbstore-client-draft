@@ -56,3 +56,15 @@ export async function updateOption(
     return { error: toApiError(err) }
   }
 }
+
+export async function deleteOption(
+  id: number,
+  token: string,
+): Promise<void | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).delete(`/api/options/${id}`)
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}

@@ -3,12 +3,12 @@ import { Badge } from '~/components/Badge'
 import { FeatureForm } from '~/features/FeatureForm'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import { createOption, getOptions } from '~/server/options.server'
+import { createOption, deleteOption, getOptions } from '~/server/options.server'
 import { useModalStore } from '~/store/modal.store'
 import { createFeature, deleteFeature } from '~/server/feature.server'
 import { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.options._index'
-import { X } from 'lucide-react'
+import { Trash, Trash2, X } from 'lucide-react'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -46,6 +46,8 @@ export async function action({ request }: Route.ActionArgs) {
     result = await createFeature(cleanPayload, token)
   } else if (intent === 'delete-feature') {
     result = await deleteFeature(cleanPayload.id, token)
+  } else if (intent === 'delete-option') {
+    result = await deleteOption(cleanPayload.id, token)
   } else {
     result = await createOption(cleanPayload, token)
   }
@@ -82,12 +84,22 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
     }
   }, [fetcher.data, fetcher.state])
 
-  const handleDelete = (id: string | number) => {
+  const handleDelete = (id: string | number, model: string) => {
     if (!confirm('¿Estás seguro de eliminar esto?')) return
-    fetcher.submit(
-      { intent: 'delete-feature', id },
-      { method: 'DELETE', encType: 'application/json' },
-    )
+
+    if (model === 'feature') {
+      fetcher.submit(
+        { intent: 'delete-feature', id },
+        { method: 'DELETE', encType: 'application/json' },
+      )
+    }
+
+    if (model === 'option') {
+      fetcher.submit(
+        { intent: 'delete-option', id },
+        { method: 'DELETE', encType: 'application/json' },
+      )
+    }
   }
 
   return (
@@ -112,7 +124,13 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
                   key={option.id}
                   className="relative rounded-lg border border-zinc-200 bg-white p-6"
                 >
-                  <div className="absolute -top-3 bg-white px-4">
+                  <div className="absolute -top-3 flex items-center bg-white px-4">
+                    <button
+                      className="mr-1 text-red-500 hover:text-red-600"
+                      onClick={() => handleDelete(option.id, 'option')}
+                    >
+                      <Trash2 className="size-5" />
+                    </button>
                     <span>{option.name}</span>
                   </div>
 
@@ -124,7 +142,7 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
                           <Badge
                             key={feature.id}
                             label={feature.value}
-                            onClick={() => handleDelete(feature.id)}
+                            onClick={() => handleDelete(feature.id, 'feature')}
                           />
                         )
                       }
@@ -138,9 +156,9 @@ export default function OptionsIndex({ loaderData }: Route.ComponentProps) {
 
                           <button
                             className="absolute -top-1 left-4 z-10 flex size-3 items-center justify-center rounded-full bg-red-500 hover:bg-red-600"
-                            onClick={() => handleDelete(feature.id)}
+                            onClick={() => handleDelete(feature.id, 'feature')}
                           >
-                            <X className="size-3 text-white hover:cursor-pointer" />
+                            <X className="size-3 text-white" />
                           </button>
                         </div>
                       )
