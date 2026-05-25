@@ -1,7 +1,7 @@
 import { data } from 'react-router'
 import { redirect } from 'react-router'
 
-import { ProductForm } from '~/components/admin/products/ProductForm'
+import { ProductForm } from '~/products/ProductForm'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'

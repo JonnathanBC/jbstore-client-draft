@@ -12,7 +12,7 @@ import {
   getProduct,
   updateProduct,
 } from '~/server/products.server'
-import { ProductForm } from '~/components/admin/products/ProductForm'
+import { ProductForm } from '~/products/ProductForm'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -131,7 +131,7 @@ export default function ProductEdit({
   }, [actionData])
 
   return (
-    <div className="card">
+    <div className="space-y-6">
       <ProductForm
         product={product}
         validationErrors={actionData?.errors as undefined}
