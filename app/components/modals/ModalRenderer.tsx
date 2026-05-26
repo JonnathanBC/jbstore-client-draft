@@ -3,14 +3,6 @@ import { useModalStore } from '~/store/modal.store'
 import { ModalProvider } from './ModalContext'
 import { modalRegistry } from '~/config/modalRegistry'
 
-const lazyComponents: Record<
-  string,
-  React.LazyExoticComponent<React.ComponentType<unknown>>
-> = {
-  healthy: lazy(() => import('~/features/healthy/HealthyModal')),
-  option: lazy(() => import('~/features/options/OptionForm')),
-}
-
 export const ModalRenderer = () => {
   const modals = useModalStore((state) => state.modals)
   const close = useModalStore((state) => state.close)

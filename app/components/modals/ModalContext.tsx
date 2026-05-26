@@ -13,9 +13,7 @@ export function ModalProvider({
   value: ModalContextValue
   children: ReactNode
 }) {
-  return (
-    <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
-  )
+  return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
 }
 
 export function useModalContext() {
@@ -25,4 +23,3 @@ export function useModalContext() {
   }
   return context
 }
-
