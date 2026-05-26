@@ -5,4 +5,7 @@ export const modalRegistry = {
   option: {
     Component: () => import('~/features/options/OptionForm'),
   },
+  productVariant: {
+    Component: () => import('~/products/variants/ProductVariantModal'),
+  },
 }

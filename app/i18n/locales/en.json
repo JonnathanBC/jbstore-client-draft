@@ -12,7 +12,8 @@
     "family": "Family",
     "category": "Category",
     "new_product": "New Product",
-    "options": "Options"
+    "options": "Options",
+    "variants": "Variants"
   },
   "global": {
     "welcome": "Welcome",
@@ -26,6 +27,7 @@
     "code": "Code",
     "value": "Value",
     "description": "Description",
-    "type": "Type"
+    "type": "Type",
+    "option": "Option"
   }
 }

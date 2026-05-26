@@ -13,6 +13,7 @@ import {
   updateProduct,
 } from '~/server/products.server'
 import { ProductForm } from '~/products/ProductForm'
+import { ProductVariants } from '~/products/variants/ProductVariants'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -136,6 +137,8 @@ export default function ProductEdit({
         product={product}
         validationErrors={actionData?.errors as undefined}
       />
+
+      <ProductVariants />
     </div>
   )
 }
