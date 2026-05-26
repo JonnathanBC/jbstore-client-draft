@@ -11,11 +11,17 @@ import {
 } from '@/components/ui/dialog'
 import { useModalContext } from './ModalContext'
 
+interface ActionData {
+  errors?: Record<string, string[]>
+}
+
 interface Props {
   open?: boolean
   title: string
   onClose?: () => void
   onSubmit: SubmitHandler<FieldValues>
+  actionData?: ActionData | null
+  isSubmitting?: boolean
   children: React.ReactNode
 }
 
@@ -24,13 +30,15 @@ export const DialogCrud = ({
   onClose,
   open = true,
   onSubmit,
+  actionData,
+  isSubmitting = false,
   children,
 }: Props) => {
   const ctx = useModalContext()
   const close = onClose ?? ctx?.onClose
 
   return (
-    <FormProvider>
+    <FormProvider actionData={actionData}>
       {({ handleSubmit }) => (
         <Dialog
           open={open}
@@ -47,11 +55,13 @@ export const DialogCrud = ({
                 <DialogTitle>{title}</DialogTitle>
                 <div className="flex items-center gap-4">
                   <button
-                    className="btn btn-primary flex items-center gap-2"
+                    className="btn btn-primary flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
                     type="button"
+                    disabled={isSubmitting}
                     onClick={handleSubmit(onSubmit)}
                   >
-                    <Save className="size-4" /> Guardar
+                    <Save className="size-4" />
+                    {isSubmitting ? 'Guardando...' : 'Guardar'}
                   </button>
                   <DialogClose>
                     <XIcon className="size-4 cursor-pointer hover:text-red-800" />

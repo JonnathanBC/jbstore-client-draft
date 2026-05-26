@@ -3,6 +3,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 
 import { Input as InputShadcn } from '@/components/ui/input'
 import { t } from '~/i18n'
+import { FieldError } from './FieldError'
 
 interface FieldProps {
   name: string
@@ -38,6 +39,7 @@ export const Field = ({
           />
         )}
       />
+      <FieldError name={name} />
     </>
   )
 }

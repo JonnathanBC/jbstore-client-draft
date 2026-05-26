@@ -12,6 +12,7 @@ import {
   getProduct,
   updateProduct,
 } from '~/server/products.server'
+import { createVariant } from '~/server/variants.server'
 import { ProductForm } from '~/products/ProductForm'
 import { ProductVariants } from '~/products/variants/ProductVariants'
 
@@ -63,6 +64,24 @@ export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData()
   const intent = formData.get('_action')
   const session = await getSession(request.headers.get('Cookie'))
+
+  if (intent === 'create_variant') {
+    const result = await createVariant(
+      {
+        product_id: id,
+        option_id: Number(formData.get('option_id')),
+        value: String(formData.get('value') ?? '').trim(),
+      },
+      token,
+    )
+    if ('error' in result) {
+      return data(
+        { error: result.error.message, errors: result.error.errors ?? {} },
+        { status: result.error.status },
+      )
+    }
+    return { ok: true, errors: {} }
+  }
 
   if (intent === 'delete') {
     const result = await deleteProduct(id, token)

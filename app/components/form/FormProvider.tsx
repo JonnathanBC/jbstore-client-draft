@@ -1,24 +1,36 @@
+import { useEffect } from 'react'
 import {
   useForm,
   FormProvider as RHFProvider,
   UseFormProps,
   FieldValues,
-  SubmitHandler,
   UseFormReturn,
 } from 'react-hook-form'
 
+type ActionErrors = Record<string, string[]>
+
 interface FormProviderProps<T extends FieldValues> {
   children: React.ReactNode | ((methods: UseFormReturn<T>) => React.ReactNode)
-  onSubmit?: SubmitHandler<T>
   options?: UseFormProps<T>
+  actionData?: { errors?: ActionErrors } | null
   className?: string
 }
 
 export function FormProvider<T extends FieldValues>({
   children,
   options,
+  actionData,
 }: FormProviderProps<T>) {
   const methods = useForm<T>(options)
+
+  useEffect(() => {
+    if (!actionData?.errors) return
+    Object.entries(actionData.errors).forEach(([field, messages]) => {
+      methods.setError(field as Parameters<typeof methods.setError>[0], {
+        message: messages[0],
+      })
+    })
+  }, [actionData])
 
   return (
     <RHFProvider {...methods}>
