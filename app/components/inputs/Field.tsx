@@ -11,6 +11,7 @@ interface FieldProps {
   label?: string
   component?: ElementType
   source?: string
+  disabled?: boolean
 }
 
 export const Field = ({
@@ -18,6 +19,7 @@ export const Field = ({
   labelKey,
   name,
   component: Component = InputShadcn,
+  disabled,
   ...rest
 }: FieldProps) => {
   const form = useFormContext()
@@ -29,6 +31,7 @@ export const Field = ({
         name={name}
         control={form.control}
         defaultValue=""
+        disabled={disabled}
         render={({ field, fieldState }) => (
           <Component
             field={field}

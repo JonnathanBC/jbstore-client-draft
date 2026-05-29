@@ -2,23 +2,24 @@ import { useEffect } from 'react'
 import { useFetcher, useParams } from 'react-router'
 import { toast } from 'sonner'
 
-import { AsyncSelect } from '~/components/inputs/AsyncSelect'
-import { Field } from '~/components/inputs/Field'
 import { DialogCrud } from '~/components/modals/DialogCrud'
 import { useModalContext } from '~/components/modals/ModalContext'
-import { useModalStore } from '~/store/modal.store'
+import { ProductVariantForm } from './ProductVariantForm'
 
 export default function ProductVariantModal() {
   const { id } = useParams()
   const fetcher = useFetcher()
   const ctx = useModalContext()
-
   const isSubmitting = fetcher.state === 'submitting'
 
   useEffect(() => {
     if (fetcher.data?.ok) {
       toast.success('Variante creada correctamente')
       ctx.onClose()
+    }
+
+    if (fetcher.data?.error) {
+      toast.error(fetcher.data.error)
     }
   }, [fetcher.data])
 
@@ -35,15 +36,13 @@ export default function ProductVariantModal() {
       onSubmit={onSubmit}
       actionData={fetcher.data}
       isSubmitting={isSubmitting}
+      options={{
+        defaultValues: {
+          features: [{ id: '', value: '', description: '' }],
+        },
+      }}
     >
-      <Field
-        name="option_id"
-        labelKey="global.option"
-        component={AsyncSelect}
-        source="/resources/options"
-      />
-
-      <Field name="value" label="Valor" />
+      <ProductVariantForm />
     </DialogCrud>
   )
 }

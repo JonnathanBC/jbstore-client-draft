@@ -1,5 +1,11 @@
+import { ReactNode } from 'react'
+import {
+  FieldValues,
+  SubmitHandler,
+  UseFormProps,
+  UseFormReturn,
+} from 'react-hook-form'
 import { Save, XIcon } from 'lucide-react'
-import { FieldValues, SubmitHandler } from 'react-hook-form'
 
 import { FormProvider } from '@/components/form/FormProvider'
 import {
@@ -22,7 +28,10 @@ interface Props {
   onSubmit: SubmitHandler<FieldValues>
   actionData?: ActionData | null
   isSubmitting?: boolean
-  children: React.ReactNode
+  options?: UseFormProps<FieldValues>
+  children:
+    | ReactNode
+    | ((methods: UseFormReturn<FieldValues>) => React.ReactNode)
 }
 
 export const DialogCrud = ({
@@ -33,20 +42,21 @@ export const DialogCrud = ({
   actionData,
   isSubmitting = false,
   children,
+  options,
 }: Props) => {
   const ctx = useModalContext()
   const close = onClose ?? ctx?.onClose
 
   return (
-    <FormProvider actionData={actionData}>
-      {({ handleSubmit }) => (
+    <FormProvider actionData={actionData} options={options}>
+      {(methods) => (
         <Dialog
           open={open}
           onOpenChange={(isOpen) => {
             if (!isOpen) close?.()
           }}
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={methods.handleSubmit(onSubmit)}>
             <DialogContent
               showCloseButton={false}
               className="p-4 sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
@@ -58,7 +68,7 @@ export const DialogCrud = ({
                     className="btn btn-primary flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
                     type="button"
                     disabled={isSubmitting}
-                    onClick={handleSubmit(onSubmit)}
+                    onClick={methods.handleSubmit(onSubmit)}
                   >
                     <Save className="size-4" />
                     {isSubmitting ? 'Guardando...' : 'Guardar'}
@@ -68,7 +78,7 @@ export const DialogCrud = ({
                   </DialogClose>
                 </div>
               </DialogHeader>
-              {children}
+              {typeof children === 'function' ? children(methods) : children}
             </DialogContent>
           </form>
         </Dialog>

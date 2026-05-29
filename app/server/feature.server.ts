@@ -1,5 +1,31 @@
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
+import { ApiResponse } from '~/types/api'
 import { Feature } from '~/types/feature'
+
+export interface GetFeaturesParams {
+  token: string
+  page?: number
+  per_page?: number
+  option_id?: string | null
+  order?: { updated_at?: 'asc' | 'desc' }
+}
+
+export async function getFeatures({
+  token,
+  ...params
+}: GetFeaturesParams): Promise<ApiResponse<Feature>> {
+  try {
+    const { data } = await apiClient(token).get<ApiResponse<Feature>>(
+      '/api/features',
+      {
+        params,
+      },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
 
 export async function createFeature(
   payload: { value: string; description: string; option_id: number },

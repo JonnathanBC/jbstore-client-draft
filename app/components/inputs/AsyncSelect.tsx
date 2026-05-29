@@ -12,19 +12,21 @@ interface AsyncSelectProps {
   form: UseFormReturn
   source: string
   error?: FieldError
+  disabled?: boolean
 }
 
 export const AsyncSelect = ({
   field,
   form,
   source,
+  disabled = false,
   ...props
 }: AsyncSelectProps) => {
   const fetcher = useFetcher()
   const { onChange: _onChange, ...restField } = field
 
   useEffect(() => {
-    if (fetcher.state === 'idle' && !fetcher.data) {
+    if (fetcher.state === 'idle' && !fetcher.data && !disabled) {
       fetcher.load(source)
     }
   }, [source])

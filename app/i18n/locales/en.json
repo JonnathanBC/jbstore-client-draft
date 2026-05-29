@@ -28,6 +28,7 @@
     "value": "Value",
     "description": "Description",
     "type": "Type",
-    "option": "Option"
+    "option": "Option",
+    "values": "Values"
   }
 }
