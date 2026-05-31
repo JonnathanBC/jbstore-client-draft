@@ -12,9 +12,10 @@ import {
   getProduct,
   updateProduct,
 } from '~/server/products.server'
-import { createVariant } from '~/server/variants.server'
 import { ProductForm } from '~/products/ProductForm'
 import { ProductVariants } from '~/products/variants/ProductVariants'
+import { createOptionsProduct } from '~/server/option-products'
+import type { OptionProduct } from '~/types/option-product'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -65,12 +66,19 @@ export async function action({ request, params }: Route.ActionArgs) {
   const intent = formData.get('_action')
   const session = await getSession(request.headers.get('Cookie'))
 
-  if (intent === 'create_variant') {
-    const result = await createVariant(
+  if (intent === 'create_option_product') {
+    let features: OptionProduct['features'] = []
+    try {
+      features = JSON.parse(String(formData.get('features') ?? '[]'))
+    } catch {
+      return { error: 'Features inválidas', errors: {} }
+    }
+
+    const result = await createOptionsProduct(
       {
         product_id: id,
         option_id: Number(formData.get('option_id')),
-        value: String(formData.get('value') ?? '').trim(),
+        features,
       },
       token,
     )

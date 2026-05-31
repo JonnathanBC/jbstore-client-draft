@@ -18,7 +18,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {
     items: features.data.map((f) => ({
       value: String(f.id),
-      label: f.value,
+      label: f.description || f.value,
+      feature_value: f.value,
+      description: f.description ?? '',
     })),
   }
 }

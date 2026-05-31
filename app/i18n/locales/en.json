@@ -29,6 +29,7 @@
     "description": "Description",
     "type": "Type",
     "option": "Option",
-    "values": "Values"
+    "values": "Values",
+    "add_value": "Add value"
   }
 }

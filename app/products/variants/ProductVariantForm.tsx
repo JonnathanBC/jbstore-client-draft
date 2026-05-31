@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { AsyncSelect } from '~/components/inputs/AsyncSelect'
@@ -12,7 +12,7 @@ interface FormValues {
 }
 
 export function ProductVariantForm() {
-  const { watch, control } = useFormContext<FormValues>()
+  const { watch, control, setValue } = useFormContext<FormValues>()
   const optionId = watch('option_id')
   const { fields, append, remove } = useFieldArray<FormValues, 'features'>({
     control,
@@ -37,7 +37,7 @@ export function ProductVariantForm() {
       </div>
 
       <ul className="mb-4 space-y-4">
-        {fields.map((feature, index) => (
+        {fields.map((_feature, index) => (
           <li
             className="relative rounded-lg border border-gray-200 p-6"
             key={`variant-feature-${index}`}
@@ -54,7 +54,7 @@ export function ProductVariantForm() {
             <div>
               <Field
                 labelKey="global.values"
-                name="feature_id"
+                name={`features.${index}.id`}
                 component={AsyncSelect}
                 source={
                   '/resources/features' +
@@ -62,9 +62,12 @@ export function ProductVariantForm() {
                 }
                 disabled={!optionId}
                 key={optionId}
+                onItemSelect={(item) => {
+                  setValue(`features.${index}.value`, item.feature_value)
+                  setValue(`features.${index}.description`, item.description)
+                }}
               />
             </div>
-            {feature.value}
           </li>
         ))}
       </ul>
@@ -75,7 +78,7 @@ export function ProductVariantForm() {
           variant="default"
           onClick={() => append({ id: '', value: '', description: '' })}
         >
-          Agregar Valor
+          <Plus className="size-4" /> {t('global.add_value')}
         </Button>
       </div>
     </div>

@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useFetcher, useParams } from 'react-router'
 import { toast } from 'sonner'
+import { UseFormReturn } from 'react-hook-form'
 
 import { DialogCrud } from '~/components/modals/DialogCrud'
 import { useModalContext } from '~/components/modals/ModalContext'
@@ -11,21 +12,38 @@ export default function ProductVariantModal() {
   const fetcher = useFetcher()
   const ctx = useModalContext()
   const isSubmitting = fetcher.state === 'submitting'
+  const formRef = useRef<UseFormReturn | null>(null)
 
   useEffect(() => {
-    if (fetcher.data?.ok) {
+    if (!fetcher.data || !formRef.current) return
+
+    if (fetcher.data.ok) {
       toast.success('Variante creada correctamente')
       ctx.onClose()
+      return
     }
 
-    if (fetcher.data?.error) {
+    if (fetcher.data.errors) {
+      formRef.current.clearErrors()
+      Object.entries(fetcher.data.errors as Record<string, string[]>).forEach(
+        ([field, messages]) => {
+          formRef.current!.setError(field, { message: messages[0] })
+        },
+      )
+    }
+
+    if (fetcher.data.error) {
       toast.error(fetcher.data.error)
     }
   }, [fetcher.data])
 
   const onSubmit = (data: Record<string, unknown>) => {
     fetcher.submit(
-      { ...data, _action: 'create_variant' } as Record<string, string>,
+      {
+        ...data,
+        features: JSON.stringify(data.features),
+        _action: 'create_option_product',
+      } as Record<string, string>,
       { method: 'post', action: `/admin/products/${id}` },
     )
   }
@@ -34,7 +52,6 @@ export default function ProductVariantModal() {
     <DialogCrud
       title="Nueva variante"
       onSubmit={onSubmit}
-      actionData={fetcher.data}
       isSubmitting={isSubmitting}
       options={{
         defaultValues: {
@@ -42,7 +59,10 @@ export default function ProductVariantModal() {
         },
       }}
     >
-      <ProductVariantForm />
+      {(methods) => {
+        formRef.current = methods
+        return <ProductVariantForm />
+      }}
     </DialogCrud>
   )
 }
