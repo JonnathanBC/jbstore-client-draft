@@ -12,7 +12,8 @@
     "typecheck": "react-router typegen && tsc",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"app/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"app/**/*.{ts,tsx,css}\"",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
@@ -58,6 +59,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.5.0",
     "prettier": "3.8.1",
+    "react-doctor": "^0.2.14",
     "tailwindcss": "4.2.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.59.1",
