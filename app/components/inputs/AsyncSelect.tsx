@@ -13,6 +13,8 @@ interface AsyncSelectProps {
   source: string
   error?: FieldError
   disabled?: boolean
+  valueLabel?: string
+  onItemSelect?: (item: Record<string, string> & { value: string }) => void
 }
 
 export const AsyncSelect = ({

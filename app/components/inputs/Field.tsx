@@ -12,6 +12,7 @@ interface FieldProps {
   component?: ElementType
   source?: string
   disabled?: boolean
+  onItemSelect?: (item: Record<string, string> & { value: string }) => void
 }
 
 export const Field = ({
