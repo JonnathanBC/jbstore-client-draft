@@ -42,6 +42,25 @@ export async function createOptionsProduct(
   }
 }
 
+export async function deleteOptionProduct(
+  productId: number,
+  optionId: number,
+  token: string,
+): Promise<{ error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).post(
+      `/api/option-products/remove-option`,
+      {
+        product_id: productId,
+        option_id: optionId,
+      },
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
 export async function deleteFeatureProduct(
   optionId: number,
   featureId: number,

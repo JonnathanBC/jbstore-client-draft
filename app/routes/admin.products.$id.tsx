@@ -17,6 +17,7 @@ import { ProductVariants } from '~/products/variants/ProductVariants'
 import {
   createOptionsProduct,
   deleteFeatureProduct,
+  deleteOptionProduct,
 } from '~/server/options-product'
 import { OptionsProduct } from '~/types/options-product'
 
@@ -113,6 +114,24 @@ export async function action({ request, params }: Route.ActionArgs) {
     return redirect('/admin/products', {
       headers: { 'Set-Cookie': await commitSession(session) },
     })
+  }
+
+  // DELETE-OPTION-PRODUCT
+  if (intent === 'remove-option-product') {
+    const result = await deleteOptionProduct(
+      id,
+      Number(formData.get('option_id')),
+      token,
+    )
+
+    if ('error' in result) {
+      return data(
+        { error: result.error.message, errors: result.error.errors ?? [] },
+        { status: result.error.status },
+      )
+    }
+
+    return data({ ok: true, errors: [] })
   }
 
   // DELETE-FEATURE-PRODUCT

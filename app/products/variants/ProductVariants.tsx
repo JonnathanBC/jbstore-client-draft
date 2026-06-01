@@ -16,8 +16,12 @@ export const ProductVariants = ({ options, productId }: Props) => {
   const openModal = useModalStore((state) => state.open)
   const fetcher = useFetcher()
 
-  const handleDelete = (optionId: number) => {
-    alert(`${optionId}`)
+  const handleDeleteOptionProduct = (optionId: number) => {
+    if (!confirm('¿Estás seguro de eliminar esta opción?')) return
+    fetcher.submit(
+      { option_id: optionId, _action: 'remove-option-product' },
+      { method: 'POST', action: `/admin/products/${productId}` },
+    )
   }
 
   const handleDeleteFeatureProduct = (data: {
@@ -66,7 +70,7 @@ export const ProductVariants = ({ options, productId }: Props) => {
               <div className="absolute -top-3 flex items-center bg-white px-4">
                 <button
                   className="mr-1 text-red-500 hover:text-red-600"
-                  onClick={() => handleDelete(option.id)}
+                  onClick={() => handleDeleteOptionProduct(option.id)}
                 >
                   <Trash2 className="size-5" />
                 </button>
