@@ -11,7 +11,7 @@ interface FormValues {
   features: { id: string; value: string; description: string }[]
 }
 
-export function ProductVariantForm() {
+export function OptionsProductForm() {
   const { watch, control, setValue } = useFormContext<FormValues>()
   const optionId = watch('option_id')
   const { fields, append, remove } = useFieldArray<FormValues, 'features'>({
@@ -37,10 +37,10 @@ export function ProductVariantForm() {
       </div>
 
       <ul className="mb-4 space-y-4">
-        {fields.map((_feature, index) => (
+        {fields.map((feature, index) => (
           <li
             className="relative rounded-lg border border-gray-200 p-6"
-            key={`variant-feature-${index}`}
+            key={`variant-feature-${feature.id}`}
           >
             <div className="absolute -top-3 bg-white px-4">
               <button

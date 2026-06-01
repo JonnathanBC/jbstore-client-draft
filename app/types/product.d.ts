@@ -1,9 +1,12 @@
+import { Option } from './option'
+
 export interface Product {
   id: number
   sku: number
   name: string
   price: number
   subcategory_id: number
+  options?: Option[]
 
   category: {
     id: number

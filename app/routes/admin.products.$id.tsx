@@ -14,8 +14,10 @@ import {
 } from '~/server/products.server'
 import { ProductForm } from '~/products/ProductForm'
 import { ProductVariants } from '~/products/variants/ProductVariants'
-import { createOptionsProduct } from '~/server/option-products'
-import type { OptionProduct } from '~/types/option-product'
+import {
+  createOptionsProduct,
+  deleteFeatureOption,
+} from '~/server/options-product'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -110,6 +112,29 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
+  if (intent === 'delete-feature') {
+    const result = await deleteFeatureOption(
+      Number(formData.get('option_id')),
+      Number(formData.get('feature_id')),
+      token,
+    )
+
+    if ('error' in result) {
+      return data(
+        {
+          error: result.error.message,
+          errors: result.error.errors ?? {},
+        },
+        { status: result.error.status },
+      )
+    }
+
+    return data({
+      ok: true,
+      message: 'Feature eliminada correctamente',
+    })
+  }
+
   const payload = new FormData()
   payload.append('sku', String(formData.get('sku') ?? '').trim())
   payload.append('name', String(formData.get('name') ?? '').trim())
@@ -165,7 +190,7 @@ export default function ProductEdit({
         validationErrors={actionData?.errors as undefined}
       />
 
-      <ProductVariants />
+      <ProductVariants options={product?.options} />
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { UseFormReturn } from 'react-hook-form'
 
 import { DialogCrud } from '~/components/modals/DialogCrud'
 import { useModalContext } from '~/components/modals/ModalContext'
-import { ProductVariantForm } from './ProductVariantForm'
+import { OptionsProductForm } from '../options/OptionsProductForm'
 
 export default function ProductVariantModal() {
   const { id } = useParams()
@@ -61,7 +61,7 @@ export default function ProductVariantModal() {
     >
       {(methods) => {
         formRef.current = methods
-        return <ProductVariantForm />
+        return <OptionsProductForm />
       }}
     </DialogCrud>
   )

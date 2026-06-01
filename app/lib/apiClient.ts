@@ -14,13 +14,16 @@ export const apiClient = (token?: string) =>
   })
 
 export type ApiError = {
-  code: 'BAD_REQUEST' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND' | 'INTERNAL_SERVER_ERROR'
+  code:
+    | 'BAD_REQUEST'
+    | 'UNAUTHORIZED'
+    | 'FORBIDDEN'
+    | 'NOT_FOUND'
+    | 'INTERNAL_SERVER_ERROR'
   message: string
   status: number
   errors?: Record<string, string[]>
 }
-
-type ApiErrorCode = ApiError['code']
 
 const STATUS_TO_CODE: Record<number, ApiError['code']> = {
   400: 'BAD_REQUEST',
