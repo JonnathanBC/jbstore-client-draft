@@ -84,6 +84,10 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
+  if (intent !== 'update' && intent !== null) {
+    return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
+  }
+
   const name = String(form.get('name') ?? '').trim()
   const familyId = Number(form.get('family_id'))
 

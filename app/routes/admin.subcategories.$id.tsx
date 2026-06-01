@@ -85,6 +85,10 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
+  if (intent !== 'update' && intent !== null) {
+    return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
+  }
+
   const name = String(form.get('name') ?? '').trim()
   const categoryId = Number(form.get('category_id'))
 
@@ -126,7 +130,7 @@ export default function SubCategoryEdit({
     <div className="card">
       <SubCategoryForm
         subcategory={subcategory}
-        validationErrors={actionData?.errors as undefined}
+        validationErrors={actionData?.errors as Record<string, string[]> | undefined}
       />
     </div>
   )

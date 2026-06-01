@@ -1,4 +1,4 @@
-import { redirect } from 'react-router'
+import { data, redirect } from 'react-router'
 import type { Route } from './+types/admin.families.$id'
 import { requireAuth } from '~/server/auth.server'
 import { deleteFamily, getFamily, updateFamily } from '~/server/api.server'
@@ -61,7 +61,12 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   if (intent === 'delete') {
     const result = await deleteFamily(id, token)
-    if ('error' in result) return { error: result.error.message }
+    if ('error' in result) {
+      return data(
+        { error: result.error.message, errors: [] },
+        { status: result.error.status },
+      )
+    }
 
     session.flash('toast', {
       kind: 'success',
@@ -73,13 +78,19 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
+  if (intent !== 'update' && intent !== null) {
+    return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
+  }
+
   const name = String(form.get('name') ?? '').trim()
 
   const result = await updateFamily(id, { name }, token)
 
-  // Ejemplo de notifiaciones para el cliente sin usar session.flash
   if ('error' in result) {
-    return { toast: { kind: 'error', message: result.error.message } }
+    return data(
+      { error: result.error.message, errors: [] },
+      { status: result.error.status },
+    )
   }
 
   session.flash('toast', {
@@ -99,8 +110,8 @@ export default function FamilyEdit({
   const { family } = loaderData
 
   useEffect(() => {
-    if (actionData?.toast) {
-      toast.error(actionData.toast.message)
+    if (actionData?.error) {
+      toast.error(actionData.error)
     }
   }, [actionData])
 

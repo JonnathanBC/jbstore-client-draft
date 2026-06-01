@@ -159,6 +159,10 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
+  if (intent !== 'update' && intent !== null) {
+    return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
+  }
+
   const payload = new FormData()
   payload.append('sku', String(formData.get('sku') ?? '').trim())
   payload.append('name', String(formData.get('name') ?? '').trim())
