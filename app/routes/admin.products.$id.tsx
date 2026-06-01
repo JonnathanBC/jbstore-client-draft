@@ -16,8 +16,9 @@ import { ProductForm } from '~/products/ProductForm'
 import { ProductVariants } from '~/products/variants/ProductVariants'
 import {
   createOptionsProduct,
-  deleteFeatureOption,
+  deleteFeatureProduct,
 } from '~/server/options-product'
+import { OptionsProduct } from '~/types/options-product'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -68,12 +69,13 @@ export async function action({ request, params }: Route.ActionArgs) {
   const intent = formData.get('_action')
   const session = await getSession(request.headers.get('Cookie'))
 
-  if (intent === 'create_option_product') {
-    let features: OptionProduct['features'] = []
+  // CREATE-OPTION-PRODUCT
+  if (intent === 'create-option-product') {
+    let features: OptionsProduct['features'] = []
     try {
       features = JSON.parse(String(formData.get('features') ?? '[]'))
     } catch {
-      return { error: 'Features inválidas', errors: {} }
+      return { error: 'Features inválidas', errors: [] }
     }
 
     const result = await createOptionsProduct(
@@ -90,9 +92,10 @@ export async function action({ request, params }: Route.ActionArgs) {
         { status: result.error.status },
       )
     }
-    return { ok: true, errors: {} }
+    return { ok: true, errors: [] }
   }
 
+  // DELETE-PRODUCT
   if (intent === 'delete') {
     const result = await deleteProduct(id, token)
     if ('error' in result) {
@@ -112,8 +115,9 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
-  if (intent === 'delete-feature') {
-    const result = await deleteFeatureOption(
+  // DELETE-FEATURE-PRODUCT
+  if (intent === 'delete-feature-product') {
+    const result = await deleteFeatureProduct(
       Number(formData.get('option_id')),
       Number(formData.get('feature_id')),
       token,
@@ -132,6 +136,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     return data({
       ok: true,
       message: 'Feature eliminada correctamente',
+      errors: [],
     })
   }
 
@@ -174,12 +179,14 @@ export async function action({ request, params }: Route.ActionArgs) {
 export default function ProductEdit({
   loaderData,
   actionData,
+  params,
 }: Route.ComponentProps) {
   const { product } = loaderData
+  const { id } = params
 
   useEffect(() => {
-    if (actionData?.error) {
-      toast.error(actionData.error)
+    if (actionData && 'error' in actionData && actionData.error) {
+      toast.error(actionData.error as string)
     }
   }, [actionData])
 
@@ -187,10 +194,14 @@ export default function ProductEdit({
     <div className="space-y-6">
       <ProductForm
         product={product}
-        validationErrors={actionData?.errors as undefined}
+        validationErrors={
+          actionData && 'errors' in actionData
+            ? (actionData.errors as Record<string, string[]>)
+            : undefined
+        }
       />
 
-      <ProductVariants options={product?.options} />
+      <ProductVariants options={product?.options} productId={id} />
     </div>
   )
 }

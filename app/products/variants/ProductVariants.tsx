@@ -1,15 +1,18 @@
 import { Trash2, X } from 'lucide-react'
+import { useEffect } from 'react'
 import { useFetcher } from 'react-router'
+import { toast } from 'sonner'
 import { Badge } from '~/components/Badge'
 import { t } from '~/i18n'
 import { useModalStore } from '~/store/modal.store'
 import { Option } from '~/types/option'
 
 interface Props {
+  productId: number | string
   options?: Option[]
 }
 
-export const ProductVariants = ({ options }: Props) => {
+export const ProductVariants = ({ options, productId }: Props) => {
   const openModal = useModalStore((state) => state.open)
   const fetcher = useFetcher()
 
@@ -17,19 +20,27 @@ export const ProductVariants = ({ options }: Props) => {
     alert(`${optionId}`)
   }
 
-  const handleDeleteFeature = (data: {
+  const handleDeleteFeatureProduct = (data: {
     option_id: number
     feature_id: number
   }) => {
+    if (!confirm('¿Estás seguro de eliminar esta feature?')) return
     fetcher.submit(
-      { ...data, intent: 'delete-feature' },
+      { ...data, _action: 'delete-feature-product' },
       {
         method: 'POST',
-        action: '/admin/products/',
-        encType: 'application/json',
+        action: `/admin/products/${productId}`,
+        // encType: 'application/json',
       },
     )
   }
+
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+    if (fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    }
+  }, [fetcher.data, fetcher.state])
 
   return (
     <section className="card">
@@ -71,7 +82,10 @@ export const ProductVariants = ({ options }: Props) => {
                         key={feature.id}
                         label={feature.description}
                         onClick={() =>
-                          handleDeleteFeature(option.id, feature.id)
+                          handleDeleteFeatureProduct({
+                            option_id: option.id,
+                            feature_id: feature.id,
+                          })
                         }
                       />
                     )
@@ -87,7 +101,10 @@ export const ProductVariants = ({ options }: Props) => {
                       <button
                         className="absolute -top-1 left-4 z-10 flex size-3 items-center justify-center rounded-full bg-red-500 hover:bg-red-600"
                         onClick={() =>
-                          handleDeleteFeature(option.id, feature.id)
+                          handleDeleteFeatureProduct({
+                            option_id: option.id,
+                            feature_id: feature.id,
+                          })
                         }
                       >
                         <X className="size-3 text-white" />

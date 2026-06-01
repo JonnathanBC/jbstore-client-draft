@@ -42,14 +42,14 @@ export async function createOptionsProduct(
   }
 }
 
-export async function deleteFeatureOption(
+export async function deleteFeatureProduct(
   optionId: number,
   featureId: number,
   token: string,
 ): Promise<{ error: ApiError }> {
   try {
     const { data } = await apiClient(token).post(
-      `/option-products/remove-features`,
+      `/api/option-products/remove-features`,
       {
         option_id: optionId,
         feature_id: featureId,
