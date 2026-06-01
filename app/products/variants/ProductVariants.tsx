@@ -2,6 +2,7 @@ import { Trash2, X } from 'lucide-react'
 import { useEffect } from 'react'
 import { useFetcher } from 'react-router'
 import { toast } from 'sonner'
+import Alert from '~/components/admin/Alert'
 import { Badge } from '~/components/Badge'
 import { t } from '~/i18n'
 import { useModalStore } from '~/store/modal.store'
@@ -48,7 +49,7 @@ export const ProductVariants = ({ options, productId }: Props) => {
 
   return (
     <section className="card">
-      <header className="px-6 py-3">
+      <header className="py-3">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
           <button
@@ -61,6 +62,9 @@ export const ProductVariants = ({ options, productId }: Props) => {
       </header>
 
       <div className="space-y-4">
+        {options?.length === 0 && (
+          <Alert message="No hay opciones para este producto" />
+        )}
         {options?.map((option) => {
           return (
             <div
