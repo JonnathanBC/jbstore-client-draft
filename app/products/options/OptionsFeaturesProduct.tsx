@@ -13,7 +13,7 @@ interface Props {
   options?: Option[]
 }
 
-export const ProductVariants = ({ options, productId }: Props) => {
+export const OptionsFeaturesProduct = ({ options, productId }: Props) => {
   const openModal = useModalStore((state) => state.open)
   const fetcher = useFetcher()
 
@@ -53,10 +53,10 @@ export const ProductVariants = ({ options, productId }: Props) => {
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
           <button
-            onClick={() => openModal('productVariant')}
+            onClick={() => openModal('productOption')}
             className="btn btn-primary"
           >
-            Nuevo
+            {t('admin.add_option')}
           </button>
         </div>
       </header>

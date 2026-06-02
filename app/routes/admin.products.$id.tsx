@@ -13,7 +13,7 @@ import {
   updateProduct,
 } from '~/server/products.server'
 import { ProductForm } from '~/products/ProductForm'
-import { ProductVariants } from '~/products/variants/ProductVariants'
+import { OptionsFeaturesProduct } from '~/products/options/OptionsFeaturesProduct'
 import {
   createOptionsProduct,
   deleteFeatureProduct,
@@ -159,6 +159,8 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
+  console.log({ intent })
+
   if (intent !== 'update' && intent !== null) {
     return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
   }
@@ -224,7 +226,7 @@ export default function ProductEdit({
         }
       />
 
-      <ProductVariants options={product?.options} productId={id} />
+      <OptionsFeaturesProduct options={product?.options} productId={id} />
     </div>
   )
 }

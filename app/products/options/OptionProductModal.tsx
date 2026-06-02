@@ -7,7 +7,7 @@ import { DialogCrud } from '~/components/modals/DialogCrud'
 import { useModalContext } from '~/components/modals/ModalContext'
 import { OptionsProductForm } from '../options/OptionsProductForm'
 
-export default function ProductVariantModal() {
+export default function OptionProductModal() {
   const { id } = useParams()
   const fetcher = useFetcher()
   const ctx = useModalContext()
@@ -42,7 +42,7 @@ export default function ProductVariantModal() {
       {
         ...data,
         features: JSON.stringify(data.features),
-        _action: 'create_option_product',
+        _action: 'create-option-product',
       } as Record<string, string>,
       { method: 'post', action: `/admin/products/${id}` },
     )

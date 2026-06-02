@@ -13,7 +13,8 @@
     "category": "Categoria",
     "new_product": "Nuevo producto",
     "options": "Opciones",
-    "variants": "Variantes"
+    "variants": "Variantes",
+    "add_option": "Add option"
   },
   "global": {
     "welcome": "Bienvenido",
