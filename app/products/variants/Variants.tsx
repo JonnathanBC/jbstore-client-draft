@@ -1,25 +1,22 @@
+import { Link, useLoaderData } from 'react-router'
+
 import { t } from '~/i18n'
+import { loader } from '~/routes/admin.products.$id'
 
-interface ProductVariants {
-  variants: {
-    sku: string
-    image: string
-    features: { id: string; description: string }[]
-  }[]
-}
+export const Variants = () => {
+  const { product } = useLoaderData<typeof loader>()
 
-export const Variants = ({ variants }: ProductVariants) => {
   return (
     <section className="card">
-      <header className="py-3">
+      <header className="pb-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">{t('admin.variants')}</h1>
         </div>
       </header>
 
-      <div className="p-6">
+      <div className="px-4">
         <ul className="-my-4 divide-y">
-          {variants.map((variant) => (
+          {product?.variants.map((variant) => (
             <li key={variant.sku} className="flex items-center py-4">
               <img
                 src={variant.image}
@@ -35,12 +32,12 @@ export const Variants = ({ variants }: ProductVariants) => {
                 ))}
               </p>
 
-              <a
-                href={`/admin/variants/${variant.sku}`} // verificar que la variante este relacionado si no que de error 404
-                className="btn btn-blue ml-auto"
+              <Link
+                to={`/products/${product.id}/variants/${variant.id}`}
+                className="btn btn-primary ml-auto"
               >
                 Editar
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

@@ -49,7 +49,7 @@ export const OptionsFeaturesProduct = ({ options, productId }: Props) => {
 
   return (
     <section className="card">
-      <header className="py-3">
+      <header className="mb-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
           <button

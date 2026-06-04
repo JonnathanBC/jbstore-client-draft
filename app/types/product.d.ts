@@ -16,6 +16,16 @@ export interface Product {
       name: string
     }
   }
+
+  variants: {
+    id: number
+    sku: string
+    image: string
+    features: {
+      id: number
+      description: string
+    }[]
+  }[]
   created_at: string
   updated_at: string
   description?: string

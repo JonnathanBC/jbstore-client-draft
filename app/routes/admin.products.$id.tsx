@@ -20,6 +20,7 @@ import {
   deleteOptionProduct,
 } from '~/server/options-product'
 import { OptionsProduct } from '~/types/options-product'
+import { Variants } from '~/products/variants/Variants'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -159,8 +160,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
   }
 
-  console.log({ intent })
-
   if (intent !== 'update' && intent !== null) {
     return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
   }
@@ -227,6 +226,7 @@ export default function ProductEdit({
       />
 
       <OptionsFeaturesProduct options={product?.options} productId={id} />
+      <Variants />
     </div>
   )
 }
