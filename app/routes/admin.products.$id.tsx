@@ -225,7 +225,7 @@ export default function ProductEdit({
         }
       />
 
-      <OptionsFeaturesProduct options={product?.options} productId={id} />
+      <OptionsFeaturesProduct />
       <Variants />
     </div>
   )

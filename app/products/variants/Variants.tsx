@@ -17,7 +17,7 @@ export const Variants = () => {
       <div className="px-4">
         <ul className="-my-4 divide-y">
           {product?.variants.map((variant) => (
-            <li key={variant.sku} className="flex items-center py-4">
+            <li key={variant.id} className="flex items-center py-4">
               <img
                 src={variant.image}
                 alt={variant.sku}
@@ -33,7 +33,7 @@ export const Variants = () => {
               </p>
 
               <Link
-                to={`/products/${product.id}/variants/${variant.id}`}
+                to={`variants/${variant.id}`}
                 className="btn btn-primary ml-auto"
               >
                 Editar

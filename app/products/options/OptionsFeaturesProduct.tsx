@@ -1,27 +1,24 @@
 import { Trash2, X } from 'lucide-react'
 import { useEffect } from 'react'
-import { useFetcher } from 'react-router'
+import { useFetcher, useLoaderData } from 'react-router'
 import { toast } from 'sonner'
+
 import Alert from '~/components/admin/Alert'
 import { Badge } from '~/components/Badge'
 import { t } from '~/i18n'
+import { loader } from '~/routes/admin.products.$id'
 import { useModalStore } from '~/store/modal.store'
-import { Option } from '~/types/option'
 
-interface Props {
-  productId: number | string
-  options?: Option[]
-}
-
-export const OptionsFeaturesProduct = ({ options, productId }: Props) => {
+export const OptionsFeaturesProduct = () => {
   const openModal = useModalStore((state) => state.open)
+  const { product } = useLoaderData<typeof loader>()
   const fetcher = useFetcher()
 
   const handleDeleteOptionProduct = (optionId: number) => {
     if (!confirm('¿Estás seguro de eliminar esta opción?')) return
     fetcher.submit(
       { option_id: optionId, _action: 'remove-option-product' },
-      { method: 'POST', action: `/admin/products/${productId}` },
+      { method: 'POST', action: `/admin/products/${product?.id}` },
     )
   }
 
@@ -34,7 +31,7 @@ export const OptionsFeaturesProduct = ({ options, productId }: Props) => {
       { ...data, _action: 'delete-feature-product' },
       {
         method: 'POST',
-        action: `/admin/products/${productId}`,
+        action: `/admin/products/${product?.id}`,
         // encType: 'application/json',
       },
     )
@@ -62,10 +59,10 @@ export const OptionsFeaturesProduct = ({ options, productId }: Props) => {
       </header>
 
       <div className="space-y-4">
-        {options?.length === 0 && (
+        {product?.options?.length === 0 && (
           <Alert message="No hay opciones para este producto" />
         )}
-        {options?.map((option) => {
+        {product?.options?.map((option) => {
           return (
             <div
               key={option.id}
