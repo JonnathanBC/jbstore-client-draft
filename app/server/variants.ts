@@ -1,4 +1,4 @@
-import { apiClient, toApiError } from '~/lib/apiClient'
+import { apiClient, ApiError, toApiError } from '~/lib/apiClient'
 
 export async function getVariant(
   productId: number,
@@ -12,5 +12,26 @@ export async function getVariant(
     return data
   } catch (err) {
     throw toApiError(err)
+  }
+}
+
+export async function updateVariant(
+  id: number,
+  payload: FormData,
+  token: string,
+): Promise<Variant | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).patch<Variant>(
+      `/api/variants/${id}`,
+      payload,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
   }
 }

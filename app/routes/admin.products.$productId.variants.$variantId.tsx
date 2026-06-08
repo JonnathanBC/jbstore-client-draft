@@ -8,6 +8,9 @@ import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.products.$productId.variants.$variantId'
 import { getVariant, updateVariant } from '~/server/variants'
 import { Upload } from 'lucide-react'
+import { createImagePreview } from '~/lib/helper'
+import { Field } from '~/components/inputs/Field'
+import { Input } from '~/components/shared/Input'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -72,7 +75,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
-  const productId = Number(params.productId)
   const variantId = Number(params.variantId)
 
   const formData = await request.formData()
@@ -86,7 +88,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   payload.append('image', image)
   payload.append('_method', 'PATCH')
 
-  const result = await updateVariant(productId, variantId, payload, token)
+  const result = await updateVariant(variantId, payload, token)
 
   if ('error' in result) {
     return data(
@@ -98,13 +100,10 @@ export async function action({ request, params }: Route.ActionArgs) {
   return { success: true }
 }
 
-export default function VariantEdit({
-  loaderData,
-  actionData,
-}: Route.ComponentProps) {
+export default function VariantEdit({ loaderData }: Route.ComponentProps) {
   const { variant } = loaderData
   const fetcher = useFetcher()
-  const [preview, setPreview] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string>()
 
   useEffect(() => {
     const data = fetcher.data as any
@@ -112,47 +111,54 @@ export default function VariantEdit({
       toast.error(data.error)
     } else if (data?.success) {
       toast.success('Imagen actualizada')
-      setPreview(null) // Limpiamos la previa local para usar la del servidor que viene en el loader
+      setPreview(undefined) // Limpiamos la previa local para usar la del servidor que viene en el loader
     }
   }, [fetcher.data])
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files ? e.target.files[0] : null
     if (!file) return
-
-    setPreview(URL.createObjectURL(file))
-
-    const formData = new FormData()
-    formData.append('image', file)
-    fetcher.submit(formData, {
-      method: 'POST',
-      encType: 'multipart/form-data',
-    })
+    const img = createImagePreview(file)
+    setPreview(img?.url)
   }
 
   return (
     <fetcher.Form method="post" encType="multipart/form-data">
-      <div className="relative">
-        <figure className="overflow-hidden rounded-xl border border-zinc-200 shadow-sm">
+      <div>
+        <figure>
           <img
             className="aspect-video w-full object-cover object-center"
             src={preview ?? variant.image}
             alt={variant.id.toString()}
           />
         </figure>
-
-        <div className="absolute top-4 right-4 sm:top-8 sm:right-9">
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-white px-4 py-2">
+        <div className="my-4">
+          <label
+            htmlFor="image-upload"
+            className="btn btn-primary inline-flex cursor-pointer gap-2"
+          >
             <Upload />
             Actualizar imagen
-            <input
-              type="file"
-              accept="image/*"
-              name="image"
-              className="hidden"
-              onChange={handleImageChange}
-            />
           </label>
+          <input
+            id="image-upload"
+            type="file"
+            className="hidden"
+            accept="image/*"
+            name="image"
+            onChange={handleImageUpload}
+          />
+          {/* {validationErrors?.image?.[0] && (
+            <p className="mt-1 text-sm text-red-500">
+              {validationErrors.image[0]}
+            </p>
+          )} */}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="space-y-4">
+          <Input name="sku" label="Ingrese el código (SKU)" />
         </div>
       </div>
     </fetcher.Form>
