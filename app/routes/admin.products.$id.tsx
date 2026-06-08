@@ -176,6 +176,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     'subcategory_id',
     String(formData.get('subcategory_id') ?? '').trim(),
   )
+  payload.append('stock', String(formData.get('stock') ?? ''))
 
   const image = formData.get('image') as File | null
   if (image && image.size > 0) {
@@ -203,10 +204,8 @@ export async function action({ request, params }: Route.ActionArgs) {
 export default function ProductEdit({
   loaderData,
   actionData,
-  params,
 }: Route.ComponentProps) {
   const { product } = loaderData
-  const { id } = params
 
   useEffect(() => {
     if (actionData && 'error' in actionData && actionData.error) {

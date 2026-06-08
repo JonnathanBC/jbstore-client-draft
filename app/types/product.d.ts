@@ -5,6 +5,7 @@ export interface Product {
   sku: number
   name: string
   price: number
+  stock: number
   subcategory_id: number
   options?: Option[]
 

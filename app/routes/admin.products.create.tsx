@@ -34,6 +34,7 @@ export async function action({ request }: Route.ActionArgs) {
     String(formData.get('description') ?? '').trim(),
   )
   payload.append('price', String(formData.get('price') ?? ''))
+  payload.append('stock', String(formData.get('stock') ?? ''))
   payload.append(
     'subcategory_id',
     String(formData.get('subcategory_id') ?? '').trim(),

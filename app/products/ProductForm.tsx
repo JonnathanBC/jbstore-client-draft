@@ -132,6 +132,26 @@ export function ProductForm({ product, validationErrors }: Props) {
         )}
 
         <label
+          htmlFor="stock"
+          className="text-strong-weak mb-1 block text-sm font-medium"
+        >
+          Stock
+        </label>
+        <input
+          id="stock"
+          name="stock"
+          type="number"
+          defaultValue={product?.stock ?? ''}
+          placeholder="Ingrese el stock del producto"
+          className="border-weak focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
+        />
+        {validationErrors?.price?.[0] && (
+          <p className="mt-1 text-sm text-red-500">
+            {validationErrors.stock[0]}
+          </p>
+        )}
+
+        <label
           htmlFor="description"
           className="text-strong-weak mb-1 block text-sm font-medium"
         >
