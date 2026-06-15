@@ -16,13 +16,14 @@ export async function getVariant(
 }
 
 export async function updateVariant(
-  id: number,
+  productId: number,
+  variantId: number,
   payload: FormData,
   token: string,
 ): Promise<Variant | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).patch<Variant>(
-      `/api/variants/${id}`,
+    const { data } = await apiClient(token).put<Variant>(
+      `/api/products/${productId}/variants/${variantId}`,
       payload,
       {
         headers: {

@@ -11,6 +11,7 @@ import { Upload } from 'lucide-react'
 import { createImagePreview } from '~/lib/helper'
 import { Field } from '~/components/inputs/Field'
 import { Input } from '~/components/shared/Input'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -75,20 +76,23 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
+  const productId = Number(params.productId)
   const variantId = Number(params.variantId)
 
   const formData = await request.formData()
   const image = formData.get('image') as File | null
-
-  if (!image || image.size === 0) {
-    return data({ error: 'No se seleccionó ninguna imagen' }, { status: 400 })
-  }
+  const sku = formData.get('sku') as string
+  const stock = formData.get('stock') as string
 
   const payload = new FormData()
-  payload.append('image', image)
-  payload.append('_method', 'PATCH')
+  payload.append('_method', 'PUT')
+  payload.append('sku', sku)
+  payload.append('stock', stock)
+  if (image && image.size > 0) {
+    payload.append('image', image)
+  }
 
-  const result = await updateVariant(variantId, payload, token)
+  const result = await updateVariant(productId, variantId, payload, token)
 
   if ('error' in result) {
     return data(
@@ -110,7 +114,7 @@ export default function VariantEdit({ loaderData }: Route.ComponentProps) {
     if (data?.error) {
       toast.error(data.error)
     } else if (data?.success) {
-      toast.success('Imagen actualizada')
+      toast.success('Variante actualizada')
       setPreview(undefined) // Limpiamos la previa local para usar la del servidor que viene en el loader
     }
   }, [fetcher.data])
@@ -158,7 +162,14 @@ export default function VariantEdit({ loaderData }: Route.ComponentProps) {
 
       <div className="card">
         <div className="space-y-4">
-          <Input name="sku" label="Ingrese el código (SKU)" />
+          <Input name="sku" label="Ingrese el código (SKU)" defaultValue={variant.sku} />
+          <Input name="stock" label="Ingrese el stock" type='number' defaultValue={variant.stock} />
+        </div>
+
+        <div className='mt-4 text-right'>
+          <Button>
+            Actualizar
+          </Button>
         </div>
       </div>
     </fetcher.Form>
