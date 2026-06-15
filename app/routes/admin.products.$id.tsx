@@ -225,7 +225,10 @@ export default function ProductEdit({
       />
 
       <OptionsFeaturesProduct />
-      <Variants />
+      {product?.variants?.length > 0 && (
+        <Variants />
+      )}
+      
     </div>
   )
 }

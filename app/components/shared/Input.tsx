@@ -4,7 +4,7 @@ import { cn } from '~/lib/utils'
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   name: string
   label: string
-  type?: 'text' | 'email' | 'password'
+  type?: 'text' | 'email' | 'password' | 'number'
   icon?: ComponentType<SVGProps<SVGSVGElement>>
 }
 
