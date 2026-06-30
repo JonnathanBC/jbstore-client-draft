@@ -5,6 +5,7 @@ import type { User } from '~/types/user'
 import { Container } from './Container'
 import { Input } from './Input'
 import { Button } from '../ui/button'
+import { useMenuStore } from '~/store/menu.store'
 
 interface Props {
   user: User | null
@@ -12,11 +13,13 @@ interface Props {
 }
 
 export function Header({ user, isAdmin }: Props) {
+  const openMenu = useMenuStore((state) => state.openMenu)
+
   return (
     <header className="bg-purple-600">
       <Container className="px-4 py-4">
         <div className="flex items-center justify-between space-x-8">
-          <Button>
+          <Button onClick={openMenu}>
             <MenuIcon className="size-6 text-white md:size-8" />
           </Button>
 
@@ -60,33 +63,4 @@ export function Header({ user, isAdmin }: Props) {
       </Container>
     </header>
   )
-}
-
-{
-  /* <nav className="flex items-center gap-6 text-sm">
-          <Link to="/products" className="hover:text-black">
-            Productos
-          </Link>
-          {isAdmin && (
-            <Link to="/admin" className="hover:text-black">
-              Admin
-            </Link>
-          )}
-
-          {user ? (
-            <Form method="post" action="/logout">
-              <button type="submit" className="cursor-pointer hover:text-black">
-                Cerrar sesión
-              </button>
-            </Form>
-          ) : (
-            <Link to="/login" className="hover:text-black">
-              Iniciar sesión
-            </Link>
-          )}
-
-          <Link to="/cart" className="hover:text-black" aria-label="Cart">
-            <ShoppingCart className="size-5" />
-          </Link>
-        </nav> */
 }
