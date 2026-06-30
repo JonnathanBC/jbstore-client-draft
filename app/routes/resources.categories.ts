@@ -16,9 +16,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   })
 
   return {
-    items: categories.data.map((f) => ({
-      value: String(f.id),
-      label: f.name,
+    items: categories.data.map((c) => ({
+      value: String(c.id),
+      label: c.name,
+      subcategories: (c.subcategories ?? []).map((s) => ({
+        value: String(s.id),
+        label: s.name,
+      })),
     })),
   }
 }
