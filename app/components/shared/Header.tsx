@@ -1,6 +1,10 @@
-import { Form, Link } from 'react-router'
-import { ShoppingCart } from 'lucide-react'
+import { Link } from 'react-router'
+import { LucideShoppingCart, MenuIcon, ShoppingCart, User2 } from 'lucide-react'
+
 import type { User } from '~/types/user'
+import { Container } from './Container'
+import { Input } from './Input'
+import { Button } from '../ui/button'
 
 interface Props {
   user: User | null
@@ -9,13 +13,57 @@ interface Props {
 
 export function Header({ user, isAdmin }: Props) {
   return (
-    <header className="flex h-16 items-center border-b bg-white px-6">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between">
-        <Link to="/" className="text-lg font-semibold">
-          JB Store
-        </Link>
+    <header className="bg-purple-600">
+      <Container className="px-4 py-4">
+        <div className="flex items-center justify-between space-x-8">
+          <Button>
+            <MenuIcon className="size-6 text-white md:size-8" />
+          </Button>
 
-        <nav className="flex items-center gap-6 text-sm">
+          <h1 className="text-white">
+            <Link to="/" className="inline-flex flex-col items-end">
+              <span className="text-2xl leading-4 font-semibold md:text-3xl md:leading-6">
+                JBStore
+              </span>
+              <span className="text-xs">Tienda Online</span>
+            </Link>
+          </h1>
+
+          <div className="hidden flex-1 md:block">
+            <Input
+              className="w-full bg-white"
+              label=""
+              name="search"
+              placeholder="Buscar por producto, tienda o marca"
+            />
+          </div>
+
+          <div className="flex items-center">
+            <Button className="text-white">
+              <User2 className="size-5 md:size-6" />
+            </Button>
+
+            <Button className="text-white">
+              <LucideShoppingCart className="size-5 md:size-6" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-4 md:hidden">
+          <Input
+            className="w-full bg-white"
+            label=""
+            name="search"
+            placeholder="Buscar por producto, tienda o marca"
+          />
+        </div>
+      </Container>
+    </header>
+  )
+}
+
+{
+  /* <nav className="flex items-center gap-6 text-sm">
           <Link to="/products" className="hover:text-black">
             Productos
           </Link>
@@ -40,8 +88,5 @@ export function Header({ user, isAdmin }: Props) {
           <Link to="/cart" className="hover:text-black" aria-label="Cart">
             <ShoppingCart className="size-5" />
           </Link>
-        </nav>
-      </div>
-    </header>
-  )
+        </nav> */
 }
