@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Form, Link, useNavigate } from 'react-router'
 import { LucideShoppingCart, MenuIcon, ShoppingCart, User2 } from 'lucide-react'
 
 import type { User } from '~/types/user'
@@ -6,6 +6,8 @@ import { Container } from './Container'
 import { Input } from './Input'
 import { Button } from '../ui/button'
 import { useMenuStore } from '~/store/menu.store'
+import { Avatar } from '../Avatar'
+import { Dropdown } from './Dropdown'
 
 interface Props {
   user: User | null
@@ -14,6 +16,7 @@ interface Props {
 
 export function Header({ user, isAdmin }: Props) {
   const openMenu = useMenuStore((state) => state.openMenu)
+  const navigate = useNavigate()
 
   return (
     <header className="bg-purple-600">
@@ -41,10 +44,56 @@ export function Header({ user, isAdmin }: Props) {
             />
           </div>
 
-          <div className="flex items-center">
-            <Button className="text-white">
-              <User2 className="size-5 md:size-6" />
-            </Button>
+          <div className="flex items-center space-x-2">
+            {user ? (
+              <Dropdown
+                items={[
+                  ...(isAdmin
+                    ? [
+                        {
+                          label: 'Administrador',
+                          onClick: () => navigate('/admin'),
+                          divider: true,
+                        },
+                      ]
+                    : []),
+                  {
+                    label: 'Mi perfil',
+                    onClick: () => navigate('/settings/profile'),
+                    divider: true,
+                  },
+
+                  {
+                    label: (
+                      <Form method="post" action="/logout">
+                        <button type="submit" className="text-left">
+                          <span>Finalizar sesión</span>
+                        </button>
+                      </Form>
+                    ),
+                    onClick: () => navigate('/logout'),
+                  },
+                ]}
+              >
+                <Avatar src={user.avatar || ''} alt="user image" />
+              </Dropdown>
+            ) : (
+              <Dropdown
+                items={[
+                  {
+                    label: 'Iniciar sesión',
+                    onClick: () => navigate('/login'),
+                  },
+                  {
+                    headerLabel: '¿No tenés cuenta?',
+                    label: 'Regístrate',
+                    onClick: () => navigate('/register'),
+                  },
+                ]}
+              >
+                <Avatar src="" alt="user image" />
+              </Dropdown>
+            )}
 
             <Button className="text-white">
               <LucideShoppingCart className="size-5 md:size-6" />

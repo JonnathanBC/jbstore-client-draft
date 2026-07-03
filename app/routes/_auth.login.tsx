@@ -45,7 +45,7 @@ export default function LoginPage() {
   const actionData = useActionData<Route.ComponentProps['actionData']>()
   const nav = useNavigation()
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo') ?? '/admin'
+  const redirectTo = searchParams.get('redirectTo') ?? '/'
   const submitting = nav.state === 'submitting'
 
   return (

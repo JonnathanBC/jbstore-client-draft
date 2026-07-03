@@ -54,7 +54,7 @@ export async function action({ request }: Route.ActionArgs) {
     message: `¡Bienvenido, ${result.user.name}!`,
   })
 
-  return redirect('/admin', {
+  return redirect('/', {
     headers: { 'Set-Cookie': await commitSession(session) },
   })
 }

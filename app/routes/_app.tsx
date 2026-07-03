@@ -17,7 +17,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-
 export default function AppLayout({ loaderData }: Route.ComponentProps) {
   const { user, isAdmin } = loaderData
   return (
