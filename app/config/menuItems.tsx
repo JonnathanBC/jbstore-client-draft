@@ -1,5 +1,13 @@
-import { Boxes, LayoutDashboard, PackageOpen, Settings, Tag, Tags } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
+import {
+  Boxes,
+  Briefcase,
+  LayoutDashboard,
+  PackageOpen,
+  Settings,
+  Tag,
+  Tags,
+} from 'lucide-react'
 import { t } from '~/i18n'
 
 interface MenuItem {
@@ -45,5 +53,11 @@ export const menuItems: MenuItem[] = [
     label: t('global.products'),
     href: '/admin/products',
     icon: PackageOpen,
+  },
+  {
+    key: 'covers',
+    label: t('admin.covers'),
+    href: '/admin/covers',
+    icon: Briefcase,
   },
 ]
