@@ -61,7 +61,6 @@ export function OptionsProductForm() {
                   `${optionId && `?option_id=${optionId}`}`
                 }
                 disabled={!optionId}
-                key={optionId}
                 onItemSelect={(item) => {
                   setValue(`features.${index}.value`, item.feature_value)
                   setValue(`features.${index}.description`, item.description)

@@ -28,10 +28,9 @@ export const AsyncSelect = ({
   const { onChange: _onChange, ...restField } = field
 
   useEffect(() => {
-    if (fetcher.state === 'idle' && !fetcher.data && !disabled) {
-      fetcher.load(source)
-    }
-  }, [source])
+    if (disabled) return
+    fetcher.load(source)
+  }, [source, disabled])
 
   const items = fetcher.data?.items ?? []
 
