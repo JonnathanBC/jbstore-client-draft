@@ -32,6 +32,13 @@
     "type": "Tipo",
     "option": "Opción",
     "values": "Valores",
-    "add_value": "Agregar valor"
+    "add_value": "Agregar valor",
+    "title": "Título",
+    "start_date": "Fecha de inicio",
+    "end_date": "Fecha de fin",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "update_image": "Actualizar imagen",
+    "status": "Estado"
   }
 }

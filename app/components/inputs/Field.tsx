@@ -1,33 +1,47 @@
-import { ElementType } from 'react'
+import { ComponentProps, ElementType } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 
 import { Input as InputShadcn } from '@/components/ui/input'
 import { t } from '~/i18n'
 import { FieldError } from './FieldError'
 
-interface FieldProps {
+type FieldOwnProps = {
   name: string
   labelKey?: string
+  placeholderKey?: string
   label?: string
-  component?: ElementType
-  source?: string
+  placeholder?: string
+  obb?: boolean
   disabled?: boolean
-  onItemSelect?: (item: Record<string, string> & { value: string }) => void
 }
 
-export const Field = ({
+/** Props the Controller injects on render — callers never pass these. */
+type InjectedProps = 'field' | 'form' | 'error' | 'value' | 'onChange' | 'onBlur'
+
+type FieldProps<C extends ElementType> = FieldOwnProps & {
+  component?: C
+} & Omit<ComponentProps<C>, keyof FieldOwnProps | 'component' | InjectedProps>
+
+export const Field = <C extends ElementType = typeof InputShadcn>({
   label,
   labelKey,
   name,
-  component: Component = InputShadcn,
+  component,
   disabled,
+  placeholderKey,
+  placeholder,
+  obb,
   ...rest
-}: FieldProps) => {
+}: FieldProps<C>) => {
   const form = useFormContext()
+  const Component = (component ?? InputShadcn) as ElementType
 
   return (
     <>
-      <label htmlFor={name}>{labelKey ? t(labelKey) : label}</label>
+      <label htmlFor={name}>
+        {labelKey ? t(labelKey) : label}
+        {obb && <span className="text-red-600">*</span>}
+      </label>
       <Controller
         name={name}
         control={form.control}
@@ -36,6 +50,7 @@ export const Field = ({
         render={({ field, fieldState }) => (
           <Component
             field={field}
+            placeholder={placeholderKey ? t(placeholderKey) : placeholder}
             form={form}
             error={fieldState.error}
             {...field}

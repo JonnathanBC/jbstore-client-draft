@@ -32,6 +32,13 @@
     "type": "Type",
     "option": "Option",
     "values": "Values",
-    "add_value": "Add value"
+    "add_value": "Add value",
+    "title": "Title",
+    "start_date": "Start date",
+    "end_date": "End date",
+    "save": "Save",
+    "saving": "Saving...",
+    "update_image": "Update image",
+    "status": "Status"
   }
 }
