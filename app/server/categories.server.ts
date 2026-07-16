@@ -28,6 +28,23 @@ export async function getCategories({
   }
 }
 
+export async function getPublicCategories(params?: {
+  page?: number
+  per_page?: number
+  family_id?: string
+  pagination?: boolean
+}): Promise<ApiResponse<Category>> {
+  try {
+    const { data } = await apiClient().get<ApiResponse<Category>>(
+      '/api/public/categories',
+      { params },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
 export async function getCategory(
   id: number,
   token: string,
@@ -78,7 +95,9 @@ export async function deleteCategory(
   token: string,
 ): Promise<void | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/admin/categories/${id}`)
+    const { data } = await apiClient(token).delete(
+      `/api/admin/categories/${id}`,
+    )
     return data
   } catch (err) {
     return { error: toApiError(err) }

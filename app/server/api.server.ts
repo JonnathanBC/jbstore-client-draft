@@ -28,9 +28,28 @@ export async function getFamilies({
   }
 }
 
+/** Familias para el storefront — endpoint público, sin auth. */
+export async function getPublicFamilies(params?: {
+  page?: number
+  per_page?: number
+  pagination?: boolean
+}): Promise<ApiResponse<Family>> {
+  try {
+    const { data } = await apiClient().get<ApiResponse<Family>>(
+      '/api/public/families',
+      { params },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
 export async function getFamily(id: number, token: string): Promise<Family> {
   try {
-    const { data } = await apiClient(token).get<Family>(`/api/admin/families/${id}`)
+    const { data } = await apiClient(token).get<Family>(
+      `/api/admin/families/${id}`,
+    )
     return data
   } catch (err) {
     throw toApiError(err)
