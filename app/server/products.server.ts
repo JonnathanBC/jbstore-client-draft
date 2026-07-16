@@ -89,3 +89,18 @@ export async function deleteProduct(
     return { error: toApiError(err) }
   }
 }
+
+export async function getPublicProducts(params?: {
+  page?: number
+  per_page?: number
+}): Promise<ApiResponse<Product>> {
+  try {
+    const { data } = await apiClient().get<ApiResponse<Product>>(
+      '/api/public/products',
+      { params },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
