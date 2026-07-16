@@ -16,7 +16,7 @@ export async function getFeatures({
 }: GetFeaturesParams): Promise<ApiResponse<Feature>> {
   try {
     const { data } = await apiClient(token).get<ApiResponse<Feature>>(
-      '/api/features',
+      '/api/admin/features',
       {
         params,
       },
@@ -33,7 +33,7 @@ export async function createFeature(
 ): Promise<Feature | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<Feature>(
-      '/api/features',
+      '/api/admin/features',
       payload,
     )
     return data
@@ -47,7 +47,7 @@ export async function deleteFeature(
   token: string,
 ): Promise<void | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/features/${id}`)
+    const { data } = await apiClient(token).delete(`/api/admin/features/${id}`)
     return data
   } catch (err) {
     return { error: toApiError(err) }

@@ -7,7 +7,7 @@ export async function getVariant(
 ): Promise<Variant> {
   try {
     const { data } = await apiClient(token).get<Variant>(
-      `/api/products/${productId}/variants/${variantId}`,
+      `/api/admin/products/${productId}/variants/${variantId}`,
     )
     return data
   } catch (err) {
@@ -25,7 +25,7 @@ export async function updateVariant(
     // PHP only parses multipart bodies on POST, so a real PUT would arrive
     // empty. The caller appends _method=PUT and Laravel routes it to Route::put.
     const { data } = await apiClient(token).post<Variant>(
-      `/api/products/${productId}/variants/${variantId}`,
+      `/api/admin/products/${productId}/variants/${variantId}`,
       payload,
       {
         headers: {

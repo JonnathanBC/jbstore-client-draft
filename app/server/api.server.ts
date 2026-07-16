@@ -17,7 +17,7 @@ export async function getFamilies({
 }: GetFamiliesParams): Promise<ApiResponse<Family>> {
   try {
     const { data } = await apiClient(token).get<ApiResponse<Family>>(
-      '/api/families',
+      '/api/admin/families',
       {
         params,
       },
@@ -30,7 +30,7 @@ export async function getFamilies({
 
 export async function getFamily(id: number, token: string): Promise<Family> {
   try {
-    const { data } = await apiClient(token).get<Family>(`/api/families/${id}`)
+    const { data } = await apiClient(token).get<Family>(`/api/admin/families/${id}`)
     return data
   } catch (err) {
     throw toApiError(err)
@@ -43,7 +43,7 @@ export async function createFamily(
 ): Promise<Family | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<Family>(
-      '/api/families',
+      '/api/admin/families',
       payload,
     )
     return data
@@ -59,7 +59,7 @@ export async function updateFamily(
 ): Promise<Family | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).patch<Family>(
-      `/api/families/${id}`,
+      `/api/admin/families/${id}`,
       payload,
     )
     return data
@@ -73,7 +73,7 @@ export async function deleteFamily(
   token: string,
 ): Promise<void | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/families/${id}`)
+    const { data } = await apiClient(token).delete(`/api/admin/families/${id}`)
     return data
   } catch (err) {
     return { error: toApiError(err) }

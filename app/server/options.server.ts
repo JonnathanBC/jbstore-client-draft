@@ -15,7 +15,7 @@ export async function getOptions({
 }: GetOptionsParams): Promise<ApiResponse<Option>> {
   try {
     const { data } = await apiClient(token).get<ApiResponse<Option>>(
-      '/api/options',
+      '/api/admin/options',
       {
         params,
       },
@@ -32,7 +32,7 @@ export async function createOption(
 ): Promise<Option | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<Option>(
-      '/api/options',
+      '/api/admin/options',
       payload,
     )
     return data
@@ -48,7 +48,7 @@ export async function updateOption(
 ): Promise<Option | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).patch<Option>(
-      `/api/options/${id}`,
+      `/api/admin/options/${id}`,
       payload,
     )
     return data
@@ -62,7 +62,7 @@ export async function deleteOption(
   token: string,
 ): Promise<void | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/options/${id}`)
+    const { data } = await apiClient(token).delete(`/api/admin/options/${id}`)
     return data
   } catch (err) {
     return { error: toApiError(err) }

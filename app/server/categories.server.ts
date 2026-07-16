@@ -17,7 +17,7 @@ export async function getCategories({
 }: GetCategoriesParams): Promise<ApiResponse<Category>> {
   try {
     const { data } = await apiClient(token).get<ApiResponse<Category>>(
-      '/api/categories',
+      '/api/admin/categories',
       {
         params,
       },
@@ -34,7 +34,7 @@ export async function getCategory(
 ): Promise<Category> {
   try {
     const { data } = await apiClient(token).get<Category>(
-      `/api/categories/${id}`,
+      `/api/admin/categories/${id}`,
     )
     return data
   } catch (err) {
@@ -48,7 +48,7 @@ export async function createCategory(
 ): Promise<Category | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<Category>(
-      '/api/categories',
+      '/api/admin/categories',
       payload,
     )
     return data
@@ -64,7 +64,7 @@ export async function updateCategory(
 ): Promise<Category | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).patch<Category>(
-      `/api/categories/${id}`,
+      `/api/admin/categories/${id}`,
       payload,
     )
     return data
@@ -78,7 +78,7 @@ export async function deleteCategory(
   token: string,
 ): Promise<void | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/categories/${id}`)
+    const { data } = await apiClient(token).delete(`/api/admin/categories/${id}`)
     return data
   } catch (err) {
     return { error: toApiError(err) }

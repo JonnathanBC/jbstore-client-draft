@@ -17,7 +17,7 @@ export async function getSubCategories({
 }: GetSubCategoriesParams): Promise<ApiResponse<SubCategory>> {
   try {
     const { data } = await apiClient(token).get<ApiResponse<SubCategory>>(
-      '/api/subcategories',
+      '/api/admin/subcategories',
       {
         params,
       },
@@ -34,7 +34,7 @@ export async function getSubCategory(
 ): Promise<SubCategory> {
   try {
     const { data } = await apiClient(token).get<SubCategory>(
-      `/api/subcategories/${id}`,
+      `/api/admin/subcategories/${id}`,
     )
     return data
   } catch (err) {
@@ -48,7 +48,7 @@ export async function createSubCategory(
 ): Promise<SubCategory | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<SubCategory>(
-      '/api/subcategories',
+      '/api/admin/subcategories',
       payload,
     )
     return data
@@ -64,7 +64,7 @@ export async function updateSubCategory(
 ): Promise<SubCategory | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).patch<SubCategory>(
-      `/api/subcategories/${id}`,
+      `/api/admin/subcategories/${id}`,
       payload,
     )
     return data
@@ -78,7 +78,7 @@ export async function deleteSubCategory(
   token: string,
 ): Promise<{ error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/subcategories/${id}`)
+    const { data } = await apiClient(token).delete(`/api/admin/subcategories/${id}`)
     return data
   } catch (err) {
     return { error: toApiError(err) }

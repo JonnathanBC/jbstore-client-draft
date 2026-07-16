@@ -30,5 +30,8 @@ export interface Product {
   created_at: string
   updated_at: string
   description?: string
+  /** Raw storage path — use `image` for rendering. */
   image_path?: string
+  /** Accessor: full public URL, appended by the model. */
+  image?: string | null
 }

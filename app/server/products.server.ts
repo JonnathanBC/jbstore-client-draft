@@ -15,7 +15,7 @@ export async function getProducts({
 }: GetProductsParams): Promise<ApiResponse<Product>> {
   try {
     const { data } = await apiClient(token).get<ApiResponse<Product>>(
-      '/api/products',
+      '/api/admin/products',
       {
         params,
       },
@@ -28,7 +28,9 @@ export async function getProducts({
 
 export async function getProduct(id: number, token: string): Promise<Product> {
   try {
-    const { data } = await apiClient(token).get<Product>(`/api/products/${id}`)
+    const { data } = await apiClient(token).get<Product>(
+      `/api/admin/products/${id}`,
+    )
     return data
   } catch (err) {
     throw toApiError(err)
@@ -41,7 +43,7 @@ export async function createProduct(
 ): Promise<Product | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<Product>(
-      '/api/products',
+      '/api/admin/products',
       payload,
       {
         headers: {
@@ -62,7 +64,7 @@ export async function updateProduct(
 ): Promise<Product | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).patch<Product>(
-      `/api/products/${id}`,
+      `/api/admin/products/${id}`,
       payload,
       {
         headers: {
@@ -81,7 +83,7 @@ export async function deleteProduct(
   token: string,
 ): Promise<{ error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/products/${id}`)
+    const { data } = await apiClient(token).delete(`/api/admin/products/${id}`)
     return data
   } catch (err) {
     return { error: toApiError(err) }

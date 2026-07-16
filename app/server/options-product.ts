@@ -16,7 +16,7 @@ export async function getOptionsProduct({
 }: GetProductsParams): Promise<ApiResponse<OptionsProduct>> {
   try {
     const { data } = await apiClient(token).get<ApiResponse<OptionsProduct>>(
-      '/api/options-product',
+      '/api/admin/options-product',
       {
         params,
       },
@@ -33,7 +33,7 @@ export async function createOptionsProduct(
 ): Promise<OptionsProduct | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<OptionsProduct>(
-      '/api/options-product',
+      '/api/admin/options-product',
       payload,
     )
     return data
@@ -49,7 +49,7 @@ export async function deleteOptionProduct(
 ): Promise<{ error: ApiError }> {
   try {
     const { data } = await apiClient(token).post(
-      `/api/option-products/remove-option`,
+      `/api/admin/option-products/remove-option`,
       {
         product_id: productId,
         option_id: optionId,
@@ -68,7 +68,7 @@ export async function deleteFeatureProduct(
 ): Promise<{ error: ApiError }> {
   try {
     const { data } = await apiClient(token).post(
-      `/api/option-products/remove-features`,
+      `/api/admin/option-products/remove-features`,
       {
         option_id: optionId,
         feature_id: featureId,
