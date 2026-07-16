@@ -26,6 +26,18 @@ export async function getCovers({
   }
 }
 
+/** Covers vigentes para el storefront — endpoint público, sin auth. */
+export async function getPublicCovers(): Promise<Cover[]> {
+  try {
+    const { data } = await apiClient().get<{ data: Cover[] }>(
+      '/api/public/covers',
+    )
+    return data.data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
 export async function getCover(id: number, token: string): Promise<Cover> {
   try {
     const { data } = await apiClient(token).get<Cover>(
