@@ -70,7 +70,7 @@ export default function CoversIndex({ loaderData }: Route.ComponentProps) {
               </div>
               <div>
                 <p className="text-sm font-bold">Fecha de finalización</p>
-                <p>{renderDate(cover.end_at) ?? '--'}</p>
+                <p>{renderDate(cover.end_at ?? '--')}</p>
               </div>
               <div>
                 <Link
