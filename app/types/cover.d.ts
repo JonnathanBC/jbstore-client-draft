@@ -8,7 +8,7 @@ export interface Cover {
   is_active: boolean
   order: number
   start_at: string
-  end_at?: string | null
+  end_at?: string
   created_at?: string | null
   updated_at?: string | null
 }

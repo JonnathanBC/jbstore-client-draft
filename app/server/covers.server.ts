@@ -1,5 +1,30 @@
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
+import { ApiResponse } from '~/types/api'
 import type { Cover } from '~/types/cover'
+
+export interface GetCoversParams {
+  token: string
+  page?: number
+  per_page?: number
+  order?: { updated_at?: 'asc' | 'desc' }
+}
+
+export async function getCovers({
+  token,
+  ...params
+}: GetCoversParams): Promise<ApiResponse<Cover>> {
+  try {
+    const { data } = await apiClient(token).get<ApiResponse<Cover>>(
+      '/api/admin/covers',
+      {
+        params,
+      },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
 
 export async function getCover(id: number, token: string): Promise<Cover> {
   try {
