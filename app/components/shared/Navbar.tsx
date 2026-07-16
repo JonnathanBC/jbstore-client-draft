@@ -36,7 +36,9 @@ export const Navbar = () => {
   // (cada una ya viene con sus subcategorías anidadas, un solo request).
   useEffect(() => {
     if (familyId) {
-      categoriesFetcher.load(`/resources/public/categories?family_id=${familyId}`)
+      categoriesFetcher.load(
+        `/resources/public/categories?family_id=${familyId}`,
+      )
     }
   }, [familyId])
 
@@ -82,7 +84,7 @@ export const Navbar = () => {
                       onMouseEnter={() => setFamilyId(family.value)}
                     >
                       <Link
-                        to={`/familia=${family.value}`}
+                        to={`/families/${family.value}`}
                         onClick={closeMenu}
                         className="flex items-center justify-between px-3 py-4 text-gray-700 hover:bg-purple-100"
                       >
@@ -105,7 +107,7 @@ export const Navbar = () => {
                   <Link
                     to={`/families/${activeFamily.value}`}
                     onClick={closeMenu}
-                    className="text-sm font-semibold text-purple-600 hover:underline"
+                    className="btn btn-primary"
                   >
                     Ver todo
                   </Link>
