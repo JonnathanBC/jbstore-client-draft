@@ -6,7 +6,7 @@ export interface GetCoversParams {
   token: string
   page?: number
   per_page?: number
-  order?: { updated_at?: 'asc' | 'desc' }
+  order?: { updated_at?: 'asc' | 'desc'; order?: 'asc' | 'desc' }
 }
 
 export async function getCovers({
@@ -64,6 +64,17 @@ export async function deleteCover(
   try {
     const { data } = await apiClient(token).delete(`/api/admin/covers/${id}`)
     return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
+export async function reorderCovers(
+  ids: number[],
+  token: string,
+): Promise<void | { error: ApiError }> {
+  try {
+    await apiClient(token).post('/api/admin/covers/reorder', { ids })
   } catch (err) {
     return { error: toApiError(err) }
   }

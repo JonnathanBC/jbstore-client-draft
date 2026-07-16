@@ -1,10 +1,14 @@
-import { Link } from 'react-router'
+import { useEffect, useState } from 'react'
+import { data, Link, useFetcher } from 'react-router'
+import { toast } from 'sonner'
 import { requireAuth } from '~/server/auth.server'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.covers._index'
-import { getCovers } from '~/server/covers.server'
+import { getCovers, reorderCovers } from '~/server/covers.server'
 import { renderDate } from '~/components/table/renders'
+import DndSortable from '~/components/shared/DndSortable'
+import type { Cover } from '~/types/cover'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.covers') }
 
@@ -22,14 +26,59 @@ export async function loader({ request }: Route.LoaderArgs) {
     token,
     page,
     per_page,
-    order: { updated_at: 'desc' },
+    order: { order: 'asc' },
   })
 
   return { covers }
 }
 
+export async function action({ request }: Route.ActionArgs) {
+  const { token } = await requireAuth(request)
+  const form = await request.formData()
+
+  if (form.get('_action') === 'reorder') {
+    const ids = String(form.get('ids') ?? '')
+      .split(',')
+      .map(Number)
+      .filter((id) => Number.isFinite(id) && id > 0)
+
+    if (!ids.length) {
+      return data({ error: 'Orden inválido' }, { status: 400 })
+    }
+
+    const result = await reorderCovers(ids, token)
+    if (result && 'error' in result) {
+      return data({ error: result.error.message }, { status: result.error.status })
+    }
+  }
+
+  return data({ error: undefined })
+}
+
 export default function CoversIndex({ loaderData }: Route.ComponentProps) {
   const { covers } = loaderData
+  const fetcher = useFetcher<typeof action>()
+  const [items, setItems] = useState(covers.data)
+
+  // Re-sincroniza cuando el loader revalida (paginación, reorder confirmado, etc.)
+  useEffect(() => {
+    setItems(covers.data)
+  }, [covers.data])
+
+  useEffect(() => {
+    if (fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    }
+  }, [fetcher.data])
+
+  function handleReorder(newItems: Cover[]) {
+    setItems(newItems)
+    fetcher.submit(
+      { _action: 'reorder', ids: newItems.map((item) => item.id).join(',') },
+      { method: 'post' },
+    )
+  }
+
   return (
     <>
       <div className="mb-4 text-right">
@@ -38,12 +87,12 @@ export default function CoversIndex({ loaderData }: Route.ComponentProps) {
         </Link>
       </div>
 
-      <ul className="space-y-4">
-        {covers.data.map((cover) => (
-          <li
-            key={cover.id}
-            className="overflow-hidden rounded-lg bg-white shadow-lg lg:flex"
-          >
+      <DndSortable
+        items={items}
+        onReorder={handleReorder}
+        className="space-y-4"
+        renderItem={(cover) => (
+          <div className="overflow-hidden rounded-lg bg-white shadow-lg lg:flex">
             <img
               src={cover.image}
               alt=""
@@ -81,9 +130,9 @@ export default function CoversIndex({ loaderData }: Route.ComponentProps) {
                 </Link>
               </div>
             </div>
-          </li>
-        ))}
-      </ul>
+          </div>
+        )}
+      />
     </>
   )
 }
