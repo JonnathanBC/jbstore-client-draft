@@ -1,7 +1,8 @@
 import { apiClient, toApiError } from '~/lib/apiClient'
-import { ApiResource } from '~/types/api'
+import { ApiResource, ApiResponse } from '~/types/api'
 import { Family } from '~/types/family'
 import { Option } from '~/types/option'
+import { Product } from '~/types/product'
 
 export async function getPublicFamily(id: number): Promise<Family> {
   try {
@@ -20,6 +21,27 @@ export async function getPublicFamilyOptions(id: number): Promise<Option[]> {
       `/api/public/families/${id}/options`,
     )
     return data.data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
+export interface GetPublicFamilyProductsParams {
+  features?: number[]
+  page?: number
+  per_page?: number
+}
+
+export async function getPublicFamilyProducts(
+  id: number,
+  params: GetPublicFamilyProductsParams = {},
+): Promise<ApiResponse<Product>> {
+  try {
+    const { data } = await apiClient().get<ApiResponse<Product>>(
+      `/api/public/families/${id}/products`,
+      { params },
+    )
+    return data
   } catch (err) {
     throw toApiError(err)
   }
