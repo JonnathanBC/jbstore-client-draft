@@ -5,6 +5,10 @@ interface PaginationLink {
   active: boolean
 }
 
+export interface ApiResource<T> {
+  data: T
+}
+
 export interface ApiResponse<T> {
   current_page: number
   data: T[]
