@@ -36,12 +36,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .map(Number)
     .filter((value) => Number.isFinite(value) && value > 0)
   const page = Number(url.searchParams.get('page')) || 1
+  const orderBy = url.searchParams.get('orderBy') ?? undefined
 
   try {
     const [family, options, products] = await Promise.all([
       getPublicFamily(id),
       getPublicFamilyOptions(id),
-      getPublicFamilyProducts(id, { features, page, per_page: 12 }),
+      getPublicFamilyProducts(id, { features, page, per_page: 12, orderBy }),
     ])
     return { family, options, products }
   } catch (err) {

@@ -48,6 +48,17 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
     setSearchParams(next)
   }
 
+  const handleSort = (value: string) => {
+    const next = new URLSearchParams(searchParams)
+    if (value) {
+      next.set('orderBy', value)
+    } else {
+      next.delete('orderBy')
+    }
+    next.delete('page')
+    setSearchParams(next, { preventScrollReset: true })
+  }
+
   const toggleCollapse = (optionId: number) =>
     setCollapsed((prev) =>
       prev.includes(optionId)
@@ -116,13 +127,13 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
           <div className="mb-4 flex items-center justify-between">
             <span className="mr-2 text-nowrap">Ordenar por:</span>
             <select
-              value={searchParams.get('sort') ?? ''}
-              onChange={(e) => {}}
+              value={searchParams.get('orderBy') ?? ''}
+              onChange={(e) => handleSort(e.target.value)}
               className="rounded"
             >
-              <option value="1">Relevancia</option>
-              <option value="2">Precio: mayor a menor</option>
-              <option value="3">Precio: menor a mayor</option>
+              <option value="relevant">Relevancia</option>
+              <option value="major_to_minor">Precio: mayor a menor</option>
+              <option value="minor_to_major">Precio: menor a mayor</option>
             </select>
           </div>
           <div
