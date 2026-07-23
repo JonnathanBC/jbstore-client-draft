@@ -122,7 +122,7 @@ export const Navbar = () => {
                     {categories.map((category) => (
                       <li key={category.value} className="px-4">
                         <Link
-                          to={`/?categoria=${category.value}`}
+                          to={`/categories/${category.value}`}
                           onClick={closeMenu}
                           className="text-lg font-semibold text-purple-600"
                         >

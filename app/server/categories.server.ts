@@ -1,6 +1,7 @@
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
 import type { ApiResponse } from '~/types/api'
 import type { Category } from '~/types/category'
+import type { Product } from '~/types/product'
 
 export interface GetCategoriesParams {
   token: string
@@ -21,6 +22,33 @@ export async function getCategories({
       {
         params,
       },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
+export interface GetPublicCategoryProductsParams {
+  page?: number
+  per_page?: number
+  orderBy?: 'relevant' | 'major_to_minor' | 'minor_to_major'
+  search?: string
+}
+
+export interface PublicCategoryProducts {
+  category: Category
+  products: ApiResponse<Product>
+}
+
+export async function getPublicCategoryProducts(
+  id: number,
+  params: GetPublicCategoryProductsParams = {},
+): Promise<PublicCategoryProducts> {
+  try {
+    const { data } = await apiClient().get<PublicCategoryProducts>(
+      `/api/public/categories/${id}`,
+      { params },
     )
     return data
   } catch (err) {
