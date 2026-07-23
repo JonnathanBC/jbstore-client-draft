@@ -31,6 +31,7 @@ export interface GetPublicFamilyProductsParams {
   page?: number
   per_page?: number
   orderBy?: 'relevant' | 'major_to_minor' | 'minor_to_major'
+  search?: string
 }
 
 export async function getPublicFamilyProducts(

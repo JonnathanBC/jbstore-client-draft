@@ -3,7 +3,7 @@ import { LucideShoppingCart, MenuIcon, ShoppingCart, User2 } from 'lucide-react'
 
 import type { User } from '~/types/user'
 import { Container } from './Container'
-import { Input } from './Input'
+import { SearchInput } from './SearchInput'
 import { Button } from '../ui/button'
 import { useMenuStore } from '~/store/menu.store'
 import { Avatar } from '../Avatar'
@@ -36,12 +36,7 @@ export function Header({ user, isAdmin }: Props) {
           </h1>
 
           <div className="hidden flex-1 md:block">
-            <Input
-              className="w-full bg-white"
-              label=""
-              name="search"
-              placeholder="Buscar por producto, tienda o marca"
-            />
+            <SearchInput className="w-full bg-white" />
           </div>
 
           <div className="flex items-center space-x-2">
@@ -102,12 +97,7 @@ export function Header({ user, isAdmin }: Props) {
         </div>
 
         <div className="mt-4 md:hidden">
-          <Input
-            className="w-full bg-white"
-            label=""
-            name="search"
-            placeholder="Buscar por producto, tienda o marca"
-          />
+          <SearchInput className="w-full bg-white" />
         </div>
       </Container>
     </header>

@@ -5,6 +5,7 @@ import {
   getPublicFamily,
   getPublicFamilyOptions,
   getPublicFamilyProducts,
+  type GetPublicFamilyProductsParams,
 } from '~/server/families.server'
 import type { Family } from '~/types/family'
 import { FamilyOptionProductsFilter } from '~/families/FamilyOptionProductsFilter'
@@ -36,13 +37,22 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .map(Number)
     .filter((value) => Number.isFinite(value) && value > 0)
   const page = Number(url.searchParams.get('page')) || 1
-  const orderBy = url.searchParams.get('orderBy') ?? undefined
+  const orderBy =
+    (url.searchParams.get('orderBy') as GetPublicFamilyProductsParams['orderBy']) ??
+    undefined
+  const search = url.searchParams.get('search') ?? undefined
 
   try {
     const [family, options, products] = await Promise.all([
       getPublicFamily(id),
       getPublicFamilyOptions(id),
-      getPublicFamilyProducts(id, { features, page, per_page: 12, orderBy }),
+      getPublicFamilyProducts(id, {
+        features,
+        page,
+        per_page: 12,
+        orderBy,
+        search,
+      }),
     ])
     return { family, options, products }
   } catch (err) {
