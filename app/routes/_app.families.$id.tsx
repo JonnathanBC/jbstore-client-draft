@@ -41,7 +41,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     const [family, options, products] = await Promise.all([
       getPublicFamily(id),
       getPublicFamilyOptions(id),
-      getPublicFamilyProducts(id, { features, page }),
+      getPublicFamilyProducts(id, { features, page, per_page: 12 }),
     ])
     return { family, options, products }
   } catch (err) {

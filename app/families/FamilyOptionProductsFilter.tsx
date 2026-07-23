@@ -56,10 +56,10 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
     )
 
   return (
-    <div className="">
-      <div className="container flex">
+    <div className="py-12">
+      <div className="px-4 md:flex">
         {options.length > 0 && (
-          <aside className="mr-8 w-52 shrink-0">
+          <aside className="mb-8 w-full md:mr-8 md:mb-0 md:w-52 md:shrink-0">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-semibold">Filtros</h2>
 
@@ -112,7 +112,7 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
           </aside>
         )}
 
-        <div className="flex-1">
+        <div className="md:flex-1">
           <div className="mb-4 flex items-center justify-between">
             <span className="mr-2 text-nowrap">Ordenar por:</span>
             <select
@@ -126,7 +126,7 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
             </select>
           </div>
           <div
-            className={`grid grid-cols-1 gap-6 transition-opacity sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
+            className={`grid grid-cols-1 gap-6 transition-opacity sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${
               isFiltering ? 'opacity-50' : ''
             }`}
           >

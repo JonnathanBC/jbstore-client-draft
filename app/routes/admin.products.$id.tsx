@@ -176,7 +176,11 @@ export async function action({ request, params }: Route.ActionArgs) {
     'subcategory_id',
     String(formData.get('subcategory_id') ?? '').trim(),
   )
-  payload.append('stock', String(formData.get('stock') ?? ''))
+
+  const stock = formData.get('stock')
+  if (stock !== null) {
+    payload.append('stock', String(stock))
+  }
 
   const image = formData.get('image') as File | null
   if (image && image.size > 0) {

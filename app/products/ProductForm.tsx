@@ -34,6 +34,10 @@ export function ProductForm({ product, validationErrors }: Props) {
     product?.category?.id?.toString() ?? undefined,
   )
 
+  const [subcategoryId, setSubcategoryId] = useState(
+    product?.subcategory_id?.toString() ?? undefined,
+  )
+
   return (
     <div className="card">
       <Form method="post" className="space-y-4" encType="multipart/form-data">
@@ -131,7 +135,7 @@ export function ProductForm({ product, validationErrors }: Props) {
           </p>
         )}
 
-        { product?.variants.length === 0 && (
+        {product?.variants.length === 0 && (
           <>
             <label
               htmlFor="stock"
@@ -217,7 +221,10 @@ export function ProductForm({ product, validationErrors }: Props) {
         <AsyncSelectOld
           key={categoryId}
           name="subcategory_id"
-          value={product?.subcategory_id?.toString() ?? ''}
+          value={subcategoryId}
+          onChange={(value) => {
+            setSubcategoryId(value)
+          }}
           source={`/resources/subcategories?category_id=${categoryId}`}
           placeholder="Selecciona una subcategoría"
           disabled={!categoryId}
