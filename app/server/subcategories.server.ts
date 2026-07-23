@@ -1,6 +1,34 @@
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
 import type { ApiResponse } from '~/types/api'
 import type { SubCategory } from '~/types/subcategory'
+import type { Product } from '~/types/product'
+
+export interface GetPublicSubcategoryProductsParams {
+  page?: number
+  per_page?: number
+  orderBy?: 'relevant' | 'major_to_minor' | 'minor_to_major'
+  search?: string
+}
+
+export interface PublicSubcategoryProducts {
+  subcategory: SubCategory
+  products: ApiResponse<Product>
+}
+
+export async function getPublicSubcategoryProducts(
+  id: number,
+  params: GetPublicSubcategoryProductsParams = {},
+): Promise<PublicSubcategoryProducts> {
+  try {
+    const { data } = await apiClient().get<PublicSubcategoryProducts>(
+      `/api/public/subcategories/${id}`,
+      { params },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
 
 export interface GetSubCategoriesParams {
   token: string

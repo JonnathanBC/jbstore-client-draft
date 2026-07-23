@@ -133,7 +133,7 @@ export const Navbar = () => {
                           {category.subcategories.map((subcategory) => (
                             <li key={subcategory.value}>
                               <Link
-                                to={`/?subcategoria=${subcategory.value}`}
+                                to={`/subcategories/${subcategory.value}`}
                                 onClick={closeMenu}
                                 className="block text-sm text-gray-600 hover:text-purple-600"
                               >
