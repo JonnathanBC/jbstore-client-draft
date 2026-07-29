@@ -104,3 +104,14 @@ export async function getPublicProducts(params?: {
     throw toApiError(err)
   }
 }
+
+export async function getPublicProduct(id: number): Promise<Product> {
+  try {
+    const { data } = await apiClient().get<Product>(
+      `/api/public/products/${id}`,
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}

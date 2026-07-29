@@ -156,7 +156,7 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
                   <p className="mb-4 text-gray-600">${product.price}</p>
 
                   <Link
-                    to=""
+                    to={`/products/${product.id}`}
                     className="btn btn-primary block w-full text-center"
                   >
                     Ver más
