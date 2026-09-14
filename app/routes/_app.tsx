@@ -25,7 +25,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     getSession(request.headers.get('Cookie')),
   ])
 
-  console.log({ auth })
   const toast = (session.get('toast') as ToastFlash | undefined) ?? null
 
   return data(
