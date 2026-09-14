@@ -1,9 +1,14 @@
+import { useState } from 'react'
+import { data, useFetcher } from 'react-router'
+import { Star, Truck } from 'lucide-react'
 import { RouteHandle } from '~/types/route'
 import { t } from '~/i18n'
 import type { Product } from '~/types/product'
-import { Route } from './+types/admin.products.$id'
+import type { Route } from './+types/_app.products.$id'
 import { getPublicProduct } from '~/server/products.server'
-import { Star, Truck } from 'lucide-react'
+import { requireAuth } from '~/server/auth.server'
+import { getSession, commitSession } from '~/server/session.server'
+import { addToCart } from '~/server/cart.server'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -29,7 +34,6 @@ export async function loader({ request: _, params }: Route.LoaderArgs) {
 
   try {
     const product = await getPublicProduct(id)
-    console.log({ product })
     return { product }
   } catch (err) {
     const status =
@@ -45,8 +49,48 @@ export async function loader({ request: _, params }: Route.LoaderArgs) {
   }
 }
 
+export async function action({ request, params }: Route.ActionArgs) {
+  const { token } = await requireAuth(request)
+  const id = Number(params.id)
+  const form = await request.formData()
+  const quantity = Number(form.get('quantity'))
+
+  console.log({ id, quantity })
+
+  if (
+    !Number.isInteger(id) ||
+    id < 1 ||
+    !Number.isInteger(quantity) ||
+    quantity < 1
+  ) {
+    return data({ error: 'Datos inválidos' }, { status: 400 })
+  }
+
+  const result = await addToCart({ product_id: id, quantity }, token)
+  const session = await getSession(request.headers.get('Cookie'))
+
+  const failed = 'error' in result
+  console.log({ failed, result, session })
+
+  session.flash(
+    'toast',
+    failed
+      ? { kind: 'error', title: 'No se pudo agregar al carrito' }
+      : { kind: 'success', title: 'Producto agregado al carrito' },
+  )
+
+  return data(
+    { ok: !failed },
+    { headers: { 'Set-Cookie': await commitSession(session) } },
+  )
+}
+
 export default function ProductDetail({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData
+  const fetcher = useFetcher<typeof action>()
+  const [quantity, setQuantity] = useState(1)
+  const busy = fetcher.state !== 'idle'
+
   return (
     <div>
       <h1 className="mb-4 text-2xl font-semibold">{product.name}</h1>
@@ -69,7 +113,7 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
             <div className="mb-4 flex items-center space-x-2">
               <ul className="flex space-x-1">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <li>
+                  <li key={star}>
                     <Star className="size-4 text-yellow-400" />
                   </li>
                 ))}
@@ -83,14 +127,34 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
             </p>
 
             <div className="mb-6 flex items-center space-x-6">
-              <button className="btn btn-primary">-</button>
-              <span>1</span>
-              <button className="btn btn-primary">+</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+              >
+                -
+              </button>
+              <span>{quantity}</span>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => setQuantity((q) => q + 1)}
+              >
+                +
+              </button>
             </div>
 
-            <button className="btn btn-primary mb-6 w-full">
-              Agregar al carrito
-            </button>
+            <fetcher.Form method="post">
+              <input type="hidden" name="quantity" value={quantity} />
+              <button
+                type="submit"
+                className="btn btn-primary mb-6 w-full"
+                disabled={busy}
+              >
+                {busy ? 'Agregando...' : 'Agregar al carrito'}
+              </button>
+            </fetcher.Form>
 
             <div className="flex items-center space-x-2 text-gray-700">
               <Truck className="size-5" />
