@@ -35,3 +35,22 @@ export interface Product {
   /** Accessor: full public URL, appended by the model. */
   image?: string
 }
+
+export interface PublicProduct {
+  id: number
+  name: string
+  description: string
+  image: string
+  price: number
+  stock: number
+  variants: {
+    id: number
+    image: string
+    features: {
+      id: number
+      description: string
+    }[]
+  }[]
+  created_at: string
+  updated_at: string
+}

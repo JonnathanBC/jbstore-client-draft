@@ -1,6 +1,6 @@
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
 import type { ApiResponse } from '~/types/api'
-import { Product } from '~/types/product'
+import { Product, PublicProduct } from '~/types/product'
 
 export interface GetProductsParams {
   token: string
@@ -105,9 +105,9 @@ export async function getPublicProducts(params?: {
   }
 }
 
-export async function getPublicProduct(id: number): Promise<Product> {
+export async function getPublicProduct(id: number): Promise<PublicProduct> {
   try {
-    const { data } = await apiClient().get<Product>(
+    const { data } = await apiClient().get<PublicProduct>(
       `/api/public/products/${id}`,
     )
     return data

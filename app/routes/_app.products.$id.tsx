@@ -9,6 +9,7 @@ import { getPublicProduct } from '~/server/products.server'
 import { requireAuth } from '~/server/auth.server'
 import { getSession, commitSession } from '~/server/session.server'
 import { addToCart } from '~/server/cart.server'
+import { Variants } from '~/products/variants/Variants'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -55,8 +56,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   const form = await request.formData()
   const quantity = Number(form.get('quantity'))
 
-  console.log({ id, quantity })
-
   if (
     !Number.isInteger(id) ||
     id < 1 ||
@@ -70,7 +69,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   const session = await getSession(request.headers.get('Cookie'))
 
   const failed = 'error' in result
-  console.log({ failed, result, session })
 
   session.flash(
     'toast',
@@ -87,6 +85,8 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 export default function ProductDetail({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData
+
+  console.log({ product })
   const fetcher = useFetcher<typeof action>()
   const [quantity, setQuantity] = useState(1)
   const busy = fetcher.state !== 'idle'
@@ -105,7 +105,6 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
                 className="aspect-video w-full object-cover object-center"
               />
             </figure>
-            <div className="text-sm">{product.description}</div>
           </div>
 
           <div className="col-span-1">
@@ -143,6 +142,8 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
               >
                 +
               </button>
+
+              {/* <Variants /> */}
             </div>
 
             <fetcher.Form method="post">
@@ -155,8 +156,9 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
                 {busy ? 'Agregando...' : 'Agregar al carrito'}
               </button>
             </fetcher.Form>
+            <p className="text-sm">{product.description}</p>
 
-            <div className="flex items-center space-x-2 text-gray-700">
+            <div className="mt-2 flex items-center space-x-2 text-gray-700">
               <Truck className="size-5" />
               <span>Despacho a domicilio</span>
             </div>
