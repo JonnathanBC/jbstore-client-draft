@@ -85,8 +85,6 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 export default function ProductDetail({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData
-
-  console.log({ product })
   const fetcher = useFetcher<typeof action>()
   const [quantity, setQuantity] = useState(1)
   const busy = fetcher.state !== 'idle'
