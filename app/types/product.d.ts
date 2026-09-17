@@ -48,6 +48,17 @@ export interface PublicProduct {
     image: string
     features: {
       id: number
+      option_id: number
+      description: string
+    }[]
+  }[]
+  options: {
+    id: number
+    name: string
+    type: number
+    features: {
+      id: number
+      value: string
       description: string
     }[]
   }[]

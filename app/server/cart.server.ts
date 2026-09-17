@@ -17,7 +17,11 @@ export type Cart = {
 }
 
 export async function addToCart(
-  payload: { product_id: number; quantity: number },
+  payload: {
+    product_id: number
+    quantity: number
+    selected_features: Record<string, number>
+  },
   token: string,
 ): Promise<{ data: Cart } | { error: ApiError }> {
   try {
