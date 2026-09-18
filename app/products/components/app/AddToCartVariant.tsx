@@ -52,7 +52,7 @@ export const AddToCartVariant = ({
                       backgroundColor: feat.value,
                     }}
                     className={cn(
-                      'size-6 rounded-full border border-gray-300',
+                      'size-7 rounded-full border border-gray-300',
                       {
                         'border-2 border-gray-400':
                           selectedFeat[option.id] === feat.id,
