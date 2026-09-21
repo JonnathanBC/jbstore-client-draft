@@ -111,7 +111,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   )
 
   return data(
-    { ok: !failed },
+    { ok: !failed, cartCount: failed ? 0 : result.count },
     {
       headers: {
         'Set-Cookie': await commitSession(session),

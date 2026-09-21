@@ -1,20 +1,22 @@
 import { Form, Link, useNavigate } from 'react-router'
-import { LucideShoppingCart, MenuIcon, ShoppingCart, User2 } from 'lucide-react'
+import { LucideShoppingCart, MenuIcon } from 'lucide-react'
 
 import type { User } from '~/types/user'
+import { useMenuStore } from '~/store/menu.store'
+
 import { Container } from './Container'
 import { SearchInput } from './SearchInput'
 import { Button } from '../ui/button'
-import { useMenuStore } from '~/store/menu.store'
 import { Avatar } from '../Avatar'
 import { Dropdown } from './Dropdown'
 
 interface Props {
   user: User | null
   isAdmin: boolean
+  cartCount: number
 }
 
-export function Header({ user, isAdmin }: Props) {
+export function Header({ user, isAdmin, cartCount }: Props) {
   const openMenu = useMenuStore((state) => state.openMenu)
   const navigate = useNavigate()
 
@@ -39,7 +41,7 @@ export function Header({ user, isAdmin }: Props) {
             <SearchInput className="w-full bg-white" />
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-4">
             {user ? (
               <Dropdown
                 items={[
@@ -90,9 +92,15 @@ export function Header({ user, isAdmin }: Props) {
               </Dropdown>
             )}
 
-            <Button className="text-white">
-              <LucideShoppingCart className="size-5 md:size-6" />
-            </Button>
+            <a href="/cart" className="relative">
+              <LucideShoppingCart className="size-6 text-white" />
+
+              {cartCount > 0 && (
+                <span className="absolute -inset-e-4 -top-2 inline-flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </a>
           </div>
         </div>
 
