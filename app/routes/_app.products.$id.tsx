@@ -5,9 +5,14 @@ import { Star, Truck } from 'lucide-react'
 import { t } from '~/i18n'
 import { AddToCartVariant } from '~/products/components/app/AddToCartVariant'
 import { getPublicProduct } from '~/server/products.server'
-import { requireAuth } from '~/server/auth.server'
+import { getOptionalAuth } from '~/server/auth.server'
 import { getSession, commitSession } from '~/server/session.server'
 import { addToCart } from '~/server/cart.server'
+import {
+  addGuestItem,
+  commitGuestCart,
+  getGuestCart,
+} from '~/server/guestCart.server'
 import { RouteHandle } from '~/types/route'
 import type { Product } from '~/types/product'
 import type { Route } from './+types/_app.products.$id'
@@ -64,8 +69,6 @@ export async function loader({ request: _, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
-
   const id = Number(params.id)
   const form = await request.formData()
 
@@ -91,33 +94,33 @@ export async function action({ request, params }: Route.ActionArgs) {
     return data({ error: 'Datos inválidos' }, { status: 400 })
   }
 
-  const result = await addToCart(
-    {
-      product_id: id,
-      quantity,
-      selected_features: selectedFeatures,
-    },
-    token,
-  )
+  const item = {
+    product_id: id,
+    quantity,
+    selected_features: selectedFeatures,
+  }
+
+  const headers = new Headers()
+  const auth = await getOptionalAuth(request)
+  let failed = false
+
+  if (auth) {
+    failed = 'error' in (await addToCart(item, auth.token))
+  } else {
+    const guestItems = addGuestItem(await getGuestCart(request), item)
+    headers.append('Set-Cookie', await commitGuestCart(guestItems))
+  }
 
   const session = await getSession(request.headers.get('Cookie'))
-  const failed = 'error' in result
-
   session.flash(
     'toast',
     failed
       ? { kind: 'error', title: 'No se pudo agregar al carrito' }
       : { kind: 'success', title: 'Producto agregado al carrito' },
   )
+  headers.append('Set-Cookie', await commitSession(session))
 
-  return data(
-    { ok: !failed, cartCount: failed ? 0 : result.count },
-    {
-      headers: {
-        'Set-Cookie': await commitSession(session),
-      },
-    },
-  )
+  return data({ ok: !failed }, { headers })
 }
 
 export default function ProductDetail({ loaderData }: Route.ComponentProps) {

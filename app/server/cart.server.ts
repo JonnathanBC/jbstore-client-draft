@@ -1,4 +1,5 @@
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
+import type { GuestCartItem } from './guestCart.server'
 
 export type CartItem = {
   rowId: string
@@ -38,12 +39,26 @@ export async function addToCart(
 }
 
 export async function getCart(
-  token?: string,
+  token: string,
 ): Promise<Cart | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).get<Cart>('/api/cart/items')
     return data
   } catch (err) {
-    throw toApiError(err)
+    return { error: toApiError(err) }
+  }
+}
+
+export async function mergeCart(
+  items: GuestCartItem[],
+  token: string,
+): Promise<Cart | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).post<Cart>('/api/cart/merge', {
+      items,
+    })
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
   }
 }

@@ -4,45 +4,41 @@ import { Header } from '~/components/shared/Header'
 import { Footer } from '~/components/shared/Footer'
 import { fetchMe, getOptionalAuth } from '~/server/auth.server'
 import { getCart } from '~/server/cart.server'
+import { getGuestCart, guestCartCount } from '~/server/guestCart.server'
 import { Navbar } from '~/components/shared/Navbar'
 import { commitSession, getSession } from '~/server/session.server'
 import { AppToaster, type ToastFlash } from '~/components/AppToaster'
 
-async function loadUser(request: Request) {
-  const auth = await getOptionalAuth(request)
-  if (!auth) return { user: null, isAdmin: false }
+async function loadUser(token: string | undefined) {
+  if (!token) return { user: null, isAdmin: false }
 
   try {
-    const user = await fetchMe(auth.token)
+    const user = await fetchMe(token)
     return { user, isAdmin: user.role === 'ROLE_ADMIN' }
   } catch {
     return { user: null, isAdmin: false }
   }
 }
 
-async function loadCartCount(request: Request) {
-  const auth = await getOptionalAuth(request)
-  if (!auth) return 0
+async function loadCartCount(request: Request, token: string | undefined) {
+  if (!token) return guestCartCount(await getGuestCart(request))
 
-  try {
-    const cart = await getCart(auth.token)
-    return 'error' in cart ? 0 : cart.count
-  } catch {
-    return 0
-  }
+  const cart = await getCart(token)
+  return 'error' in cart ? 0 : cart.count
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const [auth, cartCount, session] = await Promise.all([
-    loadUser(request),
-    loadCartCount(request),
+  const auth = await getOptionalAuth(request)
+  const [userData, cartCount, session] = await Promise.all([
+    loadUser(auth?.token),
+    loadCartCount(request, auth?.token),
     getSession(request.headers.get('Cookie')),
   ])
 
   const toast = (session.get('toast') as ToastFlash | undefined) ?? null
 
   return data(
-    { ...auth, cartCount, toast },
+    { ...userData, cartCount, toast },
     { headers: { 'Set-Cookie': await commitSession(session) } },
   )
 }

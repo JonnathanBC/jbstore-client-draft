@@ -9,6 +9,7 @@ import { Lock, User } from 'lucide-react'
 import type { Route } from './+types/_auth.register'
 import { register } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
+import { mergeGuestCartOnLogin } from '~/server/guestCart.server'
 import { GoogleIcon } from '~/components/icons/GoogleIcon'
 import { Input } from '~/components/shared/Input'
 
@@ -54,9 +55,11 @@ export async function action({ request }: Route.ActionArgs) {
     message: `¡Bienvenido, ${result.user.name}!`,
   })
 
-  return redirect('/', {
-    headers: { 'Set-Cookie': await commitSession(session) },
-  })
+  const headers = new Headers({ 'Set-Cookie': await commitSession(session) })
+  const clearGuest = await mergeGuestCartOnLogin(request, result.token)
+  if (clearGuest) headers.append('Set-Cookie', clearGuest)
+
+  return redirect('/', { headers })
 }
 
 export default function RegisterPage() {
