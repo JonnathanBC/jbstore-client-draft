@@ -71,7 +71,6 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   const quantity = Number(form.get('quantity'))
 
-  // 1. Obtener y parsear el objeto de features
   const selectedFeaturesRaw = form.get('selectedFeatures')
   let selectedFeatures: Record<string, number> = {}
 
@@ -83,7 +82,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     return data({ error: 'Formato de opciones inválido' }, { status: 400 })
   }
 
-  // 2. Validaciones básicas
   if (
     !Number.isInteger(id) ||
     id < 1 ||
@@ -93,7 +91,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     return data({ error: 'Datos inválidos' }, { status: 400 })
   }
 
-  // 3. Enviar a tu función del servidor / cliente API de Laravel
   const result = await addToCart(
     {
       product_id: id,
@@ -102,8 +99,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     },
     token,
   )
-
-  console.log({ result, selectedFeatures })
 
   const session = await getSession(request.headers.get('Cookie'))
   const failed = 'error' in result
@@ -149,8 +144,6 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
   return (
     <div>
       <h1 className="mb-4 text-2xl font-semibold">{product.name}</h1>
-
-      <pre>{JSON.stringify(selectedFeat, null, 2)}</pre>
 
       <div className="card">
         <div className="grid gap-6 md:grid-cols-2">

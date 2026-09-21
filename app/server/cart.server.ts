@@ -7,6 +7,8 @@ export type CartItem = {
   qty: number
   price: number
   options: { image: string; sku: string; features: unknown[] }
+  tax: number | string
+  isSaved: boolean
   subtotal: number
 }
 
@@ -23,14 +25,25 @@ export async function addToCart(
     selected_features: Record<string, number>
   },
   token: string,
-): Promise<{ data: Cart } | { error: ApiError }> {
+): Promise<Cart | { error: ApiError }> {
   try {
     const { data } = await apiClient(token).post<Cart>(
       '/api/cart/items',
       payload,
     )
-    return { data }
+    return data
   } catch (err) {
     return { error: toApiError(err) }
+  }
+}
+
+export async function getCart(
+  token?: string,
+): Promise<Cart | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).get<Cart>('/api/cart/items')
+    return data
+  } catch (err) {
+    throw toApiError(err)
   }
 }
