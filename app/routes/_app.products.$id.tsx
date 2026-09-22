@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { data, useFetcher } from 'react-router'
 import { Star, Truck } from 'lucide-react'
 
+import { QuantityButton } from '~/components/buttons/QuantityButton'
 import { t } from '~/i18n'
 import { AddToCartVariant } from '~/products/components/app/AddToCartVariant'
 import { getPublicProduct } from '~/server/products.server'
@@ -199,26 +200,11 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
             </p>
 
             {/* Quantity */}
-            <div className="mb-4 flex items-center space-x-6">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                disabled={quantity <= 1}
-              >
-                -
-              </button>
-
-              <span>{quantity}</span>
-
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setQuantity((q) => q + 1)}
-              >
-                +
-              </button>
-            </div>
+            <QuantityButton
+              className="mb-4"
+              quantity={quantity}
+              setQuantity={setQuantity}
+            />
 
             {product.variants.length > 0 && (
               <AddToCartVariant
