@@ -74,7 +74,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   const quantity = Number(form.get('quantity'))
 
-  const selectedFeaturesRaw = form.get('selectedFeatures')
+  const selectedFeaturesRaw = form.get('selected_features')
   let selectedFeatures: Record<string, number> = {}
 
   try {
@@ -103,9 +103,19 @@ export async function action({ request, params }: Route.ActionArgs) {
   const headers = new Headers()
   const auth = await getOptionalAuth(request)
   let failed = false
+  let errorMessage: string | undefined
 
   if (auth) {
-    failed = 'error' in (await addToCart(item, auth.token))
+    const result = await addToCart(item, auth.token)
+
+    if ('error' in result) {
+      failed = true
+      errorMessage = result.error.message
+
+      if (result.error.errors) {
+        errorMessage = Object.values(result.error.errors).flat().join(' ')
+      }
+    }
   } else {
     const guestItems = addGuestItem(await getGuestCart(request), item)
     headers.append('Set-Cookie', await commitGuestCart(guestItems))
@@ -115,12 +125,16 @@ export async function action({ request, params }: Route.ActionArgs) {
   session.flash(
     'toast',
     failed
-      ? { kind: 'error', title: 'No se pudo agregar al carrito' }
+      ? {
+          kind: 'error',
+          title: 'No se pudo agregar al carrito',
+          description: errorMessage,
+        }
       : { kind: 'success', title: 'Producto agregado al carrito' },
   )
   headers.append('Set-Cookie', await commitSession(session))
 
-  return data({ ok: !failed }, { headers })
+  return data({ ok: !failed, error: errorMessage }, { headers })
 }
 
 export default function ProductDetail({ loaderData }: Route.ComponentProps) {
@@ -143,6 +157,9 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
 
   const currentImage = selectedVariant?.image ?? product.image
   const busy = fetcher.state !== 'idle'
+  const hasAllOptionsSelected = product.options.every(
+    (option) => selectedFeat[option.id] !== undefined,
+  )
 
   return (
     <div>
@@ -216,18 +233,25 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
               {/* Convertimos el objeto { "1": 3, "2": 10 } a JSON string */}
               <input
                 type="hidden"
-                name="selectedFeatures"
+                name="selected_features"
                 value={JSON.stringify(selectedFeat)}
               />
 
               <button
                 type="submit"
                 className="btn btn-primary mb-6 w-full"
-                disabled={busy}
+                disabled={busy || !hasAllOptionsSelected}
               >
                 {busy ? 'Agregando...' : 'Agregar al carrito'}
               </button>
             </fetcher.Form>
+
+            {!hasAllOptionsSelected && (
+              <p className="mb-6 text-sm text-red-800">
+                Seleccioná una opción en cada categoría antes de agregar el
+                producto.
+              </p>
+            )}
 
             {/* Description */}
             <p className="text-sm">{product.description}</p>
