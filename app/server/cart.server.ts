@@ -62,3 +62,46 @@ export async function mergeCart(
     return { error: toApiError(err) }
   }
 }
+
+export type CartOperation = 'increase' | 'decrease'
+
+export async function updateCart(
+  rowId: string,
+  operation: CartOperation,
+  token: string,
+): Promise<{ item: CartItem | null } | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).patch<{ item: CartItem | null }>(
+      `/api/cart/items/${encodeURIComponent(rowId)}`,
+      { operation },
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
+export async function removeFromCart(
+  rowId: string,
+  token: string,
+): Promise<Cart | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).delete<Cart>(
+      `/api/cart/items/${encodeURIComponent(rowId)}`,
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
+export async function clearCart(
+  token: string,
+): Promise<Cart | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).delete<Cart>('/api/cart/items')
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
