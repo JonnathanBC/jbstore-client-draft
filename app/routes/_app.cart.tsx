@@ -1,11 +1,10 @@
 import { useRouteLoaderData } from 'react-router'
+import { Trash2 } from 'lucide-react'
+import { HeaderTitle } from '~/components/HeaderTitle'
 import { getCart } from '~/server/cart.server'
 import { getOptionalAuth } from '~/server/auth.server'
 import type { loader as appLoader } from './_app'
 import type { Route } from './+types/_app.cart'
-import { HeaderTitle } from '~/components/HeaderTitle'
-import { Trash, Trash2 } from 'lucide-react'
-import { QuantityButton } from '~/components/buttons/QuantityButton'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Carrito | JB Store' }]
 

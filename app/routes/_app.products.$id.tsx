@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { data, useFetcher } from 'react-router'
 import { Star, Truck } from 'lucide-react'
 
-import { QuantityButton } from '~/components/buttons/QuantityButton'
 import { t } from '~/i18n'
 import { AddToCartVariant } from '~/products/components/app/AddToCartVariant'
 import { getPublicProduct } from '~/server/products.server'
@@ -17,6 +16,7 @@ import {
 import { RouteHandle } from '~/types/route'
 import type { Product } from '~/types/product'
 import type { Route } from './+types/_app.products.$id'
+import { QuantityButton } from '~/components/buttons/QuantityButton'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
