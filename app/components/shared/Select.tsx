@@ -5,9 +5,17 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string
   items: { value: string; label: string }[]
   icon?: ComponentType<SVGProps<SVGSVGElement>>
+  error?: string
 }
 
-export function Select({ label, name, icon: Icon, className, items }: Props) {
+export function Select({
+  label,
+  name,
+  icon: Icon,
+  className,
+  items,
+  error,
+}: Props) {
   return (
     <div>
       <label htmlFor={name} className="block text-sm font-medium text-zinc-900">
@@ -31,6 +39,7 @@ export function Select({ label, name, icon: Icon, className, items }: Props) {
             <Icon className="absolute right-4 size-5 text-zinc-400" />
           ) : null}
         </div>
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </label>
     </div>
   )

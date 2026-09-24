@@ -53,9 +53,13 @@ export async function login(
 
 export interface RegisterInput {
   name: string
+  last_name: string
+  phone: string
   email: string
   password: string
   password_confirmation: string
+  document_type?: 'PP' | 'CI' | 'RUC'
+  document_number?: string
 }
 
 export async function register(

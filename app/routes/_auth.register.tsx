@@ -20,31 +20,39 @@ export const meta: Route.MetaFunction = () => [
 
 export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData()
-  const name = String(form.get('name') ?? '').trim()
+  const name = String(form.get('name')).trim()
+  const last_name = String(form.get('last_name')).trim()
+  const phone = String(form.get('phone')).trim()
+  const documentType = String(form.get('document_type') ?? '').trim()
+  const document_type =
+    documentType === 'CI' || documentType === 'RUC' || documentType === 'PP'
+      ? documentType
+      : undefined
+  const document_number = String(form.get('document_number')).trim()
   const email = String(form.get('email') ?? '').trim()
   const password = String(form.get('password') ?? '')
   const password_confirmation = String(form.get('password_confirmation') ?? '')
 
-  if (!name || !email || !password || !password_confirmation) {
-    return { error: 'Todos los campos son requeridos' }
-  }
-
-  if (password.length < 8) {
-    return { error: 'La contraseña debe tener al menos 8 caracteres' }
-  }
-
-  if (password !== password_confirmation) {
-    return { error: 'Las contraseñas no coinciden' }
-  }
-
   const result = await register({
     name,
+    last_name,
+    phone,
+    document_type,
+    document_number,
     email,
     password,
     password_confirmation,
   })
   if ('error' in result) {
-    return { error: result.error.message || 'No se pudo crear la cuenta' }
+    const fieldErrors = result.error.errors ?? {}
+
+    return {
+      error:
+        Object.keys(fieldErrors).length === 0
+          ? result.error.message || 'No se pudo crear la cuenta'
+          : undefined,
+      fieldErrors,
+    }
   }
 
   const session = await getSession(request.headers.get('Cookie'))
@@ -66,6 +74,7 @@ export default function RegisterPage() {
   const actionData = useActionData<typeof action>()
   const nav = useNavigation()
   const submitting = nav.state === 'submitting'
+  const fieldErrors = actionData?.fieldErrors ?? {}
 
   return (
     <div className="flex min-h-screen">
@@ -87,6 +96,7 @@ export default function RegisterPage() {
               icon={User}
               autoComplete="name"
               required
+              error={fieldErrors.name?.[0]}
             />
             <Input
               label="Apellidos"
@@ -94,6 +104,7 @@ export default function RegisterPage() {
               icon={User}
               autoComplete="name"
               required
+              error={fieldErrors.last_name?.[0]}
             />
 
             <Input
@@ -102,8 +113,15 @@ export default function RegisterPage() {
               type="email"
               icon={Mail}
               required
+              error={fieldErrors.email?.[0]}
             />
-            <Input label="Teléfono" name="phone" icon={Phone} required />
+            <Input
+              label="Teléfono"
+              name="phone"
+              icon={Phone}
+              required
+              error={fieldErrors.phone?.[0]}
+            />
             <Input
               label="Contraseña"
               name="password"
@@ -111,6 +129,7 @@ export default function RegisterPage() {
               icon={Lock}
               required
               minLength={8}
+              error={fieldErrors.password?.[0]}
             />
             <Input
               label="Confirmar contraseña"
@@ -119,25 +138,25 @@ export default function RegisterPage() {
               icon={Lock}
               required
               minLength={8}
+              error={fieldErrors.password_confirmation?.[0]}
             />
 
             <Select
               name="document_type"
               label="Tipo de documento"
               items={[
-                { value: 'DNI', label: 'DNI' },
-                { value: 'CE', label: 'CE' },
+                { value: 'CI', label: 'Cedula de Identidad' },
                 { value: 'RUC', label: 'RUC' },
-                { value: 'PP', label: 'PP' },
-                { value: 'LE', label: 'LE' },
-                { value: 'ID', label: 'ID' },
+                { value: 'PP', label: 'Pasaporte' },
               ]}
+              error={fieldErrors.document_type?.[0]}
             />
             <Input
               label="Document"
-              name="document"
+              name="document_number"
               icon={Text}
               autoComplete="document"
+              error={fieldErrors.document_number?.[0]}
             />
           </div>
 

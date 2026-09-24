@@ -6,6 +6,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string
   type?: 'text' | 'email' | 'password' | 'number'
   icon?: ComponentType<SVGProps<SVGSVGElement>>
+  error?: string
 }
 
 export function Input({
@@ -13,6 +14,7 @@ export function Input({
   name,
   type = 'text',
   icon: Icon,
+  error,
   className,
   ...rest
 }: Props) {
@@ -38,6 +40,7 @@ export function Input({
             <Icon className="absolute right-4 size-5 text-zinc-400" />
           ) : null}
         </div>
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </label>
     </div>
   )
