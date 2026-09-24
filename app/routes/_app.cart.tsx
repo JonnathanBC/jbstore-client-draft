@@ -9,7 +9,13 @@ import {
   removeFromCart,
   updateCart,
 } from '~/server/cart.server'
-import { getOptionalAuth, requireAuth } from '~/server/auth.server'
+import { getPublicProductsByIds } from '~/server/products.server'
+import { getOptionalAuth } from '~/server/auth.server'
+import {
+  clearGuestCart,
+  commitGuestCart,
+  getGuestCart,
+} from '~/server/guestCart.server'
 import type { loader as appLoader } from './_app'
 import type { Route } from './+types/_app.cart'
 
@@ -17,7 +23,44 @@ export const meta: Route.MetaFunction = () => [{ title: 'Carrito | JB Store' }]
 
 export async function loader({ request }: Route.LoaderArgs) {
   const auth = await getOptionalAuth(request)
-  if (!auth) return { items: null }
+  if (!auth) {
+    const guestItems = await getGuestCart(request)
+    const products = await getPublicProductsByIds([
+      ...new Set(guestItems.map((item) => item.product_id)),
+    ]).catch(() => [])
+    const productsById = new Map(
+      products.map((product) => [product.id, product]),
+    )
+
+    const items = guestItems.flatMap((item, index) => {
+      const product = productsById.get(item.product_id)
+      if (!product) return []
+
+      return [
+        {
+          rowId: String(index),
+          id: product.id,
+          name: product.name,
+          qty: item.quantity,
+          price: product.price,
+          options: { image: product.image, sku: '', features: [] },
+          tax: 0,
+          isSaved: false,
+          subtotal: product.price * item.quantity,
+        },
+      ]
+    })
+
+    return {
+      items: {
+        items,
+        count: items.reduce((total, item) => total + item.qty, 0),
+        subtotal: items
+          .reduce((total, item) => total + item.subtotal, 0)
+          .toFixed(2),
+      },
+    }
+  }
 
   const items = await getCart(auth.token)
 
@@ -40,10 +83,46 @@ const fromApi = (result: object | { error: ApiError }, message: string) =>
     : { ok: true as const, message }
 
 export async function action({ request }: Route.ActionArgs) {
-  const auth = await requireAuth(request)
+  const auth = await getOptionalAuth(request)
   const form = await request.formData()
   const intent = form.get('intent')
   const rowId = form.get('rowId')
+
+  if (!auth) {
+    const guestItems = await getGuestCart(request)
+    const headers = new Headers()
+
+    if (intent === 'clear') {
+      headers.append('Set-Cookie', await clearGuestCart())
+      return data(
+        { ok: true as const, message: 'Carrito vaciado' },
+        { headers },
+      )
+    }
+
+    const index = Number(rowId)
+    if (!Number.isInteger(index) || index < 0 || index >= guestItems.length) {
+      return fail('rowId inválido')
+    }
+
+    if (intent === 'remove') {
+      guestItems.splice(index, 1)
+    } else if (intent === 'increase' || intent === 'decrease') {
+      const item = guestItems[index]
+      const quantity = item.quantity + (intent === 'increase' ? 1 : -1)
+
+      if (quantity <= 0) guestItems.splice(index, 1)
+      else guestItems[index] = { ...item, quantity }
+    } else {
+      return fail('Acción inválida')
+    }
+
+    headers.append('Set-Cookie', await commitGuestCart(guestItems))
+    return data(
+      { ok: true as const, message: 'Carrito actualizado' },
+      { headers },
+    )
+  }
 
   if (intent === 'clear') {
     return fromApi(await clearCart(auth.token), 'Carrito vaciado')

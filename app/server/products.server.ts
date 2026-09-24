@@ -105,6 +105,20 @@ export async function getPublicProducts(params?: {
   }
 }
 
+export async function getPublicProductsByIds(
+  ids: number[],
+): Promise<PublicProduct[]> {
+  try {
+    const { data } = await apiClient().get<PublicProduct[]>(
+      '/api/public/products/by-ids',
+      { params: { 'ids[]': ids } },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
 export async function getPublicProduct(id: number): Promise<PublicProduct> {
   try {
     const { data } = await apiClient().get<PublicProduct>(
