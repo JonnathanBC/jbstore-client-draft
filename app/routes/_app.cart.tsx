@@ -192,7 +192,7 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
           )}
           <ul className="space-y-4">
             {items?.items.map((cart) => (
-              <li className="lg:flex">
+              <li className="lg:flex" key={cart.id}>
                 <img
                   className="mr-2 aspect-video w-full rounded object-cover object-center lg:w-36"
                   src={cart.options.image}
