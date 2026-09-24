@@ -5,13 +5,14 @@ import {
   useActionData,
   useNavigation,
 } from 'react-router'
-import { Lock, User } from 'lucide-react'
+import { Lock, Mail, Phone, Text, User } from 'lucide-react'
 import type { Route } from './+types/_auth.register'
 import { register } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { mergeGuestCartOnLogin } from '~/server/guestCart.server'
 import { GoogleIcon } from '~/components/icons/GoogleIcon'
 import { Input } from '~/components/shared/Input'
+import { Select } from '~/components/shared/Select'
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Crear cuenta | JB Store' },
@@ -52,7 +53,6 @@ export async function action({ request }: Route.ActionArgs) {
   session.flash('toast', {
     kind: 'success',
     title: 'Cuenta creada',
-    message: `¡Bienvenido, ${result.user.name}!`,
   })
 
   const headers = new Headers({ 'Set-Cookie': await commitSession(session) })
@@ -70,32 +70,76 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen">
       <div className="flex w-full items-center justify-center p-8 lg:w-1/2">
-        <Form method="post" className="w-full max-w-sm space-y-4">
-          <h2 className="text-2xl font-semibold text-zinc-900">Crear Cuenta</h2>
+        <Form method="post" className="w-full max-w-2xl">
+          <h2 className="mb-4 text-2xl font-semibold text-zinc-900">
+            Crear Cuenta
+          </h2>
           {actionData?.error && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
               {actionData.error}
             </div>
           )}
 
-          <Input label="Name" name="name" icon={User} required />
-          <Input label="Email" name="email" type="email" icon={User} required />
-          <Input
-            label="Password"
-            name="password"
-            type="password"
-            icon={Lock}
-            required
-            minLength={8}
-          />
-          <Input
-            label="Confirm Password"
-            name="password_confirmation"
-            type="password"
-            icon={Lock}
-            required
-            minLength={8}
-          />
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
+              label="Nombres"
+              name="name"
+              icon={User}
+              autoComplete="name"
+              required
+            />
+            <Input
+              label="Apellidos"
+              name="last_name"
+              icon={User}
+              autoComplete="name"
+              required
+            />
+
+            <Input
+              label="Correo electrónico"
+              name="email"
+              type="email"
+              icon={Mail}
+              required
+            />
+            <Input label="Teléfono" name="phone" icon={Phone} required />
+            <Input
+              label="Contraseña"
+              name="password"
+              type="password"
+              icon={Lock}
+              required
+              minLength={8}
+            />
+            <Input
+              label="Confirmar contraseña"
+              name="password_confirmation"
+              type="password"
+              icon={Lock}
+              required
+              minLength={8}
+            />
+
+            <Select
+              name="document_type"
+              label="Tipo de documento"
+              items={[
+                { value: 'DNI', label: 'DNI' },
+                { value: 'CE', label: 'CE' },
+                { value: 'RUC', label: 'RUC' },
+                { value: 'PP', label: 'PP' },
+                { value: 'LE', label: 'LE' },
+                { value: 'ID', label: 'ID' },
+              ]}
+            />
+            <Input
+              label="Document"
+              name="document"
+              icon={Text}
+              autoComplete="document"
+            />
+          </div>
 
           <div className="mt-12">
             <button
