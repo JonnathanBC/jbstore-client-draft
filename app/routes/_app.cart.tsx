@@ -254,7 +254,10 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
               <p>$ {items?.subtotal}</p>
             </div>
 
-            <a className="btn btn-primary block w-full text-center">
+            <a
+              href="/address"
+              className="btn btn-primary block w-full text-center"
+            >
               Continuar con la compra
             </a>
           </div>
