@@ -6,7 +6,7 @@ import { t } from '~/i18n'
 import { AddToCartVariant } from '~/products/components/app/AddToCartVariant'
 import { getPublicProduct } from '~/server/products.server'
 import { getOptionalAuth } from '~/server/auth.server'
-import { getSession, commitSession } from '~/server/session.server'
+import { commitSession, getSession } from '~/server/session.server'
 import { addToCart } from '~/server/cart.server'
 import {
   addGuestItem,
@@ -103,6 +103,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   const headers = new Headers()
   const auth = await getOptionalAuth(request)
+  const session = await getSession(request.headers.get('Cookie'))
   let failed = false
   let errorMessage: string | undefined
 
@@ -110,11 +111,18 @@ export async function action({ request, params }: Route.ActionArgs) {
     const result = await addToCart(item, auth.token)
 
     if ('error' in result) {
-      failed = true
-      errorMessage = result.error.message
+      if (result.error.status === 401) {
+        const guestItems = addGuestItem(await getGuestCart(request), item)
+        headers.append('Set-Cookie', await commitGuestCart(guestItems))
+        session.unset('token')
+        session.unset('userId')
+      } else {
+        failed = true
+        errorMessage = result.error.message
 
-      if (result.error.errors) {
-        errorMessage = Object.values(result.error.errors).flat().join(' ')
+        if (result.error.errors) {
+          errorMessage = Object.values(result.error.errors).flat().join(' ')
+        }
       }
     }
   } else {
@@ -122,7 +130,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     headers.append('Set-Cookie', await commitGuestCart(guestItems))
   }
 
-  const session = await getSession(request.headers.get('Cookie'))
   session.flash(
     'toast',
     failed
