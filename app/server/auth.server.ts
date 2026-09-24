@@ -28,12 +28,6 @@ export async function requireAuth(request: Request): Promise<AuthTokens> {
   return auth
 }
 
-export async function fetchMe(token: string): Promise<User> {
-  const client = apiClient(token)
-  const { data } = await client.get<User>('/api/auth/me')
-  return data
-}
-
 export interface LoginResult {
   token: string
   user: User

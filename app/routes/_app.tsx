@@ -2,12 +2,13 @@ import { Outlet, data } from 'react-router'
 import type { Route } from './+types/_app'
 import { Header } from '~/components/shared/Header'
 import { Footer } from '~/components/shared/Footer'
-import { fetchMe, getOptionalAuth } from '~/server/auth.server'
+import { getOptionalAuth } from '~/server/auth.server'
 import { getCart } from '~/server/cart.server'
 import { getGuestCart, guestCartCount } from '~/server/guestCart.server'
 import { Navbar } from '~/components/shared/Navbar'
 import { commitSession, getSession } from '~/server/session.server'
 import { AppToaster, type ToastFlash } from '~/components/AppToaster'
+import { fetchMe } from '~/server/user.server'
 
 async function loadUser(token: string | undefined) {
   if (!token) return { user: null, isAdmin: false }

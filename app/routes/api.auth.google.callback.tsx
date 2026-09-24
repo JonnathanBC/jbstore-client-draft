@@ -1,7 +1,7 @@
 import { redirect } from 'react-router'
 import type { Route } from './+types/api.auth.google.callback'
-import { fetchMe } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
+import { fetchMe } from '~/server/user.server'
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url)

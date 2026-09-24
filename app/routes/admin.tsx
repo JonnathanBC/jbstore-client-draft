@@ -1,12 +1,13 @@
 import { Outlet, data } from 'react-router'
 import type { Route } from './+types/admin'
-import { requireAuth, fetchMe } from '~/server/auth.server'
+import { requireAuth } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { Sidebar } from '~/components/admin/Sidebar'
 import { Breadcrumbs } from '~/components/shared/Breadcrumbs'
 import { AppToaster, type ToastFlash } from '~/components/AppToaster'
 import type { RouteHandle } from '~/types/route'
 import { UserRole } from '~/types/user'
+import { fetchMe } from '~/server/user.server'
 
 export const handle: RouteHandle = { breadcrumb: 'Dashboard' }
 
