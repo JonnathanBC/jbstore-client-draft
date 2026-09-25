@@ -1,13 +1,11 @@
-import { Form, useActionData, useLoaderData, useNavigation } from 'react-router'
+import { useEffect } from 'react'
+import { useActionData, useLoaderData, useNavigation } from 'react-router'
+import { toast } from 'sonner'
 import type { Route } from './+types/_app.address'
 import { requireAuth } from '~/server/auth.server'
-import {
-  createAddress,
-  getAddresses,
-  type AddressInput,
-} from '~/server/addresses.server'
-import { Input } from '~/components/shared/Input'
-import { Select } from '~/components/shared/Select'
+import { createAddress, getAddresses } from '~/server/addresses.server'
+import { ShippingAddress } from '~/addresses/components/ShippingAddress'
+import type { AddressInput } from '~/types/addresses'
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Dirección | JB Store' },
@@ -42,6 +40,7 @@ export async function action({ request }: Route.ActionArgs) {
       .toUpperCase(),
     reference: String(form.get('reference') ?? '').trim(),
     phone: String(form.get('phone') ?? '').trim(),
+    is_default: Boolean(form.get('is_default')),
   }
 
   const result = await createAddress(input, auth.token)
@@ -67,25 +66,25 @@ export default function AddressPage() {
   const submitting = navigation.state === 'submitting'
   const fieldErrors = actionData?.fieldErrors ?? {}
 
+  useEffect(() => {
+    if (actionData?.error) toast.error(actionData.error)
+    if (actionData?.success) toast.success(actionData.success)
+  }, [actionData])
+
   return (
-    <section className="mx-auto max-w-3xl">
-      <h1 className="mb-2 text-2xl font-semibold text-zinc-900">Dirección</h1>
-      <p className="mb-6 text-sm text-zinc-600">
-        Completá los datos de entrega para continuar.
-      </p>
-
-      {actionData?.error && (
-        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-          {actionData.error}
+    <section className="">
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-2">
+          <ShippingAddress
+            addresses={addresses}
+            fieldErrors={fieldErrors}
+            submitting={submitting}
+          />
         </div>
-      )}
-      {actionData?.success && (
-        <div className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">
-          {actionData.success}
-        </div>
-      )}
+        <div className="col-span-1"></div>
+      </div>
 
-      {addresses.length > 0 && (
+      {/* {addresses.length > 0 && (
         <div className="mb-6 space-y-3">
           <h2 className="text-lg font-semibold text-zinc-900">
             Tus direcciones
@@ -107,86 +106,7 @@ export default function AddressPage() {
             </article>
           ))}
         </div>
-      )}
-
-      <Form
-        method="post"
-        className="grid gap-4 rounded-lg bg-white p-6 shadow-sm md:grid-cols-2"
-      >
-        <Select
-          name="type"
-          label="Tipo de dirección"
-          items={[
-            { value: 'shipping', label: 'Envío' },
-            { value: 'billing', label: 'Facturación' },
-          ]}
-          error={fieldErrors.type?.[0]}
-        />
-        <Input
-          label="Teléfono"
-          name="phone"
-          type="text"
-          autoComplete="tel"
-          required
-          error={fieldErrors.phone?.[0]}
-        />
-        <Input
-          label="Dirección principal"
-          name="address_line_1"
-          placeholder="Calle principal y número"
-          required
-          error={fieldErrors.address_line_1?.[0]}
-        />
-        <Input
-          label="Complemento"
-          name="address_line_2"
-          placeholder="Edificio, departamento o piso"
-          error={fieldErrors.address_line_2?.[0]}
-        />
-        <Input
-          label="Ciudad"
-          name="city"
-          required
-          error={fieldErrors.city?.[0]}
-        />
-        <Input
-          label="Provincia"
-          name="province"
-          required
-          error={fieldErrors.province?.[0]}
-        />
-        <Input
-          label="Código postal"
-          name="postal_code"
-          error={fieldErrors.postal_code?.[0]}
-        />
-        <Input
-          label="País"
-          name="country"
-          defaultValue="EC"
-          maxLength={2}
-          required
-          error={fieldErrors.country?.[0]}
-        />
-        <div className="md:col-span-2">
-          <Input
-            label="Referencia"
-            name="reference"
-            placeholder="Cerca de..."
-            error={fieldErrors.reference?.[0]}
-          />
-        </div>
-
-        <div className="md:col-span-2 md:flex md:justify-end">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full cursor-pointer rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
-          >
-            {submitting ? 'Procesando...' : 'Continuar'}
-          </button>
-        </div>
-      </Form>
+      )} */}
     </section>
   )
 }
