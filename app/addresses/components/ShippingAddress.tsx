@@ -4,6 +4,7 @@ import { Input } from '~/components/shared/Input'
 import { Select } from '~/components/shared/Select'
 import { useState } from 'react'
 import { Checkbox } from '~/components/shared/Checkbox'
+import { Edit, Edit2, House, Star, Trash2 } from 'lucide-react'
 
 type Props = {
   addresses: Address[]
@@ -114,13 +115,41 @@ export const ShippingAddress = ({
             {addresses.length === 0 && (
               <span>No se han encontrado direcciones</span>
             )}
-            {addresses.length > 0 &&
-              addresses.map((address) => (
-                <>
-                  <p>{address.address_line_1}</p>
-                  <p>{address.city}</p>
-                </>
-              ))}
+            {addresses.length > 0 && (
+              <ul className="grid grid-cols-3 gap-4">
+                {addresses.map((address) => (
+                  <li key={address.id} className="rounded-lg bg-white shadow">
+                    <div className="flex p-4">
+                      <div>
+                        <House className="size-5 text-purple-600" />
+                      </div>
+                      <div className="mx-4 flex-1 text-sm">
+                        <p className="text-purple-600">
+                          {address.type === 'billing' ? 'Facturación' : 'Envío'}
+                        </p>
+                        <p className="font-semibold text-gray-700">
+                          {address.province}
+                        </p>
+                        <p className="font-semibold text-gray-700">
+                          {address.address_line_1}
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <button>
+                          <Star className="size-4 text-gray-800" />
+                        </button>
+                        <button>
+                          <Edit2 className="size-4 text-gray-800" />
+                        </button>
+                        <button>
+                          <Trash2 className="size-4 text-gray-800" />
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
 
             <button
               className="btn btn-primary mt-2 block w-full"
