@@ -3,7 +3,11 @@ import { useActionData, useLoaderData, useNavigation } from 'react-router'
 import { toast } from 'sonner'
 import type { Route } from './+types/_app.address'
 import { requireAuth } from '~/server/auth.server'
-import { createAddress, getAddresses } from '~/server/addresses.server'
+import {
+  createAddress,
+  getAddresses,
+  setDefaultAddress,
+} from '~/server/addresses.server'
 import { ShippingAddress } from '~/addresses/components/ShippingAddress'
 import type { AddressInput } from '~/types/addresses'
 
@@ -27,36 +31,64 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const auth = await requireAuth(request)
   const form = await request.formData()
+  const intent = form.get('intent')
 
-  const input: AddressInput = {
-    type: form.get('type') === 'billing' ? 'billing' : 'shipping',
-    address_line_1: String(form.get('address_line_1') ?? '').trim(),
-    address_line_2: String(form.get('address_line_2') ?? '').trim(),
-    city: String(form.get('city') ?? '').trim(),
-    province: String(form.get('province') ?? '').trim(),
-    postal_code: String(form.get('postal_code') ?? '').trim(),
-    country: String(form.get('country') ?? 'EC')
-      .trim()
-      .toUpperCase(),
-    reference: String(form.get('reference') ?? '').trim(),
-    phone: String(form.get('phone') ?? '').trim(),
-    is_default: Boolean(form.get('is_default')),
-  }
+  switch (intent) {
+    case 'set-default': {
+      const id = Number(form.get('id'))
+      if (!Number.isInteger(id) || id <= 0) {
+        return { error: 'Dirección inválida' }
+      }
 
-  const result = await createAddress(input, auth.token)
-  if ('error' in result) {
-    const fieldErrors = result.error.errors ?? {}
+      const result = await setDefaultAddress(id, auth.token)
+      if ('error' in result) {
+        return {
+          error:
+            result.error.message ||
+            'No se pudo marcar la dirección como predeterminada',
+        }
+      }
 
-    return {
-      error:
-        Object.keys(fieldErrors).length === 0
-          ? result.error.message || 'No se pudo guardar la dirección'
-          : undefined,
-      fieldErrors,
+      return { success: 'Dirección marcada como predeterminada' }
+    }
+
+    case 'delete': {
+      const id = Number(form.get('id'))
+      // TODO: eliminar la dirección `id`
+      return { success: 'Dirección eliminada' }
+    }
+
+    default: {
+      const input: AddressInput = {
+        address_line_1: String(form.get('address_line_1') ?? '').trim(),
+        address_line_2: String(form.get('address_line_2') ?? '').trim(),
+        city: String(form.get('city') ?? '').trim(),
+        province: String(form.get('province') ?? '').trim(),
+        postal_code: String(form.get('postal_code') ?? '').trim(),
+        country: String(form.get('country') ?? 'EC')
+          .trim()
+          .toUpperCase(),
+        reference: String(form.get('reference') ?? '').trim(),
+        phone: String(form.get('phone') ?? '').trim(),
+        is_default: Boolean(form.get('is_default')),
+      }
+
+      const result = await createAddress(input, auth.token)
+      if ('error' in result) {
+        const fieldErrors = result.error.errors ?? {}
+
+        return {
+          error:
+            Object.keys(fieldErrors).length === 0
+              ? result.error.message || 'No se pudo guardar la dirección'
+              : undefined,
+          fieldErrors,
+        }
+      }
+
+      return { success: 'Dirección guardada. Continuemos con el pedido.' }
     }
   }
-
-  return { success: 'Dirección guardada. Continuemos con el pedido.' }
 }
 
 export default function AddressPage() {

@@ -1,10 +1,11 @@
-import { Form } from 'react-router'
+import { Form, useFetcher } from 'react-router'
 import type { Address } from '~/types/addresses'
 import { Input } from '~/components/shared/Input'
-import { Select } from '~/components/shared/Select'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { Checkbox } from '~/components/shared/Checkbox'
-import { Edit, Edit2, House, Star, Trash2 } from 'lucide-react'
+import { Edit2, House, Star, Trash2 } from 'lucide-react'
+import { cn } from '~/lib/utils'
 
 type Props = {
   addresses: Address[]
@@ -18,6 +19,14 @@ export const ShippingAddress = ({
   submitting,
 }: Props) => {
   const [showForm, setShowForm] = useState(false)
+  const fetcher = useFetcher<{ success?: string; error?: string }>()
+
+  // Las respuestas del fetcher llegan en fetcher.data, no en useActionData
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+    if (fetcher.data.error) toast.error(fetcher.data.error)
+    if (fetcher.data.success) toast.success(fetcher.data.success)
+  }, [fetcher.state, fetcher.data])
 
   return (
     <div>
@@ -26,15 +35,6 @@ export const ShippingAddress = ({
           method="post"
           className="grid gap-4 rounded-lg bg-white p-6 shadow-sm md:grid-cols-2"
         >
-          <Select
-            name="type"
-            label="Tipo de dirección"
-            items={[
-              { value: 'shipping', label: 'Envío' },
-              { value: 'billing', label: 'Facturación' },
-            ]}
-            error={fieldErrors.type?.[0]}
-          />
           <Input
             label="Teléfono"
             name="phone"
@@ -118,15 +118,17 @@ export const ShippingAddress = ({
             {addresses.length > 0 && (
               <ul className="grid grid-cols-3 gap-4">
                 {addresses.map((address) => (
-                  <li key={address.id} className="rounded-lg bg-white shadow">
+                  <li
+                    key={address.id}
+                    className={cn('rounded-lg bg-white shadow', {
+                      'bg-purple-200': address.is_default,
+                    })}
+                  >
                     <div className="flex p-4">
                       <div>
                         <House className="size-5 text-purple-600" />
                       </div>
                       <div className="mx-4 flex-1 text-sm">
-                        <p className="text-purple-600">
-                          {address.type === 'billing' ? 'Facturación' : 'Envío'}
-                        </p>
                         <p className="font-semibold text-gray-700">
                           {address.province}
                         </p>
@@ -134,17 +136,29 @@ export const ShippingAddress = ({
                           {address.address_line_1}
                         </p>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <button>
-                          <Star className="size-4 text-gray-800" />
-                        </button>
-                        <button>
-                          <Edit2 className="size-4 text-gray-800" />
-                        </button>
-                        <button>
-                          <Trash2 className="size-4 text-gray-800" />
-                        </button>
-                      </div>
+                      <fetcher.Form method="post">
+                        <div className="flex flex-col gap-2">
+                          <input type="hidden" name="id" value={address.id} />
+                          <button
+                            type="submit"
+                            name="intent"
+                            value="set-default"
+                          >
+                            <Star
+                              className={cn('size-4 text-gray-800', {
+                                'fill-purple-400 text-purple-400':
+                                  !!address.is_default,
+                              })}
+                            />
+                          </button>
+                          <button type="button">
+                            <Edit2 className="size-4 text-gray-800" />
+                          </button>
+                          <button type="submit" name="intent" value="delete">
+                            <Trash2 className="size-4 text-gray-800" />
+                          </button>
+                        </div>
+                      </fetcher.Form>
                     </div>
                   </li>
                 ))}

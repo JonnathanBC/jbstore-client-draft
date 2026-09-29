@@ -1,5 +1,4 @@
 export type AddressInput = {
-  type: 'shipping' | 'billing'
   address_line_1: string
   address_line_2: string
   city: string

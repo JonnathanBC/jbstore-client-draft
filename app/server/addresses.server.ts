@@ -26,3 +26,17 @@ export async function createAddress(
     return { error: toApiError(err) }
   }
 }
+
+export async function setDefaultAddress(
+  id: number,
+  token: string,
+): Promise<Address | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).patch<Address>(
+      `/api/addresses/${id}/default`,
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
