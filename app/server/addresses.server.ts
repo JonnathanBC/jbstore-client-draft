@@ -43,6 +43,18 @@ export async function updateAddress(
   }
 }
 
+export async function deleteAddress(
+  id: number,
+  token: string,
+): Promise<{ ok: true } | { error: ApiError }> {
+  try {
+    await apiClient(token).delete(`/api/addresses/${id}`)
+    return { ok: true }
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
 export async function setDefaultAddress(
   id: number,
   token: string,

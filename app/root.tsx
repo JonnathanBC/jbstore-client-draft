@@ -11,6 +11,7 @@ import {
 import type { Route } from './+types/root'
 import './styles/global.css'
 import { ModalRenderer } from './components/modals/ModalRenderer'
+import { ConfirmDialogHost } from './components/confirm/ConfirmDialogHost'
 
 export const links: Route.LinksFunction = () => [
   { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
@@ -30,6 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ScrollRestoration />
         <Scripts />
         <ModalRenderer />
+        <ConfirmDialogHost />
       </body>
     </html>
   )

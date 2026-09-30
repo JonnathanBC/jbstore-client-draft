@@ -1,16 +1,23 @@
 import { useEffect } from 'react'
-import { useActionData, useLoaderData, useNavigation } from 'react-router'
+import {
+  redirect,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from 'react-router'
 import { toast } from 'sonner'
 import type { Route } from './+types/_app.address'
 import { requireAuth } from '~/server/auth.server'
 import {
   createAddress,
+  deleteAddress,
   getAddresses,
   setDefaultAddress,
   updateAddress,
 } from '~/server/addresses.server'
 import { ShippingAddress } from '~/addresses/components/ShippingAddress'
 import type { AddressInput } from '~/types/addresses'
+import { commitSession, getSession } from '~/server/session.server'
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Dirección | JB Store' },
@@ -41,6 +48,7 @@ export async function action({ request }: Route.ActionArgs) {
         return { error: 'Dirección inválida' }
       }
 
+      form.delete('intent')
       const result = await setDefaultAddress(id, auth.token)
       if ('error' in result) {
         return {
@@ -55,8 +63,29 @@ export async function action({ request }: Route.ActionArgs) {
 
     case 'delete': {
       const id = Number(form.get('id'))
-      // TODO: eliminar la dirección `id`
-      return { success: 'Dirección eliminada' }
+      const session = await getSession(request.headers.get('Cookie'))
+
+      if (!Number.isInteger(id) || id <= 0) {
+        return { error: 'Dirección inválida' }
+      }
+
+      form.delete('intent')
+      const result = await deleteAddress(id, auth.token)
+
+      if ('error' in result) {
+        return {
+          error: result.error.message || 'Error al eliminar la dirección',
+        }
+      }
+
+      session.flash('toast', {
+        kind: 'success',
+        title: 'Dirección eliminada correctamente',
+      })
+
+      return redirect('/address', {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      })
     }
 
     default: {
@@ -76,6 +105,8 @@ export async function action({ request }: Route.ActionArgs) {
 
       const id = Number(form.get('id'))
       const isEdit = Number.isInteger(id) && id > 0
+
+      form.delete('intent')
 
       const result = isEdit
         ? await updateAddress(id, input, auth.token)
@@ -125,30 +156,6 @@ export default function AddressPage() {
         </div>
         <div className="col-span-1"></div>
       </div>
-
-      {/* {addresses.length > 0 && (
-        <div className="mb-6 space-y-3">
-          <h2 className="text-lg font-semibold text-zinc-900">
-            Tus direcciones
-          </h2>
-          {addresses.map((address) => (
-            <article
-              key={address.id}
-              className="rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-700"
-            >
-              <p className="font-medium text-zinc-900">
-                {address.type === 'shipping' ? 'Envío' : 'Facturación'}
-              </p>
-              <p>{address.address_line_1}</p>
-              {address.address_line_2 && <p>{address.address_line_2}</p>}
-              <p>
-                {address.city}, {address.province}
-              </p>
-              <p>{address.phone}</p>
-            </article>
-          ))}
-        </div>
-      )} */}
     </section>
   )
 }

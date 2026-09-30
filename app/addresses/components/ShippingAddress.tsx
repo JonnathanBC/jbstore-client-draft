@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { Checkbox } from '~/components/shared/Checkbox'
 import { Edit2, House, Star, Trash2 } from 'lucide-react'
 import { cn } from '~/lib/utils'
+import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 
 type Props = {
   addresses: Address[]
@@ -194,7 +195,19 @@ export const ShippingAddress = ({
                           >
                             <Edit2 className="size-4 text-gray-800" />
                           </button>
-                          <button type="submit" name="intent" value="delete">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const confirmed = await showDeleteConfirm({
+                                description: 'Esta dirección se eliminará',
+                              })
+                              if (!confirmed) return
+                              fetcher.submit(
+                                { id: String(address.id), intent: 'delete' },
+                                { method: 'post' },
+                              )
+                            }}
+                          >
                             <Trash2 className="size-4 text-gray-800" />
                           </button>
                         </div>
