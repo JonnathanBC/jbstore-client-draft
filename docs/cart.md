@@ -40,7 +40,7 @@ Login:   RR lee la cookie → POST /api/cart/merge → borra la cookie
 
 ### En contra (con evidencia de tu código)
 1. **Dos implementaciones del mismo carrito.** `loadGuestCart` en RR reimplementa lo que Laravel ya hace, y ya divergen:
-   - usa `product.price`, **ignorando el precio y la imagen de la variante**;
+   - ignora la **imagen y el stock de la variante** (las variantes no tienen precio propio; si algún día lo tienen, habrá que agregarlo en dos lugares);
    - deja `features: []`, así que el guest no ve qué talla o color eligió;
    - el `rowId` es el índice del array, no el `rowId` real, y las operaciones por fila se comportan distinto.
 
@@ -70,6 +70,7 @@ Schema::create('carts', function (Blueprint $table) {
     $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
     $table->uuid('token')->unique();                  // identifica al guest (y al cart en general)
     $table->string('status', 20)->default('active');  // active | merged | converted | abandoned
+    $table->unsignedInteger('version')->default(1);   // +1 en cada cambio de items: base de la clave de checkout (checkout.md §6.1)
     $table->timestamp('converted_at')->nullable();
     $table->timestamps();
     $table->index(['status', 'updated_at']);          // limpieza y carritos abandonados
@@ -147,7 +148,7 @@ const cartCount = await getCartCount({ token: auth?.token, cartToken }) // un en
 `loadGuestCart` desaparece: RR solo **transporta** el token. Toda la lógica vive en Laravel.
 
 ### A favor
-- **Una sola implementación**: el guest ve exactamente lo mismo que el usuario (variantes, precios, imágenes).
+- **Una sola implementación**: el guest ve exactamente lo mismo que el usuario (variantes, imágenes, stock).
 - Sin límite de 4 KB.
 - Carritos abandonados medibles y recuperables (emails, métricas de conversión).
 - Relacional: podés consultar "¿qué carritos tienen el producto X?" o reservar stock. Con un blob serializado no se puede.
@@ -181,7 +182,7 @@ arquitectura distinta: es la Opción 2 bien terminada.
 | | Opción 1 (cookie) | Opción 2 (BD) | Amazon (2 + extras) |
 |---|---|---|---|
 | Implementaciones del carrito | 2 (RR + Laravel) | **1** | 1 |
-| Guest ve variantes, precio e imagen correctos | ❌ hoy no | ✅ | ✅ |
+| Guest ve variante, imagen y stock correctos | ❌ hoy no | ✅ | ✅ |
 | Límite de tamaño | 4 KB | Ninguno | Ninguno |
 | Multi-dispositivo (guest) | ❌ | ❌ (salvo login) | ❌ (salvo login) |
 | Carritos abandonados / analítica | ❌ | ✅ | ✅ |
