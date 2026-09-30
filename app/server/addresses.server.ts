@@ -27,6 +27,22 @@ export async function createAddress(
   }
 }
 
+export async function updateAddress(
+  id: number,
+  input: Partial<AddressInput>,
+  token: string,
+): Promise<Address | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).patch<Address>(
+      `/api/addresses/${id}`,
+      input,
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
 export async function setDefaultAddress(
   id: number,
   token: string,

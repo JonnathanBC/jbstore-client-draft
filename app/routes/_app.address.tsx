@@ -7,6 +7,7 @@ import {
   createAddress,
   getAddresses,
   setDefaultAddress,
+  updateAddress,
 } from '~/server/addresses.server'
 import { ShippingAddress } from '~/addresses/components/ShippingAddress'
 import type { AddressInput } from '~/types/addresses'
@@ -73,7 +74,12 @@ export async function action({ request }: Route.ActionArgs) {
         is_default: Boolean(form.get('is_default')),
       }
 
-      const result = await createAddress(input, auth.token)
+      const id = Number(form.get('id'))
+      const isEdit = Number.isInteger(id) && id > 0
+
+      const result = isEdit
+        ? await updateAddress(id, input, auth.token)
+        : await createAddress(input, auth.token)
       if ('error' in result) {
         const fieldErrors = result.error.errors ?? {}
 
@@ -86,7 +92,11 @@ export async function action({ request }: Route.ActionArgs) {
         }
       }
 
-      return { success: 'Dirección guardada. Continuemos con el pedido.' }
+      return {
+        success: isEdit
+          ? 'Dirección actualizada'
+          : 'Dirección guardada. Continuemos con el pedido.',
+      }
     }
   }
 }

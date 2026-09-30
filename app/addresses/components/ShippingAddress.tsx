@@ -1,4 +1,4 @@
-import { Form, useFetcher } from 'react-router'
+import { Form, useActionData, useFetcher } from 'react-router'
 import type { Address } from '~/types/addresses'
 import { Input } from '~/components/shared/Input'
 import { useEffect, useState } from 'react'
@@ -19,6 +19,7 @@ export const ShippingAddress = ({
   submitting,
 }: Props) => {
   const [showForm, setShowForm] = useState(false)
+  const [editing, setEditing] = useState<Address | null>(null)
   const fetcher = useFetcher<{ success?: string; error?: string }>()
 
   // Las respuestas del fetcher llegan en fetcher.data, no en useActionData
@@ -28,18 +29,36 @@ export const ShippingAddress = ({
     if (fetcher.data.success) toast.success(fetcher.data.success)
   }, [fetcher.state, fetcher.data])
 
+  const actionData = useActionData<{ success?: string }>()
+  useEffect(() => {
+    if (actionData?.success) closeForm()
+  }, [actionData])
+
+  const openForm = (address: Address | null) => {
+    setEditing(address)
+    setShowForm(true)
+  }
+
+  const closeForm = () => {
+    setEditing(null)
+    setShowForm(false)
+  }
+
   return (
     <div>
       {!!showForm ? (
         <Form
+          key={editing?.id ?? 'new'}
           method="post"
           className="grid gap-4 rounded-lg bg-white p-6 shadow-sm md:grid-cols-2"
         >
+          {editing && <input type="hidden" name="id" value={editing.id} />}
           <Input
             label="Teléfono"
             name="phone"
             type="text"
             autoComplete="tel"
+            defaultValue={editing?.phone ?? ''}
             required
             error={fieldErrors.phone?.[0]}
           />
@@ -47,6 +66,7 @@ export const ShippingAddress = ({
             label="Dirección principal"
             name="address_line_1"
             placeholder="Calle principal y número"
+            defaultValue={editing?.address_line_1 ?? ''}
             required
             error={fieldErrors.address_line_1?.[0]}
           />
@@ -54,29 +74,33 @@ export const ShippingAddress = ({
             label="Complemento"
             name="address_line_2"
             placeholder="Edificio, departamento o piso"
+            defaultValue={editing?.address_line_2 ?? ''}
             error={fieldErrors.address_line_2?.[0]}
           />
           <Input
             label="Ciudad"
             name="city"
+            defaultValue={editing?.city ?? ''}
             required
             error={fieldErrors.city?.[0]}
           />
           <Input
             label="Provincia"
             name="province"
+            defaultValue={editing?.province ?? ''}
             required
             error={fieldErrors.province?.[0]}
           />
           <Input
             label="Código postal"
             name="postal_code"
+            defaultValue={editing?.postal_code ?? ''}
             error={fieldErrors.postal_code?.[0]}
           />
           <Input
             label="País"
             name="country"
-            defaultValue="EC"
+            defaultValue={editing?.country ?? 'EC'}
             maxLength={2}
             required
             error={fieldErrors.country?.[0]}
@@ -85,21 +109,34 @@ export const ShippingAddress = ({
             label="Referencia"
             name="reference"
             placeholder="Cerca de..."
+            defaultValue={editing?.reference ?? ''}
             error={fieldErrors.reference?.[0]}
           />
           <Checkbox
             append="Marcar como dirección preferida"
             name="is_default"
-            error={fieldErrors.is_public?.[0]}
+            defaultChecked={!!editing?.is_default}
+            error={fieldErrors.is_default?.[0]}
           />
 
-          <div className="md:col-span-2 md:flex md:justify-end">
+          <div className="gap-2 md:col-span-2 md:flex md:justify-end">
+            <button
+              type="button"
+              onClick={closeForm}
+              className="w-full cursor-pointer rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 md:w-auto"
+            >
+              Cancelar
+            </button>
             <button
               type="submit"
               disabled={submitting}
               className="w-full cursor-pointer rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
             >
-              {submitting ? 'Procesando...' : 'Continuar'}
+              {submitting
+                ? 'Procesando...'
+                : editing
+                  ? 'Actualizar'
+                  : 'Continuar'}
             </button>
           </div>
         </Form>
@@ -151,7 +188,10 @@ export const ShippingAddress = ({
                               })}
                             />
                           </button>
-                          <button type="button">
+                          <button
+                            type="button"
+                            onClick={() => openForm(address)}
+                          >
                             <Edit2 className="size-4 text-gray-800" />
                           </button>
                           <button type="submit" name="intent" value="delete">
@@ -167,7 +207,7 @@ export const ShippingAddress = ({
 
             <button
               className="btn btn-primary mt-2 block w-full"
-              onClick={() => setShowForm(true)}
+              onClick={() => openForm(null)}
             >
               Añadir dirección
             </button>
