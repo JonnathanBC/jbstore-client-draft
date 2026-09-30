@@ -5,11 +5,10 @@ import { HeaderTitle } from '~/components/HeaderTitle'
 import type { ApiError } from '~/lib/apiClient'
 import {
   clearCart,
-  getCart,
   removeFromCart,
   updateCart,
 } from '~/server/cart.server'
-import { getPublicProductsByIds } from '~/server/products.server'
+import { loadCart } from '~/server/loadCart.server'
 import { getOptionalAuth } from '~/server/auth.server'
 import {
   clearGuestCart,
@@ -23,55 +22,7 @@ export const meta: Route.MetaFunction = () => [{ title: 'Carrito | JB Store' }]
 
 export async function loader({ request }: Route.LoaderArgs) {
   const auth = await getOptionalAuth(request)
-  if (!auth) {
-    const guestItems = await getGuestCart(request)
-    const products = await getPublicProductsByIds([
-      ...new Set(guestItems.map((item) => item.product_id)),
-    ]).catch(() => [])
-    const productsById = new Map(
-      products.map((product) => [product.id, product]),
-    )
-
-    const items = guestItems.flatMap((item, index) => {
-      const product = productsById.get(item.product_id)
-      if (!product) return []
-
-      return [
-        {
-          rowId: String(index),
-          id: product.id,
-          name: product.name,
-          qty: item.quantity,
-          price: product.price,
-          options: { image: product.image, sku: '', features: [] },
-          tax: 0,
-          isSaved: false,
-          subtotal: product.price * item.quantity,
-        },
-      ]
-    })
-
-    return {
-      items: {
-        items,
-        count: items.reduce((total, item) => total + item.qty, 0),
-        subtotal: items
-          .reduce((total, item) => total + item.subtotal, 0)
-          .toFixed(2),
-      },
-    }
-  }
-
-  const items = await getCart(auth.token)
-
-  if ('error' in items) {
-    throw new Response(items.error.message, {
-      status: items.error.status,
-    })
-  }
-
-  // const total = items.reduce((acc, it) => acc + it.price * it.qty, 0)
-  return { items }
+  return { items: await loadCart(request, auth?.token) }
 }
 
 const fail = (error: string, status = 400) =>

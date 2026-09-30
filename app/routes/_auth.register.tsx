@@ -1,15 +1,12 @@
 import {
   Form,
   Link,
-  redirect,
   useActionData,
   useNavigation,
 } from 'react-router'
 import { Lock, Mail, Phone, Text, User } from 'lucide-react'
 import type { Route } from './+types/_auth.register'
-import { register } from '~/server/auth.server'
-import { commitSession, getSession } from '~/server/session.server'
-import { mergeGuestCartOnLogin } from '~/server/guestCart.server'
+import { createUserSession, register } from '~/server/auth.server'
 import { GoogleIcon } from '~/components/icons/GoogleIcon'
 import { Input } from '~/components/shared/Input'
 import { Select } from '~/components/shared/Select'
@@ -55,19 +52,12 @@ export async function action({ request }: Route.ActionArgs) {
     }
   }
 
-  const session = await getSession(request.headers.get('Cookie'))
-  session.set('token', result.token)
-  session.set('userId', result.user.id)
-  session.flash('toast', {
-    kind: 'success',
-    title: 'Cuenta creada',
+  return createUserSession({
+    request,
+    token: result.token,
+    userId: result.user.id,
+    toast: { kind: 'success', title: 'Cuenta creada' },
   })
-
-  const headers = new Headers({ 'Set-Cookie': await commitSession(session) })
-  const clearGuest = await mergeGuestCartOnLogin(request, result.token)
-  if (clearGuest) headers.append('Set-Cookie', clearGuest)
-
-  return redirect('/', { headers })
 }
 
 export default function RegisterPage() {

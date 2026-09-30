@@ -18,6 +18,8 @@ import {
 import { ShippingAddress } from '~/addresses/components/ShippingAddress'
 import type { AddressInput } from '~/types/addresses'
 import { commitSession, getSession } from '~/server/session.server'
+import { loadCart } from '~/server/loadCart.server'
+import { CartSummary } from '~/addresses/components/CartSummary'
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Dirección | JB Store' },
@@ -25,7 +27,11 @@ export const meta: Route.MetaFunction = () => [
 
 export async function loader({ request }: Route.LoaderArgs) {
   const auth = await requireAuth(request)
-  const result = await getAddresses(auth.token)
+  // En paralelo: direcciones y carrito no dependen uno del otro
+  const [result, cart] = await Promise.all([
+    getAddresses(auth.token),
+    loadCart(request, auth.token),
+  ])
 
   if ('error' in result) {
     throw new Response(result.error.message, {
@@ -33,7 +39,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     })
   }
 
-  return { addresses: result }
+  return { addresses: result, cart }
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -133,7 +139,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function AddressPage() {
-  const { addresses } = useLoaderData<typeof loader>()
+  const { addresses, cart } = useLoaderData<typeof loader>()
   const actionData = useActionData<Route.ComponentProps['actionData']>()
   const navigation = useNavigation()
   const submitting = navigation.state === 'submitting'
@@ -154,7 +160,9 @@ export default function AddressPage() {
             submitting={submitting}
           />
         </div>
-        <div className="col-span-1"></div>
+        <div className="col-span-1">
+          <CartSummary cart={cart} />
+        </div>
       </div>
     </section>
   )

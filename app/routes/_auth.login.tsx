@@ -1,16 +1,13 @@
 import {
   Form,
   Link,
-  redirect,
   useActionData,
   useNavigation,
   useSearchParams,
 } from 'react-router'
 import { Lock, User } from 'lucide-react'
 import type { Route } from './+types/_auth.login'
-import { login } from '~/server/auth.server'
-import { commitSession, getSession } from '~/server/session.server'
-import { mergeGuestCartOnLogin } from '~/server/guestCart.server'
+import { createUserSession, login } from '~/server/auth.server'
 import { GoogleIcon } from '~/components/icons/GoogleIcon'
 import { Input } from '~/components/shared/Input'
 
@@ -33,15 +30,12 @@ export async function action({ request }: Route.ActionArgs) {
     return { error: result.error.message || 'Credenciales inválidas' }
   }
 
-  const session = await getSession(request.headers.get('Cookie'))
-  session.set('token', result.token)
-  session.set('userId', result.user.id)
-
-  const headers = new Headers({ 'Set-Cookie': await commitSession(session) })
-  const clearGuest = await mergeGuestCartOnLogin(request, result.token)
-  if (clearGuest) headers.append('Set-Cookie', clearGuest)
-
-  return redirect(redirectTo, { headers })
+  return createUserSession({
+    request,
+    token: result.token,
+    userId: result.user.id,
+    redirectTo,
+  })
 }
 
 export default function LoginPage() {

@@ -1,7 +1,9 @@
 import { redirect } from 'react-router'
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
 import type { User } from '~/types/user'
-import { getSession } from './session.server'
+import type { ToastFlash } from '~/components/AppToaster'
+import { commitSession, getSession } from './session.server'
+import { mergeGuestCartOnLogin } from './guestCart.server'
 
 export interface AuthTokens {
   token: string
@@ -26,6 +28,41 @@ export async function requireAuth(request: Request): Promise<AuthTokens> {
     throw redirect(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)
   }
   return auth
+}
+
+/**
+ * Único punto de entrada para iniciar sesión (login, registro, Google...).
+ * Crea la sesión y fusiona el carrito guest: si un login nuevo no pasa por
+ * aquí, los items del invitado quedan huérfanos en la cookie.
+ */
+export async function createUserSession({
+  request,
+  token,
+  userId,
+  redirectTo = '/',
+  toast,
+}: {
+  request: Request
+  token: string
+  userId: number
+  redirectTo?: string
+  toast?: ToastFlash
+}) {
+  const session = await getSession(request.headers.get('Cookie'))
+  session.set('token', token)
+  session.set('userId', userId)
+  if (toast) session.flash('toast', toast)
+
+  const headers = new Headers({ 'Set-Cookie': await commitSession(session) })
+  const clearGuest = await mergeGuestCartOnLogin(request, token)
+  if (clearGuest) headers.append('Set-Cookie', clearGuest)
+
+  return redirect(safeRedirect(redirectTo), { headers })
+}
+
+// Solo rutas internas: evita open redirect con redirectTo=https://sitio-malicioso.com
+function safeRedirect(to: string, fallback = '/') {
+  return to.startsWith('/') && !to.startsWith('//') ? to : fallback
 }
 
 export interface LoginResult {
