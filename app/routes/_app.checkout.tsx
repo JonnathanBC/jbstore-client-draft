@@ -1,17 +1,45 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useFetcher } from 'react-router'
+import { toast } from 'sonner'
 import type { Route } from './+types/_app.checkout'
 import { CreditCardIcon } from 'lucide-react'
+import { requireAuth } from '~/server/auth.server'
+import { getPaymentToken } from '~/server/payments.server'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
 export async function loader({ request }: Route.LoaderArgs) {}
 
-export async function action({ request }: Route.ActionArgs) {}
+export async function action({ request }: Route.ActionArgs) {
+  const auth = await requireAuth(request)
+
+  const result = await getPaymentToken(auth.token)
+
+  if ('error' in result) {
+    return {
+      error:
+        result.error.message ||
+        'No se pudo marcar la dirección como predeterminada',
+    }
+  }
+
+  return { token: result.accessToken }
+}
 
 export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
   const [paymentType, setPaymentType] = useState<
     'card-credit' | 'bank-deposit'
   >('card-credit')
+
+  const fetcher = useFetcher<{
+    error?: string
+    token?: string
+  }>()
+
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+    if (fetcher.data.error) toast.error(fetcher.data.error)
+  }, [fetcher.state, fetcher.data])
 
   return (
     <div className="mb-16 text-gray-700">
@@ -90,6 +118,18 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
               iure consectetur? Officia et aliquid voluptatum nobis fugit, optio
               quaerat ipsa beatae labore!
             </p>
+
+            <fetcher.Form method="post">
+              <button
+                type="submit"
+                disabled={fetcher.state !== 'idle'}
+                className="btn btn-primary mt-4 w-full"
+              >
+                {fetcher.state === 'submitting'
+                  ? 'Procesando...'
+                  : 'Pagar ahora'}
+              </button>
+            </fetcher.Form>
           </div>
         </div>
       </div>
