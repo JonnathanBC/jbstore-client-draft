@@ -17,9 +17,20 @@ export type PaymentFlash = {
   transactionDate: string
 }
 
+// Pago rechazado: si Niubiz no devuelve `data` (ej: error de autenticación),
+// la fecha y la tarjeta no existen.
+export type PaymentErrorFlash = {
+  message: string
+  purchaseNumber: string
+  transactionDate?: string
+  card?: string
+  brand?: string
+}
+
 type SessionFlashData = {
   toast: ToastFlash
   payment: PaymentFlash
+  paymentError: PaymentErrorFlash
 }
 
 const secret = process.env.SESSION_SECRET

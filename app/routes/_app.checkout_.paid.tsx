@@ -40,10 +40,13 @@ export async function action({ request }: Route.ActionArgs) {
   })
 
   if ('error' in result) {
-    session.flash('toast', {
-      kind: 'error',
-      title: 'El pago fue rechazado',
-      description: result.error.message,
+    const { rejection } = result
+    session.flash('paymentError', {
+      message: rejection?.ACTION_DESCRIPTION ?? result.error.message,
+      purchaseNumber,
+      transactionDate: rejection?.TRANSACTION_DATE,
+      card: rejection?.CARD,
+      brand: rejection?.BRAND,
     })
     return redirect('/checkout', {
       headers: { 'Set-Cookie': await commitSession(session) },

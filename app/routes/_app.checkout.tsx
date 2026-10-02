@@ -8,6 +8,8 @@ import { getPaymentSessionToken } from '~/server/payments.server'
 import { getCart } from '~/server/cart.server'
 import { niubizPublicConfig } from '~/server/niubiz.server'
 import { useNiubizScript, waitForNiubizModal } from '~/hooks/useNiubizScript'
+import { getSession } from '~/server/session.server'
+import { formatNiubizDate } from '~/lib/niubiz'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
@@ -18,9 +20,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   if ('error' in cart) {
     throw new Response(cart.error.message, { status: cart.error.status })
   }
+  // Lo deja /checkout/paid si Niubiz rechazó el pago. El layout _app lo consume.
+  const session = await getSession(request.headers.get('Cookie'))
+  const paymentError = session.get('paymentError') ?? null
+
   return {
     cart,
     niubiz: niubizPublicConfig,
+    paymentError,
   }
 }
 
@@ -50,7 +57,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
     'card-credit' | 'bank-deposit'
   >('card-credit')
 
-  const { niubiz } = loaderData
+  const { niubiz, paymentError } = loaderData
   const niubizLoaded = useNiubizScript(niubiz.scriptUrl)
   const fetcher = useFetcher<typeof action>()
   const [openingModal, setOpeningModal] = useState(false)
@@ -221,6 +228,33 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
                   {isBusy ? 'Procesando...' : 'Finalizar pedido'}
                 </button>
               </fetcher.Form>
+            )}
+
+            {paymentError && (
+              <div
+                role="alert"
+                className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800"
+              >
+                <p className="font-semibold">{paymentError.message}</p>
+                <p className="mt-2">
+                  <span className="font-medium">Número de pedido:</span>{' '}
+                  {paymentError.purchaseNumber}
+                </p>
+                {paymentError.transactionDate && (
+                  <p>
+                    <span className="font-medium">Fecha y hora del pedido:</span>{' '}
+                    {formatNiubizDate(paymentError.transactionDate)}
+                  </p>
+                )}
+                {paymentError.card && (
+                  <p>
+                    <span className="font-medium">Tarjeta:</span>{' '}
+                    {paymentError.card}
+                    {paymentError.brand &&
+                      ` (${paymentError.brand.toUpperCase()})`}
+                  </p>
+                )}
+              </div>
             )}
           </div>
         </div>

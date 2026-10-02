@@ -3,6 +3,7 @@ import { CircleCheckBig } from 'lucide-react'
 import type { Route } from './+types/_app.checkout_.thanks'
 import { requireAuth } from '~/server/auth.server'
 import { getSession } from '~/server/session.server'
+import { formatNiubizDate } from '~/lib/niubiz'
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Gracias por tu compra | JB Store' },
@@ -17,13 +18,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!payment) return redirect('/')
 
   return { payment }
-}
-
-// Niubiz manda la fecha como yyMMddHHmmss (ej: 261002115315).
-function formatNiubizDate(value: string) {
-  const [yy, MM, dd, HH, mm] = value.match(/\d{2}/g) ?? []
-  if (!mm) return value
-  return `${dd}/${MM}/20${yy} ${HH}:${mm}`
 }
 
 export default function CheckoutThanksPage({

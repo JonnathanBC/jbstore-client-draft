@@ -45,6 +45,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // paralelo, y este layout es el único que reescribe la cookie. Leer un flash
   // con get() lo consume.
   session.get('payment')
+  session.get('paymentError')
 
   return data(
     { ...userData, cartCount, toast },

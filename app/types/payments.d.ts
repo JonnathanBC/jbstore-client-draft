@@ -77,6 +77,10 @@ export type NiubizAuthorizationDataMap = {
   TRANSACTION_ID: string
 }
 
+// En un rechazo Niubiz manda un `data` parecido al dataMap, pero cualquier
+// campo puede faltar (y en errores de autenticación no viene `data`).
+export type NiubizRejectionData = Partial<NiubizAuthorizationDataMap>
+
 export type AuthorizePaymentResponse = {
   header: NiubizAuthorizationHeader
   fulfillment: NiubizAuthorizationFulfillment
