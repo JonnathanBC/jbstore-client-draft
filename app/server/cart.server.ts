@@ -19,6 +19,12 @@ export type Cart = {
   subtotal: string
 }
 
+// Sólo el carrito de Laravel trae envío y total; el de invitado no los conoce.
+export type UserCart = Cart & {
+  shipping: string
+  total: string
+}
+
 export async function addToCart(
   payload: {
     product_id: number
@@ -40,9 +46,9 @@ export async function addToCart(
 
 export async function getCart(
   token: string,
-): Promise<Cart | { error: ApiError }> {
+): Promise<UserCart | { error: ApiError }> {
   try {
-    const { data } = await apiClient(token).get<Cart>('/api/cart/items')
+    const { data } = await apiClient(token).get<UserCart>('/api/cart/items')
     return data
   } catch (err) {
     return { error: toApiError(err) }

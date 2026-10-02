@@ -2,18 +2,30 @@ import { useEffect, useState } from 'react'
 import { useFetcher } from 'react-router'
 import { toast } from 'sonner'
 import type { Route } from './+types/_app.checkout'
-import { CreditCardIcon, Info, InfoIcon } from 'lucide-react'
+import { CreditCardIcon, Info } from 'lucide-react'
 import { requireAuth } from '~/server/auth.server'
 import { getPaymentSessionToken } from '~/server/payments.server'
-import { loadCart } from '~/server/loadCart.server'
+import { getCart } from '~/server/cart.server'
+import { niubizPublicConfig } from '~/server/niubiz.server'
+import { useNiubizScript, waitForNiubizModal } from '~/hooks/useNiubizScript'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
 export async function loader({ request }: Route.LoaderArgs) {
   const auth = await requireAuth(request)
-  const cart = await loadCart(request, auth.token)
-  return { cart }
+  // Checkout exige login: usamos el carrito de Laravel, que trae envío y total.
+  const cart = await getCart(auth.token)
+  if ('error' in cart) {
+    throw new Response(cart.error.message, { status: cart.error.status })
+  }
+  return {
+    cart,
+    niubiz: niubizPublicConfig,
+  }
 }
+
+// Niubiz exige un número de compra numérico, único y de hasta 12 dígitos.
+const generatePurchaseNumber = () => String(Date.now()).slice(-12)
 
 export async function action({ request }: Route.ActionArgs) {
   const auth = await requireAuth(request)
@@ -22,13 +34,15 @@ export async function action({ request }: Route.ActionArgs) {
 
   if ('error' in result) {
     return {
-      error:
-        result.error.message ||
-        'No se pudo marcar la dirección como predeterminada',
+      error: result.error.message || 'No se pudo iniciar el pago con Niubiz',
     }
   }
 
-  return { token: result.sessionKey }
+  return {
+    token: result.sessionKey,
+    amount: result.amount,
+    purchaseNumber: generatePurchaseNumber(),
+  }
 }
 
 export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
@@ -36,15 +50,48 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
     'card-credit' | 'bank-deposit'
   >('card-credit')
 
-  const fetcher = useFetcher<{
-    error?: string
-    token?: string
-  }>()
+  const { niubiz } = loaderData
+  const niubizLoaded = useNiubizScript(niubiz.scriptUrl)
+  const fetcher = useFetcher<typeof action>()
+  const [openingModal, setOpeningModal] = useState(false)
+  const isBusy = fetcher.state !== 'idle' || openingModal
 
   useEffect(() => {
     if (fetcher.state !== 'idle' || !fetcher.data) return
-    if (fetcher.data.error) toast.error(fetcher.data.error)
-  }, [fetcher.state, fetcher.data])
+    if ('error' in fetcher.data) {
+      toast.error(fetcher.data.error)
+      return
+    }
+    if (!window.VisanetCheckout) {
+      toast.error('El checkout de Niubiz no se pudo cargar')
+      return
+    }
+
+    const { token, amount, purchaseNumber } = fetcher.data
+    // amount viene de Laravel con el envío incluido: el front no lo recalcula.
+    const params = new URLSearchParams({
+      purchaseNumber,
+      amount: String(amount),
+    })
+    // Niubiz resuelve las rutas relativas contra SU dominio: van absolutas.
+    const absolute = (path: string) =>
+      new URL(path, window.location.origin).href
+
+    window.VisanetCheckout.configure({
+      sessiontoken: token,
+      channel: 'web',
+      merchantid: niubiz.merchantId,
+      purchasenumber: purchaseNumber,
+      amount,
+      expirationminutes: '20',
+      timeouturl: absolute('/checkout'),
+      formbuttoncolor: '#000000',
+      action: absolute(`/checkout/paid?${params}`),
+    })
+    setOpeningModal(true)
+    waitForNiubizModal().then(() => setOpeningModal(false))
+    window.VisanetCheckout.open()
+  }, [fetcher.state, fetcher.data, niubiz.merchantId])
 
   return (
     <div className="mb-16 text-gray-700">
@@ -146,33 +193,33 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
             <div className="mt-2 flex justify-between">
               <p className="flex items-center gap-1">
                 Precio de envío
-                <span title="El precio de envío es de 2 dólares">
+                <span
+                  title={`El precio de envío es de ${loaderData.cart.shipping} dólares`}
+                >
                   <Info className="size-4" />
                 </span>
               </p>
-              <p>$3.00</p>
+              <p>${loaderData.cart.shipping}</p>
             </div>
 
             <hr className="my-3" />
 
             <div className="mb-4 flex justify-between text-lg font-semibold">
               <p className="text-lg font-semibold">Total</p>
-              <p>{Number(loaderData.cart.subtotal) + 3}</p>
+              <p>${loaderData.cart.total}</p>
             </div>
 
-            <div>
+            {paymentType === 'card-credit' && (
               <fetcher.Form method="post">
                 <button
                   type="submit"
-                  disabled={fetcher.state !== 'idle'}
+                  disabled={!niubizLoaded || isBusy}
                   className="btn btn-primary mt-4 w-full"
                 >
-                  {fetcher.state === 'submitting'
-                    ? 'Procesando...'
-                    : 'Finalizar pedido'}
+                  {isBusy ? 'Procesando...' : 'Finalizar pedido'}
                 </button>
               </fetcher.Form>
-            </div>
+            )}
           </div>
         </div>
       </div>
