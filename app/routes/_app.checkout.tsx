@@ -68,11 +68,13 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
     }
 
     const { token, amount, purchaseNumber } = fetcher.data
+
     // amount viene de Laravel con el envío incluido: el front no lo recalcula.
     const params = new URLSearchParams({
       purchaseNumber,
       amount: String(amount),
     })
+
     // Niubiz resuelve las rutas relativas contra SU dominio: van absolutas.
     const absolute = (path: string) =>
       new URL(path, window.location.origin).href

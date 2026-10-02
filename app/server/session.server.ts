@@ -6,8 +6,20 @@ type SessionData = {
   userId: number
 }
 
+// Resumen del pago para la página de gracias. Va en la cookie (máx ~4KB),
+// por eso guardamos sólo lo que se muestra y no la respuesta entera de Niubiz.
+export type PaymentFlash = {
+  purchaseNumber: string
+  amount: number
+  currency: string
+  card: string
+  brand: string
+  transactionDate: string
+}
+
 type SessionFlashData = {
   toast: ToastFlash
+  payment: PaymentFlash
 }
 
 const secret = process.env.SESSION_SECRET

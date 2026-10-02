@@ -41,6 +41,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   ])
 
   const toast = (session.get('toast') as ToastFlash | undefined) ?? null
+  // Flash de un solo uso: /checkout/thanks lo lee de la cookie entrante en
+  // paralelo, y este layout es el único que reescribe la cookie. Leer un flash
+  // con get() lo consume.
+  session.get('payment')
 
   return data(
     { ...userData, cartCount, toast },
