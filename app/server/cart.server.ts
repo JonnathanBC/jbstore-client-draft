@@ -49,6 +49,19 @@ export async function getCart(
   }
 }
 
+export async function getCartCount(
+  token: string,
+): Promise<{ count: number } | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).get<{ count: number }>(
+      '/api/cart/count',
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}
+
 export async function mergeCart(
   items: GuestCartItem[],
   token: string,

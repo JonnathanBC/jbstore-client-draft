@@ -3,7 +3,7 @@ import type { Route } from './+types/_app'
 import { Header } from '~/components/shared/Header'
 import { Footer } from '~/components/shared/Footer'
 import { getOptionalAuth } from '~/server/auth.server'
-import { getCart } from '~/server/cart.server'
+import { getCartCount } from '~/server/cart.server'
 import { getGuestCart, guestCartCount } from '~/server/guestCart.server'
 import { Navbar } from '~/components/shared/Navbar'
 import { commitSession, getSession } from '~/server/session.server'
@@ -24,8 +24,12 @@ async function loadUser(token: string | undefined) {
 async function loadCartCount(request: Request, token: string | undefined) {
   if (!token) return guestCartCount(await getGuestCart(request))
 
-  const cart = await getCart(token)
-  return 'error' in cart ? 0 : cart.count
+  const cart = await getCartCount(token)
+  if ('error' in cart) {
+    throw new Response(cart.error.message, { status: cart.error.status })
+  }
+
+  return cart.count
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
