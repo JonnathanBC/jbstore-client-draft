@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import type { Route } from './+types/_app.checkout'
 import { CreditCardIcon } from 'lucide-react'
 import { requireAuth } from '~/server/auth.server'
-import { getPaymentToken } from '~/server/payments.server'
+import { getPaymentSessionToken } from '~/server/payments.server'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
@@ -13,7 +13,7 @@ export async function loader({ request }: Route.LoaderArgs) {}
 export async function action({ request }: Route.ActionArgs) {
   const auth = await requireAuth(request)
 
-  const result = await getPaymentToken(auth.token)
+  const result = await getPaymentSessionToken(auth.token)
 
   if ('error' in result) {
     return {
@@ -23,7 +23,7 @@ export async function action({ request }: Route.ActionArgs) {
     }
   }
 
-  return { token: result.accessToken }
+  return { token: result.sessionKey }
 }
 
 export default function CheckoutPage({ loaderData }: Route.ComponentProps) {

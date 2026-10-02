@@ -1,12 +1,13 @@
 import { apiClient, ApiError, toApiError } from '~/lib/apiClient'
-import { PaymentResponse } from '~/types/payments'
+import { PaymentSessionTokenResponse } from '~/types/payments'
 
-export async function getPaymentToken(
+export async function getPaymentSessionToken(
   token: string,
-): Promise<PaymentResponse | { error: ApiError }> {
+): Promise<PaymentSessionTokenResponse | { error: ApiError }> {
   try {
-    const { data } =
-      await apiClient(token).get<PaymentResponse>(`/api/payments/token`)
+    const { data } = await apiClient(token).post<PaymentSessionTokenResponse>(
+      `/api/payments/session`,
+    )
     return data
   } catch (err) {
     return { error: toApiError(err) }
