@@ -235,14 +235,16 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
                 role="alert"
                 className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800"
               >
-                <p className="font-semibold">{paymentError.message}</p>
+                <p className="font-bold">{paymentError.message}</p>
                 <p className="mt-2">
                   <span className="font-medium">Número de pedido:</span>{' '}
                   {paymentError.purchaseNumber}
                 </p>
                 {paymentError.transactionDate && (
                   <p>
-                    <span className="font-medium">Fecha y hora del pedido:</span>{' '}
+                    <span className="font-medium">
+                      Fecha y hora del pedido:
+                    </span>{' '}
                     {formatNiubizDate(paymentError.transactionDate)}
                   </p>
                 )}
