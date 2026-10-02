@@ -2,13 +2,18 @@ import { useEffect, useState } from 'react'
 import { useFetcher } from 'react-router'
 import { toast } from 'sonner'
 import type { Route } from './+types/_app.checkout'
-import { CreditCardIcon } from 'lucide-react'
+import { CreditCardIcon, Info, InfoIcon } from 'lucide-react'
 import { requireAuth } from '~/server/auth.server'
 import { getPaymentSessionToken } from '~/server/payments.server'
+import { loadCart } from '~/server/loadCart.server'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
-export async function loader({ request }: Route.LoaderArgs) {}
+export async function loader({ request }: Route.LoaderArgs) {
+  const auth = await requireAuth(request)
+  const cart = await loadCart(request, auth.token)
+  return { cart }
+}
 
 export async function action({ request }: Route.ActionArgs) {
   const auth = await requireAuth(request)
@@ -44,7 +49,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="mb-16 text-gray-700">
       <div className="grid grid-cols-1 lg:grid-cols-2">
-        <div className="col-span-1 bg-white">
+        <div className="col-span-1">
           <div className="ml-auto px-4 py-12 sm:pl-6 lg:max-w-160 lg:pr-8 lg:pl-8">
             <h1 className="mb-2 text-2xl font-semibold">Pago</h1>
             <div className="overflow-hidden rounded-lg border border-gray-200 shadow">
@@ -112,24 +117,62 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
         </div>
         <div className="col-span-1">
           <div className="mr-auto px-4 py-12 sm:pr-6 lg:max-w-160 lg:pr-8 lg:pl-8">
-            <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quasi
-              facilis molestiae laudantium fugit earum placeat neque voluptatum,
-              iure consectetur? Officia et aliquid voluptatum nobis fugit, optio
-              quaerat ipsa beatae labore!
-            </p>
+            <ul className="mb-4 space-y-4">
+              {loaderData.cart.items.map((cart) => (
+                <li className="flex items-center space-x-4" key={cart.id}>
+                  <div className="shrink-0">
+                    <img
+                      src={cart.options.image}
+                      className="aspect-square size-14 rounded object-cover"
+                      alt="Image product"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p>{cart.name}</p>
+                    <p className="text-sm text-gray-500">
+                      <span>{cart.qty} X </span>
+                      <span>${cart.price}</span>
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-            <fetcher.Form method="post">
-              <button
-                type="submit"
-                disabled={fetcher.state !== 'idle'}
-                className="btn btn-primary mt-4 w-full"
-              >
-                {fetcher.state === 'submitting'
-                  ? 'Procesando...'
-                  : 'Pagar ahora'}
-              </button>
-            </fetcher.Form>
+            <div className="mt-2 flex justify-between">
+              <p>Subtotal</p>
+              <p>${loaderData.cart.subtotal}</p>
+            </div>
+
+            <div className="mt-2 flex justify-between">
+              <p className="flex items-center gap-1">
+                Precio de envío
+                <span title="El precio de envío es de 2 dólares">
+                  <Info className="size-4" />
+                </span>
+              </p>
+              <p>$3.00</p>
+            </div>
+
+            <hr className="my-3" />
+
+            <div className="mb-4 flex justify-between text-lg font-semibold">
+              <p className="text-lg font-semibold">Total</p>
+              <p>{Number(loaderData.cart.subtotal) + 3}</p>
+            </div>
+
+            <div>
+              <fetcher.Form method="post">
+                <button
+                  type="submit"
+                  disabled={fetcher.state !== 'idle'}
+                  className="btn btn-primary mt-4 w-full"
+                >
+                  {fetcher.state === 'submitting'
+                    ? 'Procesando...'
+                    : 'Finalizar pedido'}
+                </button>
+              </fetcher.Form>
+            </div>
           </div>
         </div>
       </div>
