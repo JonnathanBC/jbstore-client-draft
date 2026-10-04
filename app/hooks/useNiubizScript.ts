@@ -26,14 +26,19 @@ declare global {
  * open() inserta un iframe de Niubiz que tarda unos segundos en cargar.
  * Resuelve cuando ese iframe terminó de cargar (o a los 10s, por las dudas).
  */
-export function waitForNiubizModal(timeoutMs = 10_000): Promise<void> {
+export function waitForNiubizModal(
+  timeoutMs = 10_000,
+  signal?: AbortSignal,
+): Promise<HTMLIFrameElement | null> {
   return new Promise((resolve) => {
-    const done = () => {
+    const done = (iframe: HTMLIFrameElement | null) => {
       observer.disconnect()
       clearTimeout(timer)
-      resolve()
+      signal?.removeEventListener('abort', onAbort)
+      resolve(iframe)
     }
-    const timer = setTimeout(done, timeoutMs)
+    const onAbort = () => done(null)
+    const timer = setTimeout(() => done(null), timeoutMs)
     const observer = new MutationObserver((mutations) => {
       for (const { addedNodes } of mutations) {
         for (const node of addedNodes) {
@@ -42,11 +47,64 @@ export function waitForNiubizModal(timeoutMs = 10_000): Promise<void> {
             node instanceof HTMLIFrameElement
               ? node
               : node.querySelector('iframe')
-          if (iframe) return iframe.addEventListener('load', done)
+          if (iframe) {
+            iframe.addEventListener('load', () => done(iframe), { once: true })
+            return
+          }
         }
       }
     })
     observer.observe(document.body, { childList: true, subtree: true })
+    signal?.addEventListener('abort', onAbort, { once: true })
+    if (signal?.aborted) onAbort()
+  })
+}
+
+export function waitForNiubizModalClose(
+  iframe: HTMLIFrameElement,
+  timeoutMs = 1_200_000,
+  signal?: AbortSignal,
+): Promise<boolean> {
+  return new Promise((resolve) => {
+    const done = (closed: boolean) => {
+      observer.disconnect()
+      clearTimeout(timer)
+      signal?.removeEventListener('abort', onAbort)
+      resolve(closed)
+    }
+    const onAbort = () => done(false)
+    const isVisible = () => {
+      if (!iframe.isConnected || iframe.getClientRects().length === 0) {
+        return false
+      }
+
+      for (
+        let element: HTMLElement | null = iframe;
+        element;
+        element = element.parentElement
+      ) {
+        const style = window.getComputedStyle(element)
+        if (style.display === 'none' || style.visibility === 'hidden') {
+          return false
+        }
+      }
+
+      return true
+    }
+    const checkIfClosed = () => {
+      if (!isVisible()) done(true)
+    }
+    const timer = setTimeout(() => done(false), timeoutMs)
+    const observer = new MutationObserver(checkIfClosed)
+
+    observer.observe(document.body, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    })
+    signal?.addEventListener('abort', onAbort, { once: true })
+    if (signal?.aborted) onAbort()
+    checkIfClosed()
   })
 }
 

@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useFetcher } from 'react-router'
 import { toast } from 'sonner'
 import type { Route } from './+types/_app.checkout'
-import { CreditCardIcon, Info } from 'lucide-react'
+import { CreditCardIcon, Info, LoaderCircle } from 'lucide-react'
 import { requireAuth } from '~/server/auth.server'
 import { getPaymentSessionToken } from '~/server/payments.server'
 import { getCart } from '~/server/cart.server'
 import { niubizPublicConfig } from '~/server/niubiz.server'
-import { useNiubizScript, waitForNiubizModal } from '~/hooks/useNiubizScript'
+import {
+  useNiubizScript,
+  waitForNiubizModal,
+  waitForNiubizModalClose,
+} from '~/hooks/useNiubizScript'
 import { getSession } from '~/server/session.server'
 import { formatNiubizDate } from '~/lib/niubiz'
 
@@ -60,8 +64,33 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
   const { niubiz, paymentError } = loaderData
   const niubizLoaded = useNiubizScript(niubiz.scriptUrl)
   const fetcher = useFetcher<typeof action>()
-  const [openingModal, setOpeningModal] = useState(false)
-  const isBusy = fetcher.state !== 'idle' || openingModal
+  const [paymentStatus, setPaymentStatus] = useState<
+    'idle' | 'waiting' | 'confirming'
+  >('idle')
+  const confirmationTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  )
+  const paymentNavigationStarted = useRef(false)
+  const isBusy = fetcher.state !== 'idle' || paymentStatus !== 'idle'
+
+  useEffect(
+    () => () => {
+      if (confirmationTimeout.current) {
+        clearTimeout(confirmationTimeout.current)
+      }
+    },
+    [],
+  )
+
+  useEffect(() => {
+    const markNavigationStarted = () => {
+      paymentNavigationStarted.current = true
+    }
+
+    window.addEventListener('beforeunload', markNavigationStarted)
+    return () =>
+      window.removeEventListener('beforeunload', markNavigationStarted)
+  }, [])
 
   useEffect(() => {
     if (fetcher.state !== 'idle' || !fetcher.data) return
@@ -86,6 +115,8 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
     const absolute = (path: string) =>
       new URL(path, window.location.origin).href
 
+    paymentNavigationStarted.current = false
+    setPaymentStatus('waiting')
     window.VisanetCheckout.configure({
       sessiontoken: token,
       channel: 'web',
@@ -97,9 +128,56 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
       formbuttoncolor: '#000000',
       action: absolute(`/checkout/paid?${params}`),
     })
-    setOpeningModal(true)
-    waitForNiubizModal().then(() => setOpeningModal(false))
+
+    const controller = new AbortController()
+    let cancelled = false
+    const trackPayment = async () => {
+      const iframe = await waitForNiubizModal(10_000, controller.signal)
+      if (cancelled) return
+      if (!iframe) {
+        setPaymentStatus('idle')
+        toast.error('El checkout de Niubiz no se pudo abrir')
+        return
+      }
+
+      const closed = await waitForNiubizModalClose(
+        iframe,
+        1_200_000,
+        controller.signal,
+      )
+      if (cancelled) return
+      if (!closed) {
+        toast.error(
+          'El checkout de Niubiz sigue abierto. Completa o cancela el pago antes de continuar.',
+        )
+        return
+      }
+
+      setPaymentStatus('confirming')
+      confirmationTimeout.current = setTimeout(() => {
+        if (!paymentNavigationStarted.current) {
+          setPaymentStatus('idle')
+          toast.error(
+            'El checkout se cerró antes de confirmar el pago. Revisa tu pedido antes de volver a intentarlo.',
+          )
+          return
+        }
+
+        confirmationTimeout.current = setTimeout(() => {
+          toast.error(
+            'No se pudo confirmar el pago. Revisa el estado de tu pedido antes de volver a intentarlo.',
+          )
+        }, 120_000)
+      }, 3_000)
+    }
+
+    void trackPayment()
     window.VisanetCheckout.open()
+
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
   }, [fetcher.state, fetcher.data, niubiz.merchantId])
 
   return (
@@ -223,9 +301,22 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
                 <button
                   type="submit"
                   disabled={!niubizLoaded || isBusy}
+                  aria-live="polite"
                   className="btn btn-primary mt-4 w-full"
                 >
-                  {isBusy ? 'Procesando...' : 'Finalizar pedido'}
+                  {isBusy && (
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="mr-2 inline size-4 animate-spin"
+                    />
+                  )}
+                  {fetcher.state !== 'idle'
+                    ? 'Preparando pago...'
+                    : paymentStatus === 'waiting'
+                      ? 'Completa el pago en Niubiz'
+                      : paymentStatus === 'confirming'
+                        ? 'Confirmando pago...'
+                        : 'Finalizar pedido'}
                 </button>
               </fetcher.Form>
             )}
