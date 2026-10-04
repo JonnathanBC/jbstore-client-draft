@@ -162,6 +162,12 @@ export default function AddressPage() {
         </div>
         <div className="col-span-1">
           <CartSummary cart={cart} />
+          <a
+            href="/checkout"
+            className="btn btn-primary mt-4 block w-full text-center"
+          >
+            Ir al pago
+          </a>
         </div>
       </div>
     </section>
