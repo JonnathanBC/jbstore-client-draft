@@ -20,7 +20,7 @@ export function Sidebar() {
         aria-label="Sidebar"
       >
         <div className="flex h-full flex-col overflow-y-auto bg-white px-3 pb-4">
-          <header className='mb-4'>
+          <header className="mb-4">
             <Link
               to="/admin"
               className="text-strong ms-2 flex text-xl font-bold md:me-24"
@@ -28,9 +28,19 @@ export function Sidebar() {
               JB Store
             </Link>
           </header>
-          
+
           <ul className="flex-1 space-y-2">
             {menuItems.map((menu) => {
+              if (menu.type === 'section') {
+                return (
+                  <li key={menu.key} className="">
+                    <h2 className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">
+                      {menu.label}
+                    </h2>
+                  </li>
+                )
+              }
+
               const Icon = menu.icon
               const isActive =
                 menu.href === '/admin'
