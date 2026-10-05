@@ -41,6 +41,9 @@
     "save": "Guardar",
     "saving": "Guardando...",
     "update_image": "Actualizar imagen",
-    "status": "Estado"
+    "status": "Estado",
+    "ready_to_ship": "Listo para despachar",
+    "assign_delivery": "Asignar repartidor",
+    "cancel": "Cancelar"
   }
 }

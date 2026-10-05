@@ -41,6 +41,9 @@
     "save": "Save",
     "saving": "Saving...",
     "update_image": "Update image",
-    "status": "Status"
+    "status": "Status",
+    "ready_to_ship": "Ready to ship",
+    "assign_delivery": "Assign delivery",
+    "cancel": "Cancel"
   }
 }
