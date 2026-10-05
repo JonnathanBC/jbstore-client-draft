@@ -2,7 +2,8 @@ import { Link, useSearchParams } from 'react-router'
 import { Route } from './+types/admin.orders._index'
 import { t } from '~/i18n'
 import { Table } from '~/components/Table'
-import { Order, OrderTable } from '~/types/orders'
+import { Order } from '~/types/orders'
+import { Column } from '~/types/table'
 import { requireAuth } from '~/server/auth.server'
 import { getOrders } from '~/server/orders.server'
 import { renderDateTime } from '~/components/table/renders'
@@ -39,12 +40,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { orders }
 }
 
-const columns = [
+const columns: Column<Order>[] = [
   { title: 'No Orden', dataIndex: 'id' as const },
   {
     title: 'Ticket',
-    dataIndex: 'pdf_path' as const,
-    render: (row: Order) => (
+    render: () => (
       <button>
         <PdfIcon className="size-10" />
       </button>
@@ -113,7 +113,7 @@ export default function OrdersPage({ loaderData }: Route.ComponentProps) {
         </Link>
       </div>
 
-      <Table<OrderTable>
+      <Table<Order>
         dataSource={orders.data}
         columns={columns}
         meta={orders}

@@ -25,7 +25,7 @@ export const Badge = ({
   return (
     <span
       className={cn(
-        'text-heading inline-flex w-fit max-w-full items-center rounded-full px-2 py-1.5 text-xs font-medium',
+        'text-heading inline-flex w-fit max-w-full items-center rounded-full px-2 py-1.5 text-xs font-semibold',
         variantClassNames[variant],
       )}
     >
