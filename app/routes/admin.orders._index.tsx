@@ -44,10 +44,10 @@ const columns: Column<Order>[] = [
   { title: 'No Orden', dataIndex: 'id' as const },
   {
     title: 'Ticket',
-    render: () => (
-      <button>
+    render: (row: Order) => (
+      <Link to={`/resources/orders/${row.id}/ticket`} reloadDocument>
         <PdfIcon className="size-10" />
-      </button>
+      </Link>
     ),
   },
   {
@@ -92,8 +92,6 @@ const columns: Column<Order>[] = [
     ),
   },
 ]
-
-export async function action({ request }: Route.ActionArgs) {}
 
 export default function OrdersPage({ loaderData }: Route.ComponentProps) {
   const { orders } = loaderData

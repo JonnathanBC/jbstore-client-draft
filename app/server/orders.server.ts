@@ -25,3 +25,21 @@ export async function getOrders({
     throw toApiError(err)
   }
 }
+
+export async function downloadOrderTicket({
+  token,
+  orderId,
+}: {
+  token: string
+  orderId: string
+}) {
+  try {
+    const { data } = await apiClient(token).get<ArrayBuffer>(
+      `/api/admin/orders/${orderId}/ticket/download`,
+      { responseType: 'arraybuffer', headers: { Accept: 'application/pdf' } },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
