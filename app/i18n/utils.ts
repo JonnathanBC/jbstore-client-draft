@@ -30,4 +30,3 @@ export function t(key: string, lang?: Lang): string {
   const fallback = getNestedValue(translations[DEFAULT_LANG], keys)
   return typeof fallback === 'string' ? fallback : key
 }
-
