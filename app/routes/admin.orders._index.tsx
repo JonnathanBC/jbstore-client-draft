@@ -1,14 +1,17 @@
-import { Link, useSearchParams } from 'react-router'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
+import { data, Link, useFetcher, useSearchParams } from 'react-router'
 import { Route } from './+types/admin.orders._index'
-import { t } from '~/i18n'
-import { Table } from '~/components/Table'
-import { Order } from '~/types/orders'
-import { Column } from '~/types/table'
-import { requireAuth } from '~/server/auth.server'
-import { getOrders } from '~/server/orders.server'
+
 import { renderDateTime } from '~/components/table/renders'
 import { Badge } from '~/components/Badge'
 import { PdfIcon } from '~/components/icons/PdfIcon'
+import { Table } from '~/components/Table'
+import { t } from '~/i18n'
+import { requireAuth } from '~/server/auth.server'
+import { getOrders, updateOrderStatus } from '~/server/orders.server'
+import { Order } from '~/types/orders'
+import { Column } from '~/types/table'
 
 const orderStatusVariants = {
   pending: 'warning',
@@ -21,6 +24,13 @@ const orderStatusVariants = {
 } as const satisfies Record<
   Order['status'],
   NonNullable<React.ComponentProps<typeof Badge>['variant']>
+>
+
+const orderNextStep = {
+  pending: { intent: 'set-to-processing', labelKey: 'global.ready_to_ship' },
+  processing: { intent: 'set-to-delivery', labelKey: 'global.assign_delivery' },
+} as const satisfies Partial<
+  Record<Order['status'], { intent: string; labelKey: string }>
 >
 
 export const meta: Route.MetaFunction = () => [
@@ -38,6 +48,79 @@ export async function loader({ request }: Route.LoaderArgs) {
   })
 
   return { orders }
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const { token } = await requireAuth(request)
+  const formData = await request.formData()
+  const intent = formData.get('intent')
+  const orderId = String(formData.get('orderId'))
+
+  switch (intent) {
+    case 'set-to-processing': {
+      const result = await updateOrderStatus({
+        token,
+        orderId,
+        status: 'processing',
+      })
+
+      if ('error' in result) {
+        return data(
+          {
+            success: false,
+            error: result.error.message,
+            errors: result.error.errors,
+          },
+          { status: result.error.status },
+        )
+      }
+
+      return { success: true }
+    }
+    case 'set-to-delivery':
+      console.log('Set to delivery')
+      return { ok: true }
+    case 'cancel':
+      console.log('Cancel')
+      return { ok: true }
+  }
+}
+
+const ActionButtons = ({ order }: { order: Order }) => {
+  const fetcher = useFetcher<{ success?: string; error?: string }>()
+  const step = orderNextStep[order.status as keyof typeof orderNextStep]
+
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+    if (fetcher.data.error) toast.error(fetcher.data.error)
+    if (fetcher.data.success) toast.success(t('global.successfully_updated'))
+  }, [fetcher.state, fetcher.data])
+
+  return (
+    <fetcher.Form method="post" className="flex flex-col space-y-2">
+      <input type="hidden" name="orderId" value={order.id} />
+
+      {step && (
+        <button
+          name="intent"
+          value={step.intent}
+          type="submit"
+          className="font-medium text-blue-600 underline hover:no-underline"
+        >
+          {t(step.labelKey)}
+        </button>
+      )}
+
+      <button
+        name="intent"
+        value="cancel"
+        type="submit"
+        className="font-medium text-blue-600 underline hover:no-underline"
+      >
+        {t('global.cancel')}
+      </button>
+    </fetcher.Form>
+  )
 }
 
 const columns: Column<Order>[] = [
@@ -78,18 +161,7 @@ const columns: Column<Order>[] = [
   },
   {
     title: 'Acciones',
-    render: (row: Order) => (
-      <div className="flex flex-col space-y-2">
-        <button className="font-medium text-blue-600 underline hover:no-underline">
-          {row.status === 'pending' && t('global.ready_to_ship')}
-          {row.status === 'processing' && t('global.assign_delivery')}
-        </button>
-
-        <button className="font-medium text-blue-600 underline hover:no-underline">
-          {t('global.cancel')}
-        </button>
-      </div>
-    ),
+    render: (row: Order) => <ActionButtons order={row} />,
   },
 ]
 

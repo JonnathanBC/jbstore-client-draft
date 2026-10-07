@@ -1,6 +1,6 @@
-import { apiClient, toApiError } from '~/lib/apiClient'
+import { apiClient, ApiError, toApiError } from '~/lib/apiClient'
 import { ApiResponse } from '~/types/api'
-import { Order } from '~/types/orders'
+import { Order, OrderStatusEnum } from '~/types/orders'
 
 export interface GetOrdersParams {
   token: string
@@ -41,5 +41,25 @@ export async function downloadOrderTicket({
     return data
   } catch (err) {
     throw toApiError(err)
+  }
+}
+
+export async function updateOrderStatus({
+  token,
+  orderId,
+  status,
+}: {
+  token: string
+  orderId: string
+  status: OrderStatusEnum
+}): Promise<Order | { error: ApiError }> {
+  try {
+    const { data } = await apiClient(token).patch<Order>(
+      `/api/admin/orders/${orderId}/status`,
+      { status },
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
   }
 }

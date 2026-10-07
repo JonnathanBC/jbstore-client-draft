@@ -44,6 +44,7 @@
     "status": "Status",
     "ready_to_ship": "Ready to ship",
     "assign_delivery": "Assign delivery",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "successfully_updated": "Successfully updated"
   }
 }

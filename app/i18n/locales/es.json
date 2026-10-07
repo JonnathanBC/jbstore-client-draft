@@ -44,6 +44,7 @@
     "status": "Estado",
     "ready_to_ship": "Listo para despachar",
     "assign_delivery": "Asignar repartidor",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "successfully_updated": "Actualizado correctamente"
   }
 }
