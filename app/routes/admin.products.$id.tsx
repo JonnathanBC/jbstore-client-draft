@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
-import { data, redirect } from 'react-router'
 import { toast } from 'sonner'
 
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import { commitSession, getSession } from '~/server/session.server'
+import { handleMutation } from '~/server/mutation.server'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.products.$id'
 import {
@@ -14,12 +13,6 @@ import {
 } from '~/server/products.server'
 import { ProductForm } from '~/products/ProductForm'
 import { OptionsFeaturesProduct } from '~/products/options/OptionsFeaturesProduct'
-import {
-  createOptionsProduct,
-  deleteFeatureProduct,
-  deleteOptionProduct,
-} from '~/server/options-product'
-import { OptionsProduct } from '~/types/options-product'
 import { Variants } from '~/products/variants/Variants'
 
 export const meta: Route.MetaFunction = ({ data }) => [
@@ -64,106 +57,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
   const id = Number(params.id)
-  if (!Number.isFinite(id) || id < 1)
-    return { error: 'ID inválido', errors: [] }
+
+  // La URL ya identifica al producto: el método HTTP decide qué hacer con él.
+  if (request.method === 'DELETE') {
+    return handleMutation(request, await deleteProduct(id, token), {
+      message: 'Producto eliminado',
+      redirectTo: '/admin/products',
+    })
+  }
 
   const formData = await request.formData()
-  const intent = formData.get('_action')
-  const session = await getSession(request.headers.get('Cookie'))
-
-  // CREATE-OPTION-PRODUCT
-  if (intent === 'create-option-product') {
-    let features: OptionsProduct['features'] = []
-    try {
-      features = JSON.parse(String(formData.get('features') ?? '[]'))
-    } catch {
-      return { error: 'Features inválidas', errors: [] }
-    }
-
-    const result = await createOptionsProduct(
-      {
-        product_id: id,
-        option_id: Number(formData.get('option_id')),
-        features,
-      },
-      token,
-    )
-    if ('error' in result) {
-      return data(
-        { error: result.error.message, errors: result.error.errors ?? {} },
-        { status: result.error.status },
-      )
-    }
-    return { ok: true, errors: [] }
-  }
-
-  // DELETE-PRODUCT
-  if (intent === 'delete') {
-    const result = await deleteProduct(id, token)
-    if ('error' in result) {
-      return data(
-        { error: result.error.message, errors: [] },
-        { status: result.error.status },
-      )
-    }
-
-    session.flash('toast', {
-      kind: 'success',
-      title: 'Eliminado correctamente',
-    })
-
-    return redirect('/admin/products', {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    })
-  }
-
-  // DELETE-OPTION-PRODUCT
-  if (intent === 'remove-option-product') {
-    const result = await deleteOptionProduct(
-      id,
-      Number(formData.get('option_id')),
-      token,
-    )
-
-    if ('error' in result) {
-      return data(
-        { error: result.error.message, errors: result.error.errors ?? [] },
-        { status: result.error.status },
-      )
-    }
-
-    return data({ ok: true, errors: [] })
-  }
-
-  // DELETE-FEATURE-PRODUCT
-  if (intent === 'delete-feature-product') {
-    const result = await deleteFeatureProduct(
-      Number(formData.get('option_id')),
-      Number(formData.get('feature_id')),
-      token,
-    )
-
-    if ('error' in result) {
-      return data(
-        {
-          error: result.error.message,
-          errors: result.error.errors ?? {},
-        },
-        { status: result.error.status },
-      )
-    }
-
-    return data({
-      ok: true,
-      message: 'Feature eliminada correctamente',
-      errors: [],
-    })
-  }
-
-  if (intent !== 'update' && intent !== null) {
-    return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
-  }
-
   const payload = new FormData()
   payload.append('sku', String(formData.get('sku') ?? '').trim())
   payload.append('name', String(formData.get('name') ?? '').trim())
@@ -187,21 +90,9 @@ export async function action({ request, params }: Route.ActionArgs) {
     payload.append('image', image)
   }
 
-  const result = await updateProduct(id, payload, token)
-  if ('error' in result) {
-    return data(
-      { error: result.error.message, errors: result.error.errors },
-      { status: result.error.status },
-    )
-  }
-
-  session.flash('toast', {
-    kind: 'success',
-    title: 'Producto actualizado con éxito',
-  })
-
-  return redirect('/admin/products', {
-    headers: { 'Set-Cookie': await commitSession(session) },
+  return handleMutation(request, await updateProduct(id, payload, token), {
+    message: 'Producto actualizado con éxito',
+    redirectTo: '/admin/products',
   })
 }
 
@@ -212,27 +103,15 @@ export default function ProductEdit({
   const { product } = loaderData
 
   useEffect(() => {
-    if (actionData && 'error' in actionData && actionData.error) {
-      toast.error(actionData.error as string)
-    }
+    if (actionData?.error) toast.error(actionData.error)
   }, [actionData])
 
   return (
     <div className="space-y-6">
-      <ProductForm
-        product={product}
-        validationErrors={
-          actionData && 'errors' in actionData
-            ? (actionData.errors as Record<string, string[]>)
-            : undefined
-        }
-      />
+      <ProductForm product={product} validationErrors={actionData?.errors} />
 
       <OptionsFeaturesProduct />
-      {product?.variants?.length > 0 && (
-        <Variants />
-      )}
-      
+      {product?.variants?.length > 0 && <Variants />}
     </div>
   )
 }

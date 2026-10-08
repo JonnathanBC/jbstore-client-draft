@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useNavigation, useSubmit } from 'react-router'
+import { useFetcher, useNavigation, useSubmit } from 'react-router'
 import { Upload } from 'lucide-react'
+import { toast } from 'sonner'
 
+import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { Datepicker } from '~/components/inputs/Datepicker'
 import { Field } from '~/components/inputs/Field'
 import { Radio } from '~/components/inputs/Radio'
@@ -34,6 +36,13 @@ export function CoverForm({ cover }: Props) {
   const submitting = nav.state === 'submitting'
   const isEdit = Boolean(cover)
   const [preview, setPreview] = useState<string>()
+  const fetcher = useFetcher<{ error?: string }>()
+
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    }
+  }, [fetcher.state, fetcher.data])
 
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files ? e.target.files[0] : null
@@ -50,17 +59,17 @@ export function CoverForm({ cover }: Props) {
       formData.append(key, value)
     })
     if (cover) formData.append('id', String(cover.id))
-    formData.append('_action', 'update')
 
     submit(formData, { method: 'post', encType: 'multipart/form-data' })
   }
 
-  function remove() {
-    const formData = new FormData()
-    formData.append('id', String(cover.id))
-    formData.append('_action', 'delete')
+  async function remove() {
+    if (!cover || !(await showDeleteConfirm())) return
 
-    submit(formData, { method: 'post' })
+    fetcher.submit(null, {
+      method: 'DELETE',
+      action: `/admin/covers/${cover.id}`,
+    })
   }
 
   return (
@@ -126,7 +135,12 @@ export function CoverForm({ cover }: Props) {
           {submitting ? t('global.saving') : t('global.save')}
         </button>
         {isEdit ? (
-          <button type="button" className="btn btn-danger" onClick={remove}>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={remove}
+            disabled={fetcher.state !== 'idle'}
+          >
             {t('global.delete')}
           </button>
         ) : null}

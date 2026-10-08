@@ -1,43 +1,36 @@
 import { useEffect } from 'react'
 import { useFetcher, useParams } from 'react-router'
 import { toast } from 'sonner'
-import { FieldValues } from 'react-hook-form'
+import type { FieldValues } from 'react-hook-form'
 
 import { DialogCrud } from '~/components/modals/DialogCrud'
 import { useModalContext } from '~/components/modals/ModalContext'
-import { OptionsProductForm } from '../options/OptionsProductForm'
-
-interface ActionData {
-  ok?: boolean
-  error?: string
-  errors?: Record<string, string[]>
-}
+import type { MutationResult } from '~/server/mutation.server'
+import { OptionsProductForm } from './OptionsProductForm'
 
 export default function OptionProductModal() {
   const { id } = useParams()
-  const fetcher = useFetcher<ActionData>()
+  const fetcher = useFetcher<MutationResult>()
   const { onClose } = useModalContext()
   const isSubmitting = fetcher.state !== 'idle'
 
   // Los errores de validación los pinta FormProvider vía `actionData`;
-  // acá sólo resolvemos el toast y el cierre.
+  // el toast de éxito llega por flash. Acá sólo el toast de error y el cierre.
   useEffect(() => {
     if (fetcher.state !== 'idle' || !fetcher.data) return
     if (fetcher.data.error) toast.error(fetcher.data.error)
-    if (fetcher.data.ok) {
-      toast.success('Variante creada correctamente')
-      onClose()
-    }
+    if (fetcher.data.ok) onClose()
   }, [fetcher.state, fetcher.data])
 
   const onSubmit = (data: FieldValues) => {
+    // POST /admin/products/:id/options → admin.products.$id.options
     fetcher.submit(
+      { option_id: data.option_id, features: data.features },
       {
-        ...data,
-        features: JSON.stringify(data.features),
-        _action: 'create-option-product',
+        method: 'POST',
+        action: `/admin/products/${id}/options`,
+        encType: 'application/json',
       },
-      { method: 'post', action: `/admin/products/${id}` },
     )
   }
 

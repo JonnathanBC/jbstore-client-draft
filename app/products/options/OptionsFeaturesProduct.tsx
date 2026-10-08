@@ -4,44 +4,44 @@ import { useFetcher, useLoaderData } from 'react-router'
 import { toast } from 'sonner'
 
 import Alert from '~/components/admin/Alert'
+import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { Badge } from '~/components/Badge'
 import { t } from '~/i18n'
-import { loader } from '~/routes/admin.products.$id'
+import type { loader } from '~/routes/admin.products.$id'
+import type { MutationResult } from '~/server/mutation.server'
 import { useModalStore } from '~/store/modal.store'
 
 export const OptionsFeaturesProduct = () => {
   const openModal = useModalStore((state) => state.open)
   const { product } = useLoaderData<typeof loader>()
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<MutationResult>()
 
-  const handleDeleteOptionProduct = (optionId: number) => {
-    if (!confirm('¿Estás seguro de eliminar esta opción?')) return
-    fetcher.submit(
-      { option_id: optionId, _action: 'remove-option-product' },
-      { method: 'POST', action: `/admin/products/${product?.id}` },
-    )
+  const optionsUrl = `/admin/products/${product.id}/options`
+
+  // DELETE /admin/products/:id/options/:optionId → admin.products.$id.options.$optionId
+  const handleDeleteOptionProduct = async (optionId: number) => {
+    if (!(await showDeleteConfirm({ title: '¿Eliminar esta opción?' }))) return
+    fetcher.submit(null, {
+      method: 'DELETE',
+      action: `${optionsUrl}/${optionId}`,
+    })
   }
 
-  const handleDeleteFeatureProduct = (data: {
+  // DELETE .../options/:optionId/features/:featureId
+  const handleDeleteFeatureProduct = async (data: {
     option_id: number
     feature_id: number
   }) => {
-    if (!confirm('¿Estás seguro de eliminar esta feature?')) return
-    fetcher.submit(
-      { ...data, _action: 'delete-feature-product' },
-      {
-        method: 'POST',
-        action: `/admin/products/${product?.id}`,
-        // encType: 'application/json',
-      },
-    )
+    if (!(await showDeleteConfirm({ title: '¿Eliminar este valor?' }))) return
+    fetcher.submit(null, {
+      method: 'DELETE',
+      action: `${optionsUrl}/${data.option_id}/features/${data.feature_id}`,
+    })
   }
 
   useEffect(() => {
     if (fetcher.state !== 'idle' || !fetcher.data) return
-    if (fetcher.data?.error) {
-      toast.error(fetcher.data.error)
-    }
+    if (fetcher.data.error) toast.error(fetcher.data.error)
   }, [fetcher.data, fetcher.state])
 
   return (

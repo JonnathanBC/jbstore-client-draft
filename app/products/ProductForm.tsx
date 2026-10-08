@@ -1,7 +1,9 @@
 import { Upload } from 'lucide-react'
-import { useState } from 'react'
-import { Form, useNavigation } from 'react-router'
+import { useEffect, useState } from 'react'
+import { Form, useFetcher, useNavigation } from 'react-router'
+import { toast } from 'sonner'
 
+import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { AsyncSelectOld } from '~/components/inputs/AsyncSelectOld'
 import { t } from '~/i18n'
 import { createImagePreview } from '~/lib/helper'
@@ -40,7 +42,11 @@ export function ProductForm({ product, validationErrors }: Props) {
 
   return (
     <div className="card">
-      <Form method="post" className="space-y-4" encType="multipart/form-data">
+      <Form
+        method={isEdit ? 'PATCH' : 'POST'}
+        className="space-y-4"
+        encType="multipart/form-data"
+      >
         <figure className="">
           <img
             className="aspect-video object-cover object-center"
@@ -240,23 +246,44 @@ export function ProductForm({ product, validationErrors }: Props) {
             type="submit"
             disabled={submitting}
             className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-            name="_action"
-            value="update"
           >
             {submitting ? 'Guardando...' : 'Guardar'}
           </button>
-          <button
-            type="submit"
-            className="btn btn-danger"
-            name="_action"
-            value="delete"
-          >
-            {t('global.delete')}
-          </button>
+          {isEdit ? <DeleteProductButton productId={product!.id} /> : null}
         </div>
 
         {isEdit ? <input type="hidden" name="id" value={product!.id} /> : null}
       </Form>
     </div>
+  )
+}
+
+// DELETE /admin/products/:id → lo resuelve el action de admin.products.$id
+function DeleteProductButton({ productId }: { productId: number }) {
+  const fetcher = useFetcher<{ error?: string }>()
+
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    }
+  }, [fetcher.state, fetcher.data])
+
+  const handleDelete = async () => {
+    if (!(await showDeleteConfirm())) return
+    fetcher.submit(null, {
+      method: 'DELETE',
+      action: `/admin/products/${productId}`,
+    })
+  }
+
+  return (
+    <button
+      type="button"
+      className="btn btn-danger"
+      disabled={fetcher.state !== 'idle'}
+      onClick={handleDelete}
+    >
+      {t('global.delete')}
+    </button>
   )
 }

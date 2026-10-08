@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { data, redirect } from 'react-router'
+import { data } from 'react-router'
 import { toast } from 'sonner'
 
 import { requireAuth } from '~/server/auth.server'
@@ -9,7 +9,7 @@ import { Route } from './+types/admin.covers.$id'
 import { CoverForm } from '~/covers/CoverForm'
 import { FormProvider } from '~/components/form/FormProvider'
 import { deleteCover, getCover, updateCover } from '~/server/covers.server'
-import { commitSession, getSession } from '~/server/session.server'
+import { handleMutation, type MutationResult } from '~/server/mutation.server'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -62,51 +62,28 @@ export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
   const id = Number(params.id)
   if (!Number.isFinite(id) || id < 1) {
-    return data({ error: 'ID inválido', errors: undefined }, { status: 400 })
-  }
-
-  const form = await request.formData()
-  const intent = form.get('_action')
-  const session = await getSession(request.headers.get('Cookie'))
-
-  if (intent === 'delete') {
-    const result = await deleteCover(id, token)
-    if (result && 'error' in result) {
-      return data(
-        { error: result.error.message, errors: undefined },
-        { status: result.error.status },
-      )
-    }
-
-    session.flash('toast', {
-      kind: 'success',
-      title: 'Portada eliminada correctamente',
-    })
-
-    return redirect('/admin/covers', {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    })
-  }
-
-  form.delete('_action')
-  form.delete('id')
-
-  const result = await updateCover(id, form, token)
-
-  if ('error' in result) {
-    return data(
-      { error: result.error.message, errors: result.error.errors },
-      { status: result.error.status },
+    return data<MutationResult>(
+      { ok: false, error: 'ID inválido' },
+      { status: 400 },
     )
   }
 
-  session.flash('toast', {
-    kind: 'success',
-    title: 'Portada actualizada con éxito',
-  })
+  const isDelete = request.method === 'DELETE'
 
-  return redirect('/admin/covers', {
-    headers: { 'Set-Cookie': await commitSession(session) },
+  if (isDelete) {
+    return handleMutation(request, await deleteCover(id, token), {
+      message: 'Portada eliminada correctamente',
+      redirectTo: '/admin/covers',
+    })
+  }
+
+  // Multipart (imagen opcional): se reenvía el FormData tal cual a la API.
+  const form = await request.formData()
+  form.delete('id')
+
+  return handleMutation(request, await updateCover(id, form, token), {
+    message: 'Portada actualizada con éxito',
+    redirectTo: '/admin/covers',
   })
 }
 

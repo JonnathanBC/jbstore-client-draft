@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { data, redirect } from 'react-router'
+import { data } from 'react-router'
 import { toast } from 'sonner'
 
 import type { Route } from './+types/admin.subcategories.$id'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import { commitSession, getSession } from '~/server/session.server'
+import { handleMutation, type MutationResult } from '~/server/mutation.server'
 import type { RouteHandle } from '~/types/route'
 import {
   deleteSubCategory,
@@ -24,8 +24,7 @@ export const meta: Route.MetaFunction = ({ data }) => [
 
 export const handle: RouteHandle = {
   breadcrumb: ({ match }) => {
-    const data =
-      (match as { data?: { subcategory?: { name: string } } }).data
+    const data = (match as { data?: { subcategory?: { name: string } } }).data
     return [
       { label: t('admin.subcategories'), to: '/admin/subcategories' },
       { label: data?.subcategory?.name ?? t('global.edit') },
@@ -59,59 +58,34 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
   const id = Number(params.id)
-  if (!Number.isFinite(id) || id < 1)
-    return { error: 'ID inválido', errors: [] }
-
-  const form = await request.formData()
-  const intent = form.get('_action')
-  const session = await getSession(request.headers.get('Cookie'))
-
-  if (intent === 'delete') {
-    const result = await deleteSubCategory(id, token)
-    if ('error' in result) {
-      return data(
-        { error: result.error.message, errors: [] },
-        { status: result.error.status },
-      )
-    }
-
-    session.flash('toast', {
-      kind: 'success',
-      title: 'Eliminado correctamente',
-    })
-
-    return redirect('/admin/subcategories', {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    })
-  }
-
-  if (intent !== 'update' && intent !== null) {
-    return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
-  }
-
-  const name = String(form.get('name') ?? '').trim()
-  const categoryId = Number(form.get('category_id'))
-
-  const result = await updateSubCategory(
-    id,
-    { name, category_id: categoryId },
-    token,
-  )
-  if ('error' in result) {
-    return data(
-      { error: result.error.message, errors: result.error.errors },
-      { status: result.error.status },
+  if (!Number.isFinite(id) || id < 1) {
+    return data<MutationResult>(
+      { ok: false, error: 'ID inválido' },
+      { status: 400 },
     )
   }
 
-  session.flash('toast', {
-    kind: 'success',
-    title: 'Subcategoría actualizada con éxito',
-  })
+  const isDelete = request.method === 'DELETE'
 
-  return redirect('/admin/subcategories', {
-    headers: { 'Set-Cookie': await commitSession(session) },
-  })
+  if (isDelete) {
+    return handleMutation(request, await deleteSubCategory(id, token), {
+      message: 'Eliminado correctamente',
+      redirectTo: '/admin/subcategories',
+    })
+  }
+
+  const form = await request.formData()
+  const name = String(form.get('name') ?? '').trim()
+  const categoryId = Number(form.get('category_id'))
+
+  return handleMutation(
+    request,
+    await updateSubCategory(id, { name, category_id: categoryId }, token),
+    {
+      message: 'Subcategoría actualizada con éxito',
+      redirectTo: '/admin/subcategories',
+    },
+  )
 }
 
 export default function SubCategoryEdit({
@@ -130,7 +104,7 @@ export default function SubCategoryEdit({
     <div className="card">
       <SubCategoryForm
         subcategory={subcategory}
-        validationErrors={actionData?.errors as Record<string, string[]> | undefined}
+        validationErrors={actionData?.errors}
       />
     </div>
   )

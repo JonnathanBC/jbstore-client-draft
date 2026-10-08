@@ -6,12 +6,12 @@ import { toast } from 'sonner'
 
 import { Input } from '~/components/inputs/Input'
 import { Button } from '~/components/ui/button'
+import type { MutationResult } from '~/server/mutation.server'
 import { Option } from '~/types/option'
 
 type Inputs = {
   value: string | null
   description: string
-  option_id: string
 }
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 export const FeatureForm = ({ option }: Props) => {
   const { register, control, handleSubmit, reset, setValue } = useForm<Inputs>()
   const colorInputRef = useRef<HTMLInputElement>(null)
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<MutationResult>()
   const { type } = option
   const loading = fetcher.state === 'submitting'
 
@@ -31,30 +31,20 @@ export const FeatureForm = ({ option }: Props) => {
   })
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    const payload = {
-      ...data,
-      option_id: option.id,
-    }
-
-    fetcher.submit(
-      { ...payload, intent: 'create-feature' },
-      {
-        method: 'POST',
-        action: '/admin/options',
-        encType: 'application/json',
-      },
-    )
+    // POST /admin/options/:id/features → admin.options.$id.features
+    // (la opción va en la URL; el toast de éxito llega por flash)
+    fetcher.submit(data, {
+      method: 'POST',
+      action: `/admin/options/${option.id}/features`,
+      encType: 'application/json',
+    })
   }
 
   useEffect(() => {
     if (fetcher.state !== 'idle' || !fetcher.data) return
 
-    if (fetcher.data?.error) {
-      toast.error(fetcher.data.error)
-    } else if (fetcher.data?.success) {
-      toast.success('Creado con éxito')
-      reset()
-    }
+    if (fetcher.data.error) toast.error(fetcher.data.error)
+    if (fetcher.data.ok) reset()
   }, [fetcher.data, fetcher.state])
 
   return (

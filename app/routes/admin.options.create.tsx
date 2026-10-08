@@ -1,35 +1,38 @@
-import type { Route } from './+types/admin.drivers.create'
+import type { Route } from './+types/admin.options.create'
 import { RouteModalForm } from '~/components/modals/RouteModalForm'
-import { DriverFields, toDriverFormValues } from '~/drivers/DriverFields'
+import {
+  OptionFields,
+  toOptionFormValues,
+} from '~/features/options/OptionFields'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import { createDriver } from '~/server/drivers.server'
 import { handleMutation } from '~/server/mutation.server'
+import { createOption } from '~/server/options.server'
 
 export const meta: Route.MetaFunction = () => [
-  { title: `${t('global.new')} | ${t('admin.drivers')} | JB Store` },
+  { title: `${t('global.new')} | ${t('admin.options')} | JB Store` },
 ]
 
 export async function action({ request }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
   const payload = await request.json()
 
-  const result = await createDriver(payload, token)
+  const result = await createOption(payload, token)
 
   return handleMutation(request, result, {
-    message: 'Conductor creado',
-    redirectTo: '/admin/drivers',
+    message: 'Opción creada',
+    redirectTo: '/admin/options',
   })
 }
 
-export default function DriverCreate() {
+export default function OptionCreate() {
   return (
     <RouteModalForm
-      title="Nuevo conductor"
+      title="Nueva opción"
       method="POST"
-      defaultValues={toDriverFormValues()}
+      defaultValues={toOptionFormValues()}
     >
-      <DriverFields />
+      <OptionFields />
     </RouteModalForm>
   )
 }

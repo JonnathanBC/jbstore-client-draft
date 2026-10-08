@@ -1,8 +1,8 @@
-import { data, redirect } from 'react-router'
+import { data } from 'react-router'
 import type { Route } from './+types/admin.families.$id'
 import { requireAuth } from '~/server/auth.server'
 import { deleteFamily, getFamily, updateFamily } from '~/server/api.server'
-import { commitSession, getSession } from '~/server/session.server'
+import { handleMutation, type MutationResult } from '~/server/mutation.server'
 import { FamilyForm } from '~/components/admin/families/FamilyForm'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
@@ -53,53 +53,28 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
   const id = Number(params.id)
-  if (!Number.isFinite(id) || id < 1) return { error: 'ID inválido' }
-
-  const form = await request.formData()
-  const intent = form.get('_action')
-  const session = await getSession(request.headers.get('Cookie'))
-
-  if (intent === 'delete') {
-    const result = await deleteFamily(id, token)
-    if ('error' in result) {
-      return data(
-        { error: result.error.message, errors: [] },
-        { status: result.error.status },
-      )
-    }
-
-    session.flash('toast', {
-      kind: 'success',
-      title: 'Familia eliminada',
-    })
-
-    return redirect('/admin/families', {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    })
-  }
-
-  if (intent !== 'update' && intent !== null) {
-    return data({ error: 'Intent desconocido', errors: [] }, { status: 400 })
-  }
-
-  const name = String(form.get('name') ?? '').trim()
-
-  const result = await updateFamily(id, { name }, token)
-
-  if ('error' in result) {
-    return data(
-      { error: result.error.message, errors: [] },
-      { status: result.error.status },
+  if (!Number.isFinite(id) || id < 1) {
+    return data<MutationResult>(
+      { ok: false, error: 'ID inválido' },
+      { status: 400 },
     )
   }
 
-  session.flash('toast', {
-    kind: 'success',
-    title: 'Éxito',
-  })
+  const isDelete = request.method === 'DELETE'
 
-  return redirect('/admin/families', {
-    headers: { 'Set-Cookie': await commitSession(session) },
+  if (isDelete) {
+    return handleMutation(request, await deleteFamily(id, token), {
+      message: 'Familia eliminada',
+      redirectTo: '/admin/families',
+    })
+  }
+
+  const form = await request.formData()
+  const name = String(form.get('name') ?? '').trim()
+
+  return handleMutation(request, await updateFamily(id, { name }, token), {
+    message: 'Éxito',
+    redirectTo: '/admin/families',
   })
 }
 

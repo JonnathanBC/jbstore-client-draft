@@ -1,4 +1,8 @@
-import { Form, useNavigation } from 'react-router'
+import { useEffect } from 'react'
+import { Form, useFetcher, useNavigation } from 'react-router'
+import { toast } from 'sonner'
+
+import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { AsyncSelectOld } from '~/components/inputs/AsyncSelectOld'
 import { t } from '~/i18n'
 import type { Category } from '~/types/category'
@@ -12,6 +16,23 @@ export function CategoryForm({ category, validationErrors }: Props) {
   const nav = useNavigation()
   const submitting = nav.state === 'submitting'
   const isEdit = Boolean(category)
+
+  const fetcher = useFetcher<{ error?: string }>()
+
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    }
+  }, [fetcher.state, fetcher.data])
+
+  async function remove() {
+    if (!category || !(await showDeleteConfirm())) return
+
+    fetcher.submit(null, {
+      method: 'DELETE',
+      action: `/admin/categories/${category.id}`,
+    })
+  }
 
   return (
     <Form method="post" className="space-y-4">
@@ -60,19 +81,19 @@ export function CategoryForm({ category, validationErrors }: Props) {
           type="submit"
           disabled={submitting}
           className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-          name="_action"
-          value="update"
         >
           {submitting ? 'Guardando...' : 'Guardar'}
         </button>
-        <button
-          type="submit"
-          className="btn btn-danger"
-          name="_action"
-          value="delete"
-        >
-          {t('global.delete')}
-        </button>
+        {isEdit ? (
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={remove}
+            disabled={fetcher.state !== 'idle'}
+          >
+            {t('global.delete')}
+          </button>
+        ) : null}
       </div>
 
       {isEdit ? <input type="hidden" name="id" value={category!.id} /> : null}

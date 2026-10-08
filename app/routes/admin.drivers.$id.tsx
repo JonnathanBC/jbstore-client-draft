@@ -1,16 +1,10 @@
-import { data, redirect } from 'react-router'
-
 import type { Route } from './+types/admin.drivers.$id'
 import { RouteModalForm } from '~/components/modals/RouteModalForm'
 import { DriverFields, toDriverFormValues } from '~/drivers/DriverFields'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import {
-  deleteDriver,
-  getDriver,
-  updateDriver,
-} from '~/server/drivers.server'
-import { commitSession, getSession } from '~/server/session.server'
+import { deleteDriver, getDriver, updateDriver } from '~/server/drivers.server'
+import { handleMutation } from '~/server/mutation.server'
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('global.edit')} | ${t('admin.drivers')} | JB Store` },
@@ -32,21 +26,9 @@ export async function action({ request, params }: Route.ActionArgs) {
     ? await deleteDriver(params.id, token)
     : await updateDriver(params.id, await request.json(), token)
 
-  if (result && 'error' in result) {
-    return data(
-      { error: result.error.message, errors: result.error.errors },
-      { status: result.error.status },
-    )
-  }
-
-  const session = await getSession(request.headers.get('Cookie'))
-  session.flash('toast', {
-    kind: 'success',
-    title: isDelete ? 'Conductor eliminado' : 'Conductor actualizado',
-  })
-
-  return redirect('/admin/drivers', {
-    headers: { 'Set-Cookie': await commitSession(session) },
+  return handleMutation(request, result, {
+    message: isDelete ? 'Conductor eliminado' : 'Conductor actualizado',
+    redirectTo: '/admin/drivers',
   })
 }
 
