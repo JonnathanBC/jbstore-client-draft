@@ -1,7 +1,8 @@
 import { data, redirect } from 'react-router'
 
 import type { Route } from './+types/admin.drivers.$id'
-import { DriverFormModal } from '~/drivers/DriverFormModal'
+import { RouteModalForm } from '~/components/modals/RouteModalForm'
+import { DriverFields, toDriverFormValues } from '~/drivers/DriverFields'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
 import { getDriver, updateDriver } from '~/server/drivers.server'
@@ -43,11 +44,13 @@ export default function DriverEdit({ loaderData }: Route.ComponentProps) {
   const { driver } = loaderData
 
   return (
-    <DriverFormModal
+    <RouteModalForm
       key={driver.id}
       title="Editar conductor"
       method="PATCH"
-      driver={driver}
-    />
+      defaultValues={toDriverFormValues(driver)}
+    >
+      <DriverFields />
+    </RouteModalForm>
   )
 }

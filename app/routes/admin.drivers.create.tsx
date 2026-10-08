@@ -1,7 +1,8 @@
 import { data, redirect } from 'react-router'
 
 import type { Route } from './+types/admin.drivers.create'
-import { DriverFormModal } from '~/drivers/DriverFormModal'
+import { RouteModalForm } from '~/components/modals/RouteModalForm'
+import { DriverFields, toDriverFormValues } from '~/drivers/DriverFields'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
 import { createDriver } from '~/server/drivers.server'
@@ -33,5 +34,13 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function DriverCreate() {
-  return <DriverFormModal title="Nuevo conductor" method="POST" />
+  return (
+    <RouteModalForm
+      title="Nuevo conductor"
+      method="POST"
+      defaultValues={toDriverFormValues()}
+    >
+      <DriverFields />
+    </RouteModalForm>
+  )
 }
