@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useModalContext } from './ModalContext'
+import { useOptionalModalContext } from './ModalContext'
 
 interface ActionData {
   errors?: Record<string, string[]>
@@ -44,7 +44,7 @@ export const DialogCrud = ({
   children,
   options,
 }: Props) => {
-  const ctx = useModalContext()
+  const ctx = useOptionalModalContext()
   const close = onClose ?? ctx?.onClose
 
   return (

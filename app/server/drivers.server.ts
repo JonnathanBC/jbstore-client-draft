@@ -26,6 +26,20 @@ export async function getDrivers({
   }
 }
 
+export async function getDriver(
+  id: number | string,
+  token: string,
+): Promise<Driver> {
+  try {
+    const { data } = await apiClient(token).get<Driver>(
+      `/api/admin/drivers/${id}`,
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
 export async function createDriver(
   payload: DriverPayload,
   token: string,
@@ -42,7 +56,7 @@ export async function createDriver(
 }
 
 export async function updateDriver(
-  id: number,
+  id: number | string,
   payload: DriverPayload,
   token: string,
 ): Promise<Driver | { error: ApiError }> {

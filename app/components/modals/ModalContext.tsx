@@ -23,3 +23,7 @@ export function useModalContext() {
   }
   return context
 }
+
+export function useOptionalModalContext() {
+  return use(ModalContext)
+}

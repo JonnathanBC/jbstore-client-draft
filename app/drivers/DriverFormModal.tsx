@@ -1,12 +1,11 @@
 import { useEffect } from 'react'
-import { useFetcher } from 'react-router'
+import { useFetcher, useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
 import { AsyncSelect } from '~/components/inputs/AsyncSelect'
 import { Field } from '~/components/inputs/Field'
 import { Select } from '~/components/inputs/Select'
 import { DialogCrud } from '~/components/modals/DialogCrud'
-import { useModalContext } from '~/components/modals/ModalContext'
 import { t } from '~/i18n'
 import { Driver } from '~/types/driver'
 
@@ -16,47 +15,40 @@ const TYPE_ITEMS = [
 ]
 
 interface Props {
+  title: string
+  method: 'POST' | 'PATCH'
   driver?: Driver
 }
 
-export default function DriverModal({ driver }: Props) {
+/**
+ * Modal de alta/edición de conductor. Se renderiza dentro de una ruta hija
+ * (create / $id), así que el submit va al action de ESA ruta y cerrar
+ * es volver a la ruta padre.
+ */
+export function DriverFormModal({ title, method, driver }: Props) {
+  const navigate = useNavigate()
   const fetcher = useFetcher<{
-    success?: boolean
     error?: string
     errors?: Record<string, string[]>
   }>()
-  const { onClose } = useModalContext()
-  const isEdit = Boolean(driver)
-  const isSubmitting = fetcher.state === 'submitting'
+  const isSubmitting = fetcher.state !== 'idle'
 
   useEffect(() => {
-    if (fetcher.state !== 'idle' || !fetcher.data) return
-    if (fetcher.data.error) toast.error(fetcher.data.error)
-    if (fetcher.data.success) {
-      toast.success(isEdit ? 'Actualizado con éxito' : 'Creado con éxito')
-      onClose()
-    }
-  }, [fetcher.state, fetcher.data])
+    if (fetcher.data?.error) toast.error(fetcher.data.error)
+  }, [fetcher.data])
 
   const onSubmit = (data: Record<string, unknown>) => {
-    fetcher.submit(
-      {
-        ...data,
-        intent: isEdit ? 'update-driver' : 'create-driver',
-        ...(isEdit && { id: driver!.id }),
-      },
-      {
-        method: isEdit ? 'PATCH' : 'POST',
-        action: '/admin/drivers',
-        encType: 'application/json',
-      },
-    )
+    fetcher.submit(data as Record<string, string>, {
+      method,
+      encType: 'application/json',
+    })
   }
 
   return (
     <DialogCrud
-      title={isEdit ? 'Editar conductor' : 'Nuevo conductor'}
+      title={title}
       onSubmit={onSubmit}
+      onClose={() => navigate('..')}
       isSubmitting={isSubmitting}
       actionData={fetcher.data}
       options={{
