@@ -8,6 +8,7 @@ import { FieldError } from './FieldError'
 type FieldOwnProps = {
   name: string
   labelKey?: string
+  className?: string
   placeholderKey?: string
   label?: string
   placeholder?: string
@@ -16,7 +17,13 @@ type FieldOwnProps = {
 }
 
 /** Props the Controller injects on render — callers never pass these. */
-type InjectedProps = 'field' | 'form' | 'error' | 'value' | 'onChange' | 'onBlur'
+type InjectedProps =
+  | 'field'
+  | 'form'
+  | 'error'
+  | 'value'
+  | 'onChange'
+  | 'onBlur'
 
 type FieldProps<C extends ElementType> = FieldOwnProps & {
   component?: C
@@ -31,13 +38,14 @@ export const Field = <C extends ElementType = typeof InputShadcn>({
   placeholderKey,
   placeholder,
   obb,
+  className,
   ...rest
 }: FieldProps<C>) => {
   const form = useFormContext()
   const Component = (component ?? InputShadcn) as ElementType
 
   return (
-    <>
+    <div className={className}>
       <label htmlFor={name}>
         {labelKey ? t(labelKey) : label}
         {obb && <span className="text-red-600">*</span>}
@@ -59,6 +67,6 @@ export const Field = <C extends ElementType = typeof InputShadcn>({
         )}
       />
       <FieldError name={name} />
-    </>
+    </div>
   )
 }

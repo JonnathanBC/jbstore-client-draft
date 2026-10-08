@@ -15,6 +15,10 @@ export interface User {
   role: UserRoleMap[keyof UserRoleMap]
 }
 
+export type UserOption = Pick<User, 'id' | 'name' | 'email'> & {
+  last_name: string | null
+}
+
 export const UserRole = {
   ADMIN: 'ROLE_ADMIN',
   USER: 'ROLE_USER',
