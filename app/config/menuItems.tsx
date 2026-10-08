@@ -2,6 +2,7 @@ import type { ComponentType, SVGProps } from 'react'
 import {
   Boxes,
   Briefcase,
+  CarIcon,
   LayoutDashboard,
   PackageOpen,
   Settings,
@@ -93,5 +94,12 @@ export const menuItems: MenuItem[] = [
     label: t('admin.orders'),
     href: '/admin/orders',
     icon: ShoppingCartIcon,
+  },
+  {
+    type: 'link',
+    key: 'drivers',
+    label: t('admin.drivers'),
+    href: '/admin/drivers',
+    icon: CarIcon,
   },
 ]
