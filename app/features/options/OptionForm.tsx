@@ -25,7 +25,7 @@ export default function OptionForm() {
   const { onClose } = useModalContext()
 
   const { register, handleSubmit, control, watch } = useForm<Inputs>({
-    values: {
+    defaultValues: {
       name: '',
       type: 1,
       features: [{ value: '', description: '' }],
@@ -47,21 +47,21 @@ export default function OptionForm() {
     })
   }
 
-  const isSubmitting = fetcher.state === 'submitting'
+  const isSubmitting = fetcher.state !== 'idle'
 
   useEffect(() => {
-    if (fetcher.data?.error) {
-      toast.error(fetcher.data.error)
-    }
-    if (fetcher.data?.success) {
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+    if (fetcher.data.error) toast.error(fetcher.data.error)
+    if (fetcher.data.success) {
       toast.success('Creado con éxito')
       onClose()
     }
-  }, [fetcher.data])
+  }, [fetcher.state, fetcher.data])
 
   return (
     <Modal
       title="Nueva opción"
+      onClose={onClose}
       actionButtons={
         <button
           className="btn btn-primary"

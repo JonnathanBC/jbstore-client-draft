@@ -44,6 +44,7 @@ export function OptionsProductForm() {
           >
             <div className="absolute -top-3 bg-white px-4">
               <button
+                type="button"
                 className="text-red-500 hover:text-red-600"
                 onClick={() => remove(index)}
               >

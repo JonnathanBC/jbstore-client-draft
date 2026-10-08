@@ -1,17 +1,28 @@
 import { create } from 'zustand'
 import { modalRegistry } from '~/config/modalRegistry'
 
-type ModalType = keyof typeof modalRegistry
+export type ModalType = keyof typeof modalRegistry
 
-interface ModalStore {
-  modals: { _type: ModalType; [key: string]: unknown }[]
-  open: (key: ModalType, options?: Record<string, unknown>) => void
-  close: (index: number) => void
+interface ModalEntry {
+  id: number
+  type: ModalType
+  props: Record<string, unknown>
 }
 
-export const useModalStore = create<ModalStore>((set, get) => ({
+interface ModalStore {
+  modals: ModalEntry[]
+  open: (type: ModalType, props?: Record<string, unknown>) => void
+  close: (id: number) => void
+}
+
+let nextId = 0
+
+export const useModalStore = create<ModalStore>((set) => ({
   modals: [],
-  open: (key, options = {}) =>
-    set({ modals: [...get().modals, { _type: key, ...options }] }),
-  close: (index) => set({ modals: get().modals.filter((_, i) => i !== index) }),
+  open: (type, props = {}) =>
+    set((state) => ({
+      modals: [...state.modals, { id: ++nextId, type, props }],
+    })),
+  close: (id) =>
+    set((state) => ({ modals: state.modals.filter((m) => m.id !== id) })),
 }))

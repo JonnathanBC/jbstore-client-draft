@@ -15,7 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useOptionalModalContext } from './ModalContext'
 
 interface ActionData {
   errors?: Record<string, string[]>
@@ -24,7 +23,7 @@ interface ActionData {
 interface Props {
   open?: boolean
   title: string
-  onClose?: () => void
+  onClose: () => void
   onSubmit: SubmitHandler<FieldValues>
   actionData?: ActionData | null
   isSubmitting?: boolean
@@ -44,43 +43,44 @@ export const DialogCrud = ({
   children,
   options,
 }: Props) => {
-  const ctx = useOptionalModalContext()
-  const close = onClose ?? ctx?.onClose
-
   return (
     <FormProvider actionData={actionData} options={options}>
       {(methods) => (
         <Dialog
           open={open}
           onOpenChange={(isOpen) => {
-            if (!isOpen) close?.()
+            if (!isOpen) onClose()
           }}
         >
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <DialogContent
-              showCloseButton={false}
-              className="p-4 sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
-            >
+          <DialogContent
+            showCloseButton={false}
+            className="p-4 sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
+          >
+            {/* El <form> va DENTRO del DialogContent: el contenido se renderiza en un
+                portal, así que un <form> afuera no envolvería a los inputs (Enter no enviaría). */}
+            <form onSubmit={methods.handleSubmit(onSubmit)}>
               <DialogHeader className="mb-4 flex-row items-center justify-between gap-0">
                 <DialogTitle>{title}</DialogTitle>
                 <div className="flex items-center gap-4">
                   <button
                     className="btn btn-primary flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    type="button"
+                    type="submit"
                     disabled={isSubmitting}
-                    onClick={methods.handleSubmit(onSubmit)}
                   >
                     <Save className="size-4" />
                     {isSubmitting ? 'Guardando...' : 'Guardar'}
                   </button>
-                  <DialogClose>
-                    <XIcon className="size-4 cursor-pointer hover:text-red-800" />
+                  <DialogClose
+                    type="button"
+                    className="cursor-pointer hover:text-red-800"
+                  >
+                    <XIcon className="size-4" />
                   </DialogClose>
                 </div>
               </DialogHeader>
               {typeof children === 'function' ? children(methods) : children}
-            </DialogContent>
-          </form>
+            </form>
+          </DialogContent>
         </Dialog>
       )}
     </FormProvider>

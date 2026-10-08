@@ -1,49 +1,42 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useFetcher, useParams } from 'react-router'
 import { toast } from 'sonner'
-import { UseFormReturn } from 'react-hook-form'
+import { FieldValues } from 'react-hook-form'
 
 import { DialogCrud } from '~/components/modals/DialogCrud'
 import { useModalContext } from '~/components/modals/ModalContext'
 import { OptionsProductForm } from '../options/OptionsProductForm'
 
+interface ActionData {
+  ok?: boolean
+  error?: string
+  errors?: Record<string, string[]>
+}
+
 export default function OptionProductModal() {
   const { id } = useParams()
-  const fetcher = useFetcher()
-  const ctx = useModalContext()
-  const isSubmitting = fetcher.state === 'submitting'
-  const formRef = useRef<UseFormReturn | null>(null)
+  const fetcher = useFetcher<ActionData>()
+  const { onClose } = useModalContext()
+  const isSubmitting = fetcher.state !== 'idle'
 
+  // Los errores de validación los pinta FormProvider vía `actionData`;
+  // acá sólo resolvemos el toast y el cierre.
   useEffect(() => {
-    if (!fetcher.data || !formRef.current) return
-
+    if (fetcher.state !== 'idle' || !fetcher.data) return
+    if (fetcher.data.error) toast.error(fetcher.data.error)
     if (fetcher.data.ok) {
       toast.success('Variante creada correctamente')
-      ctx.onClose()
-      return
+      onClose()
     }
+  }, [fetcher.state, fetcher.data])
 
-    if (fetcher.data.errors) {
-      formRef.current.clearErrors()
-      Object.entries(fetcher.data.errors as Record<string, string[]>).forEach(
-        ([field, messages]) => {
-          formRef.current!.setError(field, { message: messages[0] })
-        },
-      )
-    }
-
-    if (fetcher.data.error) {
-      toast.error(fetcher.data.error)
-    }
-  }, [fetcher.data])
-
-  const onSubmit = (data: Record<string, unknown>) => {
+  const onSubmit = (data: FieldValues) => {
     fetcher.submit(
       {
         ...data,
         features: JSON.stringify(data.features),
         _action: 'create-option-product',
-      } as Record<string, string>,
+      },
       { method: 'post', action: `/admin/products/${id}` },
     )
   }
@@ -52,17 +45,16 @@ export default function OptionProductModal() {
     <DialogCrud
       title="Nueva variante"
       onSubmit={onSubmit}
+      onClose={onClose}
       isSubmitting={isSubmitting}
+      actionData={fetcher.data}
       options={{
         defaultValues: {
           features: [{ id: '', value: '', description: '' }],
         },
       }}
     >
-      {(methods) => {
-        formRef.current = methods
-        return <OptionsProductForm />
-      }}
+      <OptionsProductForm />
     </DialogCrud>
   )
 }

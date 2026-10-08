@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { XIcon } from 'lucide-react'
+
 import {
   Dialog,
   DialogClose,
@@ -6,13 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useModalContext } from './ModalContext'
-import { XIcon } from 'lucide-react'
 import { cn } from '~/lib/utils'
 
 interface Props {
   open?: boolean
-  onClose?: () => void
+  onClose: () => void
   title: string
   children: ReactNode
   actionButtons?: ReactNode
@@ -25,14 +25,11 @@ export function Modal({
   open = true,
   onClose,
 }: Props) {
-  const ctx = useModalContext()
-  const close = onClose ?? ctx?.onClose
-
   return (
     <Dialog
       open={open}
       onOpenChange={(isOpen) => {
-        if (!isOpen) close?.()
+        if (!isOpen) onClose()
       }}
     >
       <DialogContent
@@ -42,11 +39,9 @@ export function Modal({
         <DialogHeader className="mb-4 flex-row items-center justify-between gap-0">
           <DialogTitle>{title}</DialogTitle>
           <div className={cn('flex items-center', actionButtons && 'gap-4')}>
-            {actionButtons && actionButtons}
-            <DialogClose>
-              <button className="cursor-pointer hover:text-red-800">
-                <XIcon className="size-4" />
-              </button>
+            {actionButtons}
+            <DialogClose className="cursor-pointer hover:text-red-800">
+              <XIcon className="size-4" />
             </DialogClose>
           </div>
         </DialogHeader>
