@@ -1,6 +1,11 @@
 export interface Driver {
   id: number
   user_id: number
+  user: {
+    id: number
+    first_name: string
+    last_name: string
+  }
   type: 'car' | 'motorcycle'
   license_plate: string
   created_at: string

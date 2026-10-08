@@ -70,3 +70,14 @@ export async function updateDriver(
     return { error: toApiError(err) }
   }
 }
+
+export async function deleteDriver(
+  id: number | string,
+  token: string,
+): Promise<void | { error: ApiError }> {
+  try {
+    await apiClient(token).delete(`/api/admin/drivers/${id}`)
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}

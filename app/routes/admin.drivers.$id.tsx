@@ -5,7 +5,11 @@ import { RouteModalForm } from '~/components/modals/RouteModalForm'
 import { DriverFields, toDriverFormValues } from '~/drivers/DriverFields'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import { getDriver, updateDriver } from '~/server/drivers.server'
+import {
+  deleteDriver,
+  getDriver,
+  updateDriver,
+} from '~/server/drivers.server'
 import { commitSession, getSession } from '~/server/session.server'
 
 export const meta: Route.MetaFunction = () => [
@@ -21,11 +25,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ request, params }: Route.ActionArgs) {
   const { token } = await requireAuth(request)
-  const payload = await request.json()
+  const isDelete = request.method === 'DELETE'
 
-  const result = await updateDriver(params.id, payload, token)
+  // La URL ya identifica al driver: el método HTTP decide qué hacer con él.
+  const result = isDelete
+    ? await deleteDriver(params.id, token)
+    : await updateDriver(params.id, await request.json(), token)
 
-  if ('error' in result) {
+  if (result && 'error' in result) {
     return data(
       { error: result.error.message, errors: result.error.errors },
       { status: result.error.status },
@@ -33,7 +40,10 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const session = await getSession(request.headers.get('Cookie'))
-  session.flash('toast', { kind: 'success', title: 'Conductor actualizado' })
+  session.flash('toast', {
+    kind: 'success',
+    title: isDelete ? 'Conductor eliminado' : 'Conductor actualizado',
+  })
 
   return redirect('/admin/drivers', {
     headers: { 'Set-Cookie': await commitSession(session) },

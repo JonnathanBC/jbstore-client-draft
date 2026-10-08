@@ -1,6 +1,9 @@
-import { Link, Outlet, useSearchParams } from 'react-router'
+import { useEffect } from 'react'
+import { Link, Outlet, useFetcher, useSearchParams } from 'react-router'
+import { toast } from 'sonner'
 import { Route } from './+types/admin.drivers'
 
+import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { renderDateTime } from '~/components/table/renders'
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
@@ -26,26 +29,61 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { drivers }
 }
 
-const ActionButtons = ({ driver }: { driver: Driver }) => (
-  <Link to={String(driver.id)} className="btn btn-primary">
-    {t('global.edit')}
-  </Link>
-)
+const ActionButtons = ({ driver }: { driver: Driver }) => {
+  const fetcher = useFetcher<{ error?: string }>()
+
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.error) {
+      toast.error(fetcher.data.error)
+    }
+  }, [fetcher.state, fetcher.data])
+
+  const handleDelete = async () => {
+    if (!(await showDeleteConfirm())) return
+    // DELETE a /admin/drivers/:id → lo resuelve el action de admin.drivers.$id
+    fetcher.submit(null, { method: 'DELETE', action: String(driver.id) })
+  }
+
+  return (
+    <>
+      <Link to={String(driver.id)} className="btn btn-primary mr-4">
+        {t('global.edit')}
+      </Link>
+      <button
+        type="button"
+        className="btn btn-danger"
+        disabled={fetcher.state !== 'idle'}
+        onClick={handleDelete}
+      >
+        {t('global.delete')}
+      </button>
+    </>
+  )
+}
 
 const columns: Column<Driver>[] = [
   { title: 'ID', dataIndex: 'id' as const },
   {
     title: 'Nombres',
     dataIndex: 'user_id' as const,
-    render: (row: Driver) => <>{row.user_id}</>,
+    render: (row: Driver) => (
+      <span>
+        {row.user.first_name} {row.user.last_name}
+      </span>
+    ),
   },
   {
     title: 'Tipo',
     dataIndex: 'type' as const,
-    render: (row: Driver) => <>{row.type}</>,
+    render: (row: Driver) => (
+      <span>
+        {row.type === 'car' && <span>Automovil</span>}
+        {row.type === 'motorcycle' && <span>Motocicleta</span>}
+      </span>
+    ),
   },
   {
-    title: 'Matricula vehicular',
+    title: 'Placa',
     dataIndex: 'license_plate' as const,
     render: (row: Driver) => <>{row.license_plate}</>,
   },
