@@ -35,9 +35,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-// Niubiz exige un número de compra numérico, único y de hasta 12 dígitos.
-const generatePurchaseNumber = () => String(Date.now()).slice(-12)
-
 export async function action({ request }: Route.ActionArgs) {
   const auth = await requireAuth(request)
 
@@ -52,7 +49,8 @@ export async function action({ request }: Route.ActionArgs) {
   return {
     token: result.sessionKey,
     amount: result.amount,
-    purchaseNumber: generatePurchaseNumber(),
+    // Lo genera Laravel: si se reenvía el mismo pago, no se cobra dos veces
+    purchaseNumber: result.purchaseNumber,
   }
 }
 
@@ -106,10 +104,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
     const { token, amount, purchaseNumber } = fetcher.data
 
     // amount viene de Laravel con el envío incluido: el front no lo recalcula.
-    const params = new URLSearchParams({
-      purchaseNumber,
-      amount: String(amount),
-    })
+    const params = new URLSearchParams({ purchaseNumber })
 
     // Niubiz resuelve las rutas relativas contra SU dominio: van absolutas.
     const absolute = (path: string) =>

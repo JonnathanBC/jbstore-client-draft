@@ -4,15 +4,15 @@ export type PaymentResponse = {
 
 export type PaymentSessionTokenResponse = {
   sessionKey: string
+  // Lo genera Laravel: es la llave de idempotencia del pago
+  purchaseNumber: string
   amount: number
 }
 
+// El monto no viaja: Laravel cobra el que fijó al iniciar la sesión
 export type CapturePaymentPayload = {
   transactionToken: string
-  customerEmail: string
-  channel: string
   purchaseNumber: string
-  amount: number
 }
 
 // Respuesta de la autorización de Niubiz (api.authorization/v3/authorization).

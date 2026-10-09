@@ -14,13 +14,9 @@ export async function action({ request }: Route.ActionArgs) {
   const url = new URL(request.url)
   const formData = await request.formData()
   const transactionToken = String(formData.get('transactionToken') ?? '')
-  const customerEmail = String(formData.get('customerEmail') ?? '')
-  const channel = String(formData.get('channel') ?? '')
-
   const purchaseNumber = url.searchParams.get('purchaseNumber') ?? ''
-  const amount = Number(url.searchParams.get('amount'))
 
-  if (!transactionToken || !purchaseNumber || !amount) {
+  if (!transactionToken || !purchaseNumber) {
     session.flash('toast', {
       kind: 'error',
       title: 'No se pudo procesar el pago',
@@ -32,10 +28,7 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   const result = await capturePayment(auth.token, {
-    amount,
     transactionToken,
-    customerEmail,
-    channel,
     purchaseNumber,
   })
 
