@@ -63,3 +63,22 @@ export async function updateOrderStatus({
     return { error: toApiError(err) }
   }
 }
+
+export async function assignOrderDriver({
+  token,
+  orderId,
+  driverId,
+}: {
+  token: string
+  orderId: string
+  driverId: string
+}): Promise<void | { error: ApiError }> {
+  try {
+    // Crea el shipping y pasa la orden a `shipped` en una sola transacción
+    await apiClient(token).post(`/api/admin/orders/${orderId}/shipping`, {
+      driver_id: driverId,
+    })
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
+}

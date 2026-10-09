@@ -9,7 +9,13 @@ import { PdfIcon } from '~/components/icons/PdfIcon'
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
-import { getOrders, updateOrderStatus } from '~/server/orders.server'
+import { handleMutation } from '~/server/mutation.server'
+import {
+  assignOrderDriver,
+  getOrders,
+  updateOrderStatus,
+} from '~/server/orders.server'
+import { useModalStore } from '~/store/modal.store'
 import { Order } from '~/types/orders'
 import { Column } from '~/types/table'
 
@@ -28,7 +34,7 @@ const orderStatusVariants = {
 
 const orderNextStep = {
   pending: { intent: 'set-to-processing', labelKey: 'global.ready_to_ship' },
-  processing: { intent: 'set-to-delivery', labelKey: 'global.assign_delivery' },
+  processing: { intent: 'assign-driver', labelKey: 'global.assign_delivery' },
 } as const satisfies Partial<
   Record<Order['status'], { intent: string; labelKey: string }>
 >
@@ -77,9 +83,17 @@ export async function action({ request }: Route.ActionArgs) {
 
       return { success: true }
     }
-    case 'set-to-delivery':
-      console.log('Set to delivery')
-      return { ok: true }
+    case 'assign-driver': {
+      const result = await assignOrderDriver({
+        token,
+        orderId,
+        driverId: String(formData.get('driverId')),
+      })
+
+      return handleMutation(request, result, {
+        message: 'Conductor asignado',
+      })
+    }
     case 'cancel':
       console.log('Cancel')
       return { ok: true }
@@ -89,6 +103,7 @@ export async function action({ request }: Route.ActionArgs) {
 const ActionButtons = ({ order }: { order: Order }) => {
   const fetcher = useFetcher<{ success?: string; error?: string }>()
   const step = orderNextStep[order.status as keyof typeof orderNextStep]
+  const openModal = useModalStore((state) => state.open)
 
   useEffect(() => {
     if (fetcher.state !== 'idle' || !fetcher.data) return
@@ -100,7 +115,18 @@ const ActionButtons = ({ order }: { order: Order }) => {
     <fetcher.Form method="post" className="flex flex-col space-y-2">
       <input type="hidden" name="orderId" value={order.id} />
 
-      {step && (
+      {/* Asignar repartidor necesita elegir conductor: abre modal en vez de enviar */}
+      {step?.intent === 'assign-driver' && (
+        <button
+          type="button"
+          onClick={() => openModal('assignDriver', { orderId: order.id })}
+          className="font-medium text-blue-600 underline hover:no-underline"
+        >
+          {t(step.labelKey)}
+        </button>
+      )}
+
+      {step && step.intent !== 'assign-driver' && (
         <button
           name="intent"
           value={step.intent}

@@ -5,4 +5,7 @@ export const modalRegistry = {
   productOption: {
     Component: () => import('~/products/options/OptionProductModal'),
   },
+  assignDriver: {
+    Component: () => import('~/drivers/modals/AssignDriverModal'),
+  },
 }
