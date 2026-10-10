@@ -10,7 +10,7 @@ export interface Shipping {
       first_name: string
       last_name: string
     }
-    plate_number: string
+    license_plate: string
   }
   status: ShippingStatusEnum
   updated_at: string

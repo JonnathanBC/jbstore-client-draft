@@ -53,7 +53,7 @@ const columns: Column<Shipping>[] = [
   {
     title: 'Placa',
     dataIndex: 'driver' as const,
-    render: (row: Shipping) => <>{row.driver.plate_number}</>,
+    render: (row: Shipping) => <>{row.driver.license_plate}</>,
   },
   {
     title: 'Status',
