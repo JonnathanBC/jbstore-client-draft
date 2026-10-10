@@ -18,7 +18,8 @@
     "variants": "Variantes",
     "add_option": "Agregar opción",
     "covers": "Portadas",
-    "drivers": "Conductores"
+    "drivers": "Conductores",
+    "shippings": "Envìos"
   },
   "global": {
     "welcome": "Bienvenido",

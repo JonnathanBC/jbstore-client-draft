@@ -18,7 +18,8 @@
     "variants": "Variants",
     "add_option": "Agregar opción",
     "covers": "Covers",
-    "drivers": "Drivers"
+    "drivers": "Drivers",
+    "shippings": "Shippings"
   },
   "global": {
     "welcome": "Welcome",

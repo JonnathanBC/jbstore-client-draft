@@ -5,6 +5,7 @@ import {
   CarIcon,
   LayoutDashboard,
   PackageOpen,
+  SendIcon,
   Settings,
   ShoppingCartIcon,
   Tag,
@@ -101,5 +102,12 @@ export const menuItems: MenuItem[] = [
     label: t('admin.drivers'),
     href: '/admin/drivers',
     icon: CarIcon,
+  },
+  {
+    type: 'link',
+    key: 'shippings',
+    label: t('admin.shippings'),
+    href: '/admin/shippings',
+    icon: SendIcon,
   },
 ]
