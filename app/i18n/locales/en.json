@@ -19,7 +19,9 @@
     "add_option": "Agregar opción",
     "covers": "Covers",
     "drivers": "Drivers",
-    "shippings": "Shippings"
+    "shippings": "Shippings",
+    "mark_as_paid": "Mark as paid",
+    "mark_as_a_delivery_error": "Mark as a delivery error"
   },
   "global": {
     "welcome": "Welcome",

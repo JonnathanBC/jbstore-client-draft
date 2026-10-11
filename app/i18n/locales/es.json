@@ -19,7 +19,9 @@
     "add_option": "Agregar opción",
     "covers": "Portadas",
     "drivers": "Conductores",
-    "shippings": "Envìos"
+    "shippings": "Envìos",
+    "mark_as_paid": "Marcar como pagado",
+    "mark_as_a_delivery_error": "Marcar como error en la entrega"
   },
   "global": {
     "welcome": "Bienvenido",

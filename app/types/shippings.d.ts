@@ -13,5 +13,8 @@ export interface Shipping {
     license_plate: string
   }
   status: ShippingStatusEnum
+  refunded_at: string
+  delivered_at: string
   updated_at: string
+  _actions: unknown
 }
