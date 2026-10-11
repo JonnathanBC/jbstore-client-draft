@@ -33,6 +33,9 @@ const STATUS_TO_CODE: Record<number, ApiError['code']> = {
   422: 'BAD_REQUEST',
 }
 
+const GENERIC_ERROR =
+  'Ocurrió un error inesperado. Intentá de nuevo en unos minutos.'
+
 export function toApiError(err: unknown): ApiError {
   if (err instanceof AxiosError) {
     const status = err.response?.status ?? 500
@@ -43,16 +46,30 @@ export function toApiError(err: unknown): ApiError {
         }
       | undefined
 
+    // 500 / sin respuesta = excepción no controlada: su mensaje puede traer SQL, rutas o stack.
+    // Otros 5xx (502 de la pasarela) traen mensajes pensados para el usuario: se respetan.
+    const isUnhandled = status === 500 || !err.response
+    if (isUnhandled) {
+      console.error(
+        '[api] error inesperado',
+        status,
+        err.config?.url,
+        data?.message ?? err.message,
+      )
+    }
+
     return {
       code: STATUS_TO_CODE[status] ?? 'INTERNAL_SERVER_ERROR',
-      message: data?.message ?? err.message,
+      message: isUnhandled ? GENERIC_ERROR : (data?.message ?? GENERIC_ERROR),
       status,
       errors: data?.errors,
     }
   }
+
+  console.error('[api] error inesperado', err)
   return {
     code: 'INTERNAL_SERVER_ERROR',
-    message: err instanceof Error ? err.message : 'Unexpected error',
+    message: GENERIC_ERROR,
     status: 500,
   }
 }
