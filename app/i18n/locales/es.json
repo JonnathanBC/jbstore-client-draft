@@ -50,6 +50,19 @@
     "ready_to_ship": "Listo para despachar",
     "assign_delivery": "Asignar repartidor",
     "cancel": "Cancelar",
-    "successfully_updated": "Actualizado correctamente"
+    "successfully_updated": "Actualizado correctamente",
+    "search": "Buscar",
+    "filters": "Filtros",
+    "applied_filters": "Filtros aplicados",
+    "clear": "Borrar",
+    "all": "Todos",
+    "showing": "Mostrando",
+    "results": "resultados",
+    "no_data": "Sin datos"
+  },
+  "shipping_status": {
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "failed": "Fallido"
   }
 }

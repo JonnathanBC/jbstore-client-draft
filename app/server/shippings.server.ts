@@ -6,6 +6,8 @@ export interface GetShippingsParams {
   token: string
   page?: number
   per_page?: number
+  search?: string
+  status?: ShippingStatusEnum
   order?: { updated_at?: 'asc' | 'desc' }
 }
 

@@ -50,6 +50,19 @@
     "ready_to_ship": "Ready to ship",
     "assign_delivery": "Assign delivery",
     "cancel": "Cancel",
-    "successfully_updated": "Successfully updated"
+    "successfully_updated": "Successfully updated",
+    "search": "Search",
+    "filters": "Filters",
+    "applied_filters": "Applied filters",
+    "clear": "Clear",
+    "all": "All",
+    "showing": "Showing",
+    "results": "results",
+    "no_data": "No data"
+  },
+  "shipping_status": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
   }
 }

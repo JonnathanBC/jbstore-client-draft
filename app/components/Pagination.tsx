@@ -3,6 +3,8 @@ import type { ApiResponse } from '~/types/api'
 interface Props {
   meta: ApiResponse<unknown>
   onPageChange: (page: number) => void
+  // Reemplaza el texto informativo por defecto ("Mostrando x–y de z")
+  summary?: React.ReactNode
 }
 
 const ArrowLeft = () => (
@@ -57,7 +59,7 @@ const ArrowRight = () => (
   </svg>
 )
 
-export const Pagination = ({ meta, onPageChange }: Props) => {
+export const Pagination = ({ meta, onPageChange, summary }: Props) => {
   const prevLink = meta.links[0]
   const nextLink = meta.links[meta.links.length - 1]
 
@@ -68,9 +70,13 @@ export const Pagination = ({ meta, onPageChange }: Props) => {
     <nav className="mt-4 flex items-center justify-between text-sm font-medium">
       {/* Texto informativo */}
       <span className="text-zinc-500">
-        Mostrando <span className="text-zinc-800">{meta.from ?? 0}</span>–
-        <span className="text-zinc-800">{meta.to ?? 0}</span> de{' '}
-        <span className="text-zinc-800">{meta.total}</span>
+        {summary ?? (
+          <>
+            Mostrando <span className="text-zinc-800">{meta.from ?? 0}</span>–
+            <span className="text-zinc-800">{meta.to ?? 0}</span> de{' '}
+            <span className="text-zinc-800">{meta.total}</span>
+          </>
+        )}
       </span>
 
       <div className="flex items-center gap-4">
