@@ -21,7 +21,8 @@
     "drivers": "Drivers",
     "shippings": "Shippings",
     "mark_as_paid": "Mark as paid",
-    "mark_as_a_delivery_error": "Mark as a delivery error"
+    "mark_as_a_delivery_error": "Mark as a delivery error",
+    "mark_as_refunded": "Mark as refunded"
   },
   "global": {
     "welcome": "Welcome",

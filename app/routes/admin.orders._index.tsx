@@ -35,6 +35,8 @@ const orderStatusVariants = {
 const orderNextStep = {
   pending: { intent: 'set-to-processing', labelKey: 'global.ready_to_ship' },
   processing: { intent: 'assign-driver', labelKey: 'global.assign_delivery' },
+  failed: { intent: 'set-to-refunded', labelKey: 'admin.mark_as_refunded' },
+  refunded: { intent: 'assign-driver', labelKey: 'global.assign_delivery' },
 } as const satisfies Partial<
   Record<Order['status'], { intent: string; labelKey: string }>
 >
@@ -94,14 +96,51 @@ export async function action({ request }: Route.ActionArgs) {
         message: 'Conductor asignado',
       })
     }
-    case 'cancel':
-      console.log('Cancel')
-      return { ok: true }
+    case 'set-to-refunded': {
+      const result = await updateOrderStatus({
+        token,
+        orderId,
+        status: 'refunded',
+      })
+
+      if ('error' in result) {
+        return data(
+          {
+            success: false,
+            error: result.error.message,
+            errors: result.error.errors,
+          },
+          { status: result.error.status },
+        )
+      }
+
+      return { success: true }
+    }
+    case 'cancel': {
+      const result = await updateOrderStatus({
+        token,
+        orderId,
+        status: 'cancelled',
+      })
+
+      if ('error' in result) {
+        return data(
+          {
+            success: false,
+            error: result.error.message,
+            errors: result.error.errors,
+          },
+          { status: result.error.status },
+        )
+      }
+
+      return { success: true }
+    }
   }
 }
 
 const ActionButtons = ({ order }: { order: Order }) => {
-  const fetcher = useFetcher<{ success?: string; error?: string }>()
+  const fetcher = useFetcher<{ success?: boolean; error?: string }>()
   const step = orderNextStep[order.status as keyof typeof orderNextStep]
   const openModal = useModalStore((state) => state.open)
 
@@ -137,14 +176,16 @@ const ActionButtons = ({ order }: { order: Order }) => {
         </button>
       )}
 
-      <button
-        name="intent"
-        value="cancel"
-        type="submit"
-        className="font-medium text-blue-600 underline hover:no-underline"
-      >
-        {t('global.cancel')}
-      </button>
+      {order.status !== 'cancelled' && (
+        <button
+          name="intent"
+          value="cancel"
+          type="submit"
+          className="font-medium text-blue-600 underline hover:no-underline"
+        >
+          {t('global.cancel')}
+        </button>
+      )}
     </fetcher.Form>
   )
 }

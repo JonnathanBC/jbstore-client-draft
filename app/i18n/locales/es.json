@@ -21,7 +21,8 @@
     "drivers": "Conductores",
     "shippings": "Envìos",
     "mark_as_paid": "Marcar como pagado",
-    "mark_as_a_delivery_error": "Marcar como error en la entrega"
+    "mark_as_a_delivery_error": "Marcar como error en la entrega",
+    "mark_as_refunded": "Marcar como devuelto"
   },
   "global": {
     "welcome": "Bienvenido",
