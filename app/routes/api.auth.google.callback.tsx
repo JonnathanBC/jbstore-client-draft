@@ -1,17 +1,35 @@
 import { redirect } from 'react-router'
 import type { Route } from './+types/api.auth.google.callback'
-import { createUserSession } from '~/server/auth.server'
-import { fetchMe } from '~/server/user.server'
+import { createUserSession, exchangeGoogleCode } from '~/server/auth.server'
+import { clearOAuthState, verifyOAuthState } from '~/server/oauthState.server'
+
+const loginWithError = async () =>
+  redirect('/login?error=google', {
+    headers: { 'Set-Cookie': await clearOAuthState() },
+  })
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url)
-  const token = url.searchParams.get('token')
+  const code = url.searchParams.get('code')
 
-  if (!token) {
-    return redirect('/login')
+  // Sin state válido no canjeamos nada: protege contra login-CSRF
+  if (
+    !code ||
+    !(await verifyOAuthState(request, url.searchParams.get('state')))
+  ) {
+    return loginWithError()
   }
 
-  const user = await fetchMe(token)
+  const result = await exchangeGoogleCode(code)
+  if ('error' in result) return loginWithError()
 
-  return createUserSession({ request, token, userId: user.id })
+  const response = await createUserSession({
+    request,
+    token: result.token,
+    userId: result.user.id,
+  })
+  // El state es de un solo uso: lo borramos al terminar
+  response.headers.append('Set-Cookie', await clearOAuthState())
+
+  return response
 }

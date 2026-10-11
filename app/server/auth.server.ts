@@ -122,7 +122,24 @@ export async function logoutBackend(token: string): Promise<void> {
   }
 }
 
-export async function fetchGoogleOAuthUrl(): Promise<string> {
-  const { data } = await apiClient().get<{ url: string }>('/api/auth/google')
+export async function fetchGoogleOAuthUrl(state: string): Promise<string> {
+  const { data } = await apiClient().get<{ url: string }>('/api/auth/google', {
+    params: { state },
+  })
   return data.url
+}
+
+/** Server-to-server: el token nunca pasa por la URL ni por el navegador. */
+export async function exchangeGoogleCode(
+  code: string,
+): Promise<LoginResult | { error: ApiError }> {
+  try {
+    const { data } = await apiClient().post<LoginResult>(
+      '/api/auth/google/exchange',
+      { code },
+    )
+    return data
+  } catch (err) {
+    return { error: toApiError(err) }
+  }
 }

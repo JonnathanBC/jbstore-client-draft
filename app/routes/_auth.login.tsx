@@ -44,15 +44,21 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') ?? '/'
   const submitting = nav.state === 'submitting'
+  // El callback de Google vuelve con ?error=google (state inválido, código vencido o email no verificado)
+  const error =
+    actionData?.error ??
+    (searchParams.get('error') === 'google'
+      ? 'No pudimos iniciar sesión con Google. Intentá de nuevo.'
+      : null)
 
   return (
     <div className="flex min-h-screen">
       <div className="flex w-full items-center justify-center p-8 lg:w-1/2">
         <Form method="post" className="w-full max-w-sm space-y-4">
           <h2 className="text-2xl font-semibold text-zinc-900">Sign in</h2>
-          {actionData?.error && (
+          {error && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-              {actionData.error}
+              {error}
             </div>
           )}
 

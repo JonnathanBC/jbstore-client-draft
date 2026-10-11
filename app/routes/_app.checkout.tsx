@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useFetcher } from 'react-router'
+import { data, useFetcher } from 'react-router'
 import { toast } from 'sonner'
 import type { Route } from './+types/_app.checkout'
 import { CreditCardIcon, Info, LoaderCircle } from 'lucide-react'
@@ -15,6 +15,15 @@ import {
 import { getSession } from '~/server/session.server'
 import { formatNiubizDate } from '~/lib/niubiz'
 import { Button } from '~/components/ui/button'
+import { completeProfile, fetchMe } from '~/server/user.server'
+import {
+  COMPLETE_PROFILE_INTENT,
+  CompleteProfileForm,
+} from '~/users/CompleteProfileForm'
+
+type PaymentActionData =
+  | { error: string }
+  | { token: string; amount: number; purchaseNumber: string }
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
@@ -28,16 +37,39 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Lo deja /checkout/paid si Niubiz rechazó el pago. El layout _app lo consume.
   const session = await getSession(request.headers.get('Cookie'))
   const paymentError = session.get('paymentError') ?? null
+  // Usuarios de Google llegan sin documento/teléfono: el backend no deja pagar así
+  const user = await fetchMe(auth.token)
 
   return {
     cart,
     niubiz: niubizPublicConfig,
     paymentError,
+    user,
   }
 }
 
 export async function action({ request }: Route.ActionArgs) {
   const auth = await requireAuth(request)
+  const formData = await request.formData()
+
+  if (formData.get('intent') === COMPLETE_PROFILE_INTENT) {
+    const result = await completeProfile(auth.token, {
+      last_name: String(formData.get('last_name') ?? '').trim(),
+      document_type: String(formData.get('document_type') ?? ''),
+      document_number: String(formData.get('document_number') ?? '').trim(),
+      phone: String(formData.get('phone') ?? '').trim(),
+    })
+
+    if ('error' in result) {
+      return data(
+        { error: result.error.message, errors: result.error.errors },
+        { status: result.error.status },
+      )
+    }
+
+    // El loader se revalida solo: con profile_complete en true el form desaparece
+    return { success: true as const }
+  }
 
   const result = await getPaymentSessionToken(auth.token)
 
@@ -60,9 +92,11 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
     'card-credit' | 'bank-deposit'
   >('card-credit')
 
-  const { niubiz, paymentError } = loaderData
+  const { niubiz, paymentError, user } = loaderData
+  const profileComplete = user.profile_complete === true
   const niubizLoaded = useNiubizScript(niubiz.scriptUrl)
-  const fetcher = useFetcher<typeof action>()
+  // Tipado explícito: el action también responde al form de perfil, este fetcher solo ve el pago
+  const fetcher = useFetcher<PaymentActionData>()
   const [paymentStatus, setPaymentStatus] = useState<
     'idle' | 'waiting' | 'confirming'
   >('idle')
@@ -179,6 +213,8 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="col-span-1">
           <div className="ml-auto px-4 py-12 sm:pl-6 lg:max-w-160 lg:pr-8 lg:pl-8">
+            {!profileComplete && <CompleteProfileForm user={user} />}
+
             <h1 className="mb-2 text-2xl font-semibold">Pago</h1>
             <div className="overflow-hidden rounded-lg border border-gray-200 shadow">
               <ul className="divide-y divide-gray-200">
@@ -294,7 +330,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
               <fetcher.Form method="post">
                 <Button
                   type="submit"
-                  disabled={!niubizLoaded || isBusy}
+                  disabled={!niubizLoaded || isBusy || !profileComplete}
                   aria-live="polite"
                   className="mt-4 w-full"
                 >

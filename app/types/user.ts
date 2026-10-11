@@ -13,6 +13,22 @@ export interface User {
   google_id: string | null
   avatar: string | null
   role: UserRoleMap[keyof UserRoleMap]
+  // null en usuarios que entraron con Google y todavía no completaron el perfil
+  last_name: string | null
+  document_type: DocumentType | null
+  document_number: string | null
+  phone: string | null
+  // Solo lo devuelve /api/user/me
+  profile_complete?: boolean
+}
+
+export type DocumentType = 'CI' | 'RUC' | 'PP'
+
+export interface ProfileInput {
+  last_name: string
+  document_type: string
+  document_number: string
+  phone: string
 }
 
 export type UserOption = Pick<User, 'id' | 'name' | 'email'> & {
