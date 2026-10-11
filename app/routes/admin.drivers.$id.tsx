@@ -2,7 +2,7 @@ import type { Route } from './+types/admin.drivers.$id'
 import { RouteModalForm } from '~/components/modals/RouteModalForm'
 import { DriverFields, toDriverFormValues } from '~/drivers/DriverFields'
 import { t } from '~/i18n'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { deleteDriver, getDriver, updateDriver } from '~/server/drivers.server'
 import { handleMutation } from '~/server/mutation.server'
 
@@ -10,15 +10,15 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('global.edit')} | ${t('admin.drivers')} | JB Store` },
 ]
 
-export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context, params }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
   const driver = await getDriver(params.id, token)
 
   return { driver }
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAdmin(request)
+export async function action({ request, context, params }: Route.ActionArgs) {
+  const { token } = requireSessionUser(context)
   const isDelete = request.method === 'DELETE'
 
   // La URL ya identifica al driver: el método HTTP decide qué hacer con él.

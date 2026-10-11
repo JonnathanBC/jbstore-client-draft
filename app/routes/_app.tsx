@@ -3,24 +3,13 @@ import { RouteErrorContent } from '~/components/shared/RouteErrorContent'
 import type { Route } from './+types/_app'
 import { Header } from '~/components/shared/Header'
 import { Footer } from '~/components/shared/Footer'
-import { getOptionalAuth } from '~/server/auth.server'
+import { getSessionUser } from '~/server/auth.context.server'
+import { UserRole } from '~/types/user'
 import { getCartCount } from '~/server/cart.server'
 import { getGuestCart, guestCartCount } from '~/server/guestCart.server'
 import { Navbar } from '~/components/shared/Navbar'
 import { commitSession, getSession } from '~/server/session.server'
 import { AppToaster, type ToastFlash } from '~/components/AppToaster'
-import { fetchMe } from '~/server/user.server'
-
-async function loadUser(token: string | undefined) {
-  if (!token) return { user: null, isAdmin: false }
-
-  try {
-    const user = await fetchMe(token)
-    return { user, isAdmin: user.role === 'ROLE_ADMIN' }
-  } catch {
-    return { user: null, isAdmin: false }
-  }
-}
 
 async function loadCartCount(request: Request, token: string | undefined) {
   if (!token) return guestCartCount(await getGuestCart(request))
@@ -33,11 +22,14 @@ async function loadCartCount(request: Request, token: string | undefined) {
   return cart.count
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const auth = await getOptionalAuth(request)
-  const [userData, cartCount, session] = await Promise.all([
-    loadUser(auth?.token),
-    loadCartCount(request, auth?.token),
+export async function loader({ request, context }: Route.LoaderArgs) {
+  // El middleware del root ya resolvió el usuario (y limpió la cookie si el token venció)
+  const sessionUser = getSessionUser(context)
+  const user = sessionUser?.user ?? null
+  const userData = { user, isAdmin: user?.role === UserRole.ADMIN }
+
+  const [cartCount, session] = await Promise.all([
+    loadCartCount(request, sessionUser?.token),
     getSession(request.headers.get('Cookie')),
   ])
 

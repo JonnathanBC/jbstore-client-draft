@@ -1,12 +1,10 @@
 import { createCookieSessionStorage } from 'react-router'
 import type { ToastFlash } from '~/components/AppToaster'
-import type { User } from '~/types/user'
 
+// El rol NO va acá: lo trae /api/user/me en el middleware, así un cambio de rol aplica al instante
 type SessionData = {
   token: string
   userId: number
-  // Cookie firmada: el cliente no puede cambiarlo. Laravel igual valida el rol en cada request.
-  role: User['role']
 }
 
 // Resumen del pago para la página de gracias. Va en la cookie (máx ~4KB),

@@ -1,56 +1,11 @@
 import { redirect } from 'react-router'
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
-import { UserRole, type User } from '~/types/user'
+import type { User } from '~/types/user'
 import type { ToastFlash } from '~/components/AppToaster'
 import { commitSession, getSession } from './session.server'
 import { mergeGuestCartOnLogin } from './guestCart.server'
-import { fetchMe } from './user.server'
 
-export interface AuthTokens {
-  token: string
-  userId: number
-}
-
-export async function getOptionalAuth(
-  request: Request,
-): Promise<AuthTokens | null> {
-  const session = await getSession(request.headers.get('Cookie'))
-  const token = session.get('token')
-  const userId = session.get('userId')
-  if (!token || typeof userId !== 'number') return null
-  return { token, userId }
-}
-
-export async function requireAuth(request: Request): Promise<AuthTokens> {
-  const auth = await getOptionalAuth(request)
-  if (!auth) {
-    const url = new URL(request.url)
-    const redirectTo = url.pathname + url.search
-    throw redirect(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)
-  }
-  return auth
-}
-
-/**
- * Guard de TODO loader/action del admin. En RR7 los loaders hijos corren en paralelo
- * con el del layout `admin.tsx`, así que el chequeo del layout no los protege.
- * El rol sale de la sesión (sin request extra); Laravel igual lo valida con `can:admin`.
- */
-export async function requireAdmin(request: Request): Promise<AuthTokens> {
-  const auth = await requireAuth(request)
-  const session = await getSession(request.headers.get('Cookie'))
-  // Sesiones previas a guardar el rol: lo pedimos a la API una vez más
-  const role = session.get('role') ?? (await fetchMe(auth.token)).role
-
-  if (role !== UserRole.ADMIN) {
-    throw new Response('This action is unauthorized.', {
-      status: 403,
-      statusText: 'FORBIDDEN',
-    })
-  }
-
-  return auth
-}
+// Los guards de rutas (login/admin) viven en auth.context.server.ts
 
 /**
  * Único punto de entrada para iniciar sesión (login, registro, Google...).
@@ -66,14 +21,13 @@ export async function createUserSession({
 }: {
   request: Request
   token: string
-  user: Pick<User, 'id' | 'role'>
+  user: Pick<User, 'id'>
   redirectTo?: string
   toast?: ToastFlash
 }) {
   const session = await getSession(request.headers.get('Cookie'))
   session.set('token', token)
   session.set('userId', user.id)
-  session.set('role', user.role)
   if (toast) session.flash('toast', toast)
 
   const headers = new Headers({ 'Set-Cookie': await commitSession(session) })

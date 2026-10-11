@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from 'react-router'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
@@ -15,8 +15,8 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('global.products')} | JB Store` },
 ]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page') ?? 1)
   const per_page = Number(url.searchParams.get('per_page') ?? 10)

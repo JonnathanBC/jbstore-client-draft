@@ -7,7 +7,7 @@ import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { renderDateTime } from '~/components/table/renders'
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { getDrivers } from '~/server/drivers.server'
 import { Column } from '~/types/table'
 import { Driver } from '~/types/driver'
@@ -17,8 +17,8 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.drivers')} | JB Store` },
 ]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
 
   const drivers = await getDrivers({
     token,

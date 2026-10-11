@@ -1,5 +1,5 @@
 import type { Route } from './+types/admin.options.$id.features'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { createFeature } from '~/server/feature.server'
 import { handleMutation } from '~/server/mutation.server'
 
@@ -8,12 +8,12 @@ import { handleMutation } from '~/server/mutation.server'
  * POST /admin/options/:id/features → agrega un valor (feature) a la opción.
  * La opción sale de la URL, no del body.
  */
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, context, params }: Route.ActionArgs) {
   if (request.method !== 'POST') {
     throw new Response('Method Not Allowed', { status: 405 })
   }
 
-  const { token } = await requireAdmin(request)
+  const { token } = requireSessionUser(context)
   const { value, description } = await request.json()
 
   const result = await createFeature(

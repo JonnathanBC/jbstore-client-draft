@@ -1,7 +1,6 @@
 import { Link, redirect } from 'react-router'
 import { CircleCheckBig } from 'lucide-react'
-import type { Route } from './+types/_app.checkout_.thanks'
-import { requireAuth } from '~/server/auth.server'
+import type { Route } from './+types/_app._private.checkout_.thanks'
 import { getSession } from '~/server/session.server'
 import { formatNiubizDate } from '~/lib/niubiz'
 import { Button } from '~/components/ui/button'
@@ -10,8 +9,8 @@ export const meta: Route.MetaFunction = () => [
   { title: 'Gracias por tu compra | JB Store' },
 ]
 
+// El login lo exige el layout _app._private
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireAuth(request)
   const session = await getSession(request.headers.get('Cookie'))
 
   // No hacemos commit acá: el layout _app ya consume el flash y reescribe la cookie.

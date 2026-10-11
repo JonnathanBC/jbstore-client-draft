@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { data, redirect } from 'react-router'
 import { toast } from 'sonner'
 
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.covers.create'
@@ -22,9 +22,9 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('global.new')} ${t('admin.covers')} | JB Store` },
 ]
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAdmin(request),
+    requireSessionUser(context),
     request.formData(),
   ])
 

@@ -6,7 +6,7 @@ import { HeaderTitle } from '~/components/HeaderTitle'
 import type { ApiError } from '~/lib/apiClient'
 import { clearCart, removeFromCart, updateCart } from '~/server/cart.server'
 import { loadCart } from '~/server/loadCart.server'
-import { getOptionalAuth } from '~/server/auth.server'
+import { getSessionUser } from '~/server/auth.context.server'
 import {
   clearGuestCart,
   commitGuestCart,
@@ -18,8 +18,8 @@ import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Carrito | JB Store' }]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const auth = await getOptionalAuth(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const auth = getSessionUser(context)
   return { items: await loadCart(request, auth?.token) }
 }
 
@@ -31,8 +31,8 @@ const fromApi = (result: object | { error: ApiError }, message: string) =>
     ? fail(result.error.message, result.error.status)
     : { ok: true as const, message }
 
-export async function action({ request }: Route.ActionArgs) {
-  const auth = await getOptionalAuth(request)
+export async function action({ request, context }: Route.ActionArgs) {
+  const auth = getSessionUser(context)
   const form = await request.formData()
   const intent = form.get('intent')
   const rowId = form.get('rowId')

@@ -3,7 +3,7 @@ import { redirect } from 'react-router'
 
 import { ProductForm } from '~/products/ProductForm'
 import { t } from '~/i18n'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { commitSession, getSession } from '~/server/session.server'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.products.create'
@@ -20,9 +20,9 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.new_product')} | JB Store` },
 ]
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const [{ token }, formData] = await Promise.all([
-    requireAdmin(request),
+    requireSessionUser(context),
     request.formData(),
   ])
 

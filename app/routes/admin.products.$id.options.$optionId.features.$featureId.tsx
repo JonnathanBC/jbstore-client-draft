@@ -1,12 +1,12 @@
 import type { Route } from './+types/admin.products.$id.options.$optionId.features.$featureId'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { handleMutation } from '~/server/mutation.server'
 import { deleteFeatureProduct } from '~/server/options-product'
 
 // Action-only: DELETE /admin/products/:id/options/:optionId/features/:featureId
 // quita el valor de la opción del producto. Sin redirect: el loader se revalida.
-export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAdmin(request)
+export async function action({ request, context, params }: Route.ActionArgs) {
+  const { token } = requireSessionUser(context)
 
   const result = await deleteFeatureProduct(
     Number(params.optionId),

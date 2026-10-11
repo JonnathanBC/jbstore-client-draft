@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { data, useFetcher } from 'react-router'
 import { toast } from 'sonner'
-import type { Route } from './+types/_app.checkout'
+import type { Route } from './+types/_app._private.checkout'
 import { CreditCardIcon, Info, LoaderCircle } from 'lucide-react'
-import { requireAuth } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { getPaymentSessionToken } from '~/server/payments.server'
 import { getCart } from '~/server/cart.server'
 import { niubizPublicConfig } from '~/server/niubiz.server'
@@ -15,7 +15,7 @@ import {
 import { getSession } from '~/server/session.server'
 import { formatNiubizDate } from '~/lib/niubiz'
 import { Button } from '~/components/ui/button'
-import { completeProfile, fetchMe } from '~/server/user.server'
+import { completeProfile } from '~/server/user.server'
 import {
   COMPLETE_PROFILE_INTENT,
   CompleteProfileForm,
@@ -27,18 +27,18 @@ type PaymentActionData =
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const auth = await requireAuth(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  // El usuario ya viene del middleware (sin pedir /me de nuevo). Si completa el perfil,
+  // la revalidación vuelve a correr el middleware y trae profile_complete actualizado.
+  const { token, user } = requireSessionUser(context)
   // Checkout exige login: usamos el carrito de Laravel, que trae envío y total.
-  const cart = await getCart(auth.token)
+  const cart = await getCart(token)
   if ('error' in cart) {
     throw new Response(cart.error.message, { status: cart.error.status })
   }
   // Lo deja /checkout/paid si Niubiz rechazó el pago. El layout _app lo consume.
   const session = await getSession(request.headers.get('Cookie'))
   const paymentError = session.get('paymentError') ?? null
-  // Usuarios de Google llegan sin documento/teléfono: el backend no deja pagar así
-  const user = await fetchMe(auth.token)
 
   return {
     cart,
@@ -48,8 +48,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const auth = await requireAuth(request)
+export async function action({ request, context }: Route.ActionArgs) {
+  const auth = requireSessionUser(context)
   const formData = await request.formData()
 
   if (formData.get('intent') === COMPLETE_PROFILE_INTENT) {

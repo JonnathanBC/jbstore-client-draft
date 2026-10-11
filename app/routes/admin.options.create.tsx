@@ -5,7 +5,7 @@ import {
   toOptionFormValues,
 } from '~/features/options/OptionFields'
 import { t } from '~/i18n'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { handleMutation } from '~/server/mutation.server'
 import { createOption } from '~/server/options.server'
 
@@ -13,8 +13,8 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('global.new')} | ${t('admin.options')} | JB Store` },
 ]
 
-export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAdmin(request)
+export async function action({ request, context }: Route.ActionArgs) {
+  const { token } = requireSessionUser(context)
   const payload = await request.json()
 
   const result = await createOption(payload, token)

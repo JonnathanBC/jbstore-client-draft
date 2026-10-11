@@ -12,6 +12,10 @@ import type { Route } from './+types/root'
 import './styles/global.css'
 import { ModalRenderer } from './components/modals/ModalRenderer'
 import { ConfirmDialogHost } from './components/confirm/ConfirmDialogHost'
+import { loadUserMiddleware } from './server/auth.context.server'
+
+// Corre antes que cualquier loader/action: resuelve el usuario una sola vez por request
+export const middleware: Route.MiddlewareFunction[] = [loadUserMiddleware]
 
 export const links: Route.LinksFunction = () => [
   { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },

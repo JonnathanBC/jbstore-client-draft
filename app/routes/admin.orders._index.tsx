@@ -8,7 +8,7 @@ import {
   isOrderStatusIntent,
   ORDER_STATUS_INTENTS,
 } from '~/orders/status'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { handleMutation, type MutationResult } from '~/server/mutation.server'
 import {
   assignOrderDriver,
@@ -20,8 +20,8 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.orders')} | JB Store` },
 ]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
   const searchParams = new URL(request.url).searchParams
 
   const orders = await getOrders({
@@ -33,8 +33,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { orders }
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAdmin(request)
+export async function action({ request, context }: Route.ActionArgs) {
+  const { token } = requireSessionUser(context)
   const formData = await request.formData()
   const intent = formData.get('intent')
   const orderId = String(formData.get('orderId'))

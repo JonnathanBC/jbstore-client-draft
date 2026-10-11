@@ -1,10 +1,13 @@
 import type { Route } from './+types/resources.orders.$orderId.ticket'
 
-import { requireAdmin } from '~/server/auth.server'
+import {
+  requireAdminMiddleware,
+  requireSessionUser,
+} from '~/server/auth.context.server'
 import { downloadOrderTicket } from '~/server/orders.server'
 
-export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context, params }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
 
   const pdf = await downloadOrderTicket({
     token,
@@ -18,3 +21,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     },
   })
 }
+
+// Las resource routes no cuelgan del layout admin: llevan su propio guard
+export const middleware: Route.MiddlewareFunction[] = [requireAdminMiddleware]

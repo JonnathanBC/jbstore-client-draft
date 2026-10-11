@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { data } from 'react-router'
 import { toast } from 'sonner'
 
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.covers.$id'
@@ -36,8 +36,8 @@ export const handle: RouteHandle = {
  */
 const toDateInput = (value?: string | null) => (value ? value.slice(0, 10) : '')
 
-export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context, params }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
   const id = Number(params.id)
   if (!Number.isFinite(id) || id < 1) {
     throw new Response('Portada no encontrada', { status: 404 })
@@ -58,8 +58,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAdmin(request)
+export async function action({ request, context, params }: Route.ActionArgs) {
+  const { token } = requireSessionUser(context)
   const id = Number(params.id)
   if (!Number.isFinite(id) || id < 1) {
     return data<MutationResult>(

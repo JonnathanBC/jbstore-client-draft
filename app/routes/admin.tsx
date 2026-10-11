@@ -1,13 +1,15 @@
 import { Outlet, data } from 'react-router'
 import type { Route } from './+types/admin'
-import { requireAdmin } from '~/server/auth.server'
+import {
+  requireAdminMiddleware,
+  requireSessionUser,
+} from '~/server/auth.context.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { Sidebar } from '~/components/admin/Sidebar'
 import { Breadcrumbs } from '~/components/shared/Breadcrumbs'
 import { RouteErrorContent } from '~/components/shared/RouteErrorContent'
 import { AppToaster, type ToastFlash } from '~/components/AppToaster'
 import type { RouteHandle } from '~/types/route'
-import { fetchMe } from '~/server/user.server'
 
 export const handle: RouteHandle = { breadcrumb: 'Dashboard' }
 
@@ -15,13 +17,13 @@ export const meta: Route.MetaFunction = () => [
   { title: 'Panel de Administración | JB Store' },
 ]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  // El guard es el mismo que usan todos los loaders hijos; acá además traemos el user para el Sidebar
-  const { token } = await requireAdmin(request)
-  const [user, session] = await Promise.all([
-    fetchMe(token),
-    getSession(request.headers.get('Cookie')),
-  ])
+// Protege este layout Y todos sus hijos (loaders + actions de admin.*): ningún hijo repite el chequeo
+export const middleware: Route.MiddlewareFunction[] = [requireAdminMiddleware]
+
+export async function loader({ request, context }: Route.LoaderArgs) {
+  // Ya lo resolvió el middleware del root: sin request extra a /api/user/me
+  const { user } = requireSessionUser(context)
+  const session = await getSession(request.headers.get('Cookie'))
   const toast = (session.get('toast') as ToastFlash | undefined) ?? null
 
   return data(

@@ -5,7 +5,7 @@ import { Star, Truck } from 'lucide-react'
 import { t } from '~/i18n'
 import { AddToCartVariant } from '~/products/components/app/AddToCartVariant'
 import { getPublicProduct } from '~/server/products.server'
-import { getOptionalAuth } from '~/server/auth.server'
+import { getSessionUser } from '~/server/auth.context.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { addToCart } from '~/server/cart.server'
 import {
@@ -70,7 +70,7 @@ export async function loader({ request: _, params }: Route.LoaderArgs) {
   }
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
   const id = Number(params.id)
   const form = await request.formData()
 
@@ -103,7 +103,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const headers = new Headers()
-  const auth = await getOptionalAuth(request)
+  const auth = getSessionUser(context)
   const session = await getSession(request.headers.get('Cookie'))
   let failed = false
   let errorMessage: string | undefined

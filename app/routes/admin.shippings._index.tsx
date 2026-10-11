@@ -2,7 +2,7 @@ import { data } from 'react-router'
 import { Route } from './+types/admin.shippings._index'
 
 import { t } from '~/i18n'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { handleMutation, type MutationResult } from '~/server/mutation.server'
 import { getShippings, updateShippingStatus } from '~/server/shippings.server'
 import { ShippingsPage } from '~/shippings/ShippingsPage'
@@ -16,8 +16,8 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.shippings')} | JB Store` },
 ]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
   const searchParams = new URL(request.url).searchParams
   const status = searchParams.get('status')
 
@@ -33,8 +33,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { shippings }
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAdmin(request)
+export async function action({ request, context }: Route.ActionArgs) {
+  const { token } = requireSessionUser(context)
   const formData = await request.formData()
   const intent = formData.get('intent')
 

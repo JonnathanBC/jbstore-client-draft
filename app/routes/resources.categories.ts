@@ -1,9 +1,12 @@
-import { requireAdmin } from '~/server/auth.server'
+import {
+  requireAdminMiddleware,
+  requireSessionUser,
+} from '~/server/auth.context.server'
 import { getCategories } from '~/server/categories.server'
 import { Route } from './+types/resources.categories'
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
 
   const url = new URL(request.url)
   const familyId = url.searchParams.get('family_id')
@@ -26,3 +29,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     })),
   }
 }
+
+// Las resource routes no cuelgan del layout admin: llevan su propio guard
+export const middleware: Route.MiddlewareFunction[] = [requireAdminMiddleware]

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { t } from '~/i18n'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { handleMutation } from '~/server/mutation.server'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.products.$id'
@@ -33,8 +33,8 @@ export const handle: RouteHandle = {
   },
 }
 
-export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAdmin(request)
+export async function loader({ request, context, params }: Route.LoaderArgs) {
+  const { token } = requireSessionUser(context)
   const id = Number(params.id)
 
   try {
@@ -54,8 +54,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 }
 
-export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAdmin(request)
+export async function action({ request, context, params }: Route.ActionArgs) {
+  const { token } = requireSessionUser(context)
   const id = Number(params.id)
 
   // La URL ya identifica al producto: el método HTTP decide qué hacer con él.

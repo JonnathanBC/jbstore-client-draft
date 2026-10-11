@@ -1,6 +1,6 @@
 import { redirect } from 'react-router'
 import type { Route } from './+types/admin.families.create'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { createFamily } from '~/server/api.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { FamilyForm } from '~/components/admin/families/FamilyForm'
@@ -18,9 +18,9 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('global.new')} ${t('admin.families')} | JB Store` },
 ]
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAdmin(request),
+    requireSessionUser(context),
     request.formData(),
   ])
   const name = String(form.get('name') ?? '').trim()

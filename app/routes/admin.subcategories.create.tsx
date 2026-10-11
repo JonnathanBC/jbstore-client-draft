@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { SubCategoryForm } from '~/components/admin/subcategories/SubCategoryForm'
 import { t } from '~/i18n'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { createSubCategory } from '~/server/subcategories.server'
 import type { Route } from './+types/admin.subcategories.create'
@@ -21,9 +21,9 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.new_subcategory')} | JB Store` },
 ]
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAdmin(request),
+    requireSessionUser(context),
     request.formData(),
   ])
   const categoryId = Number(form.get('category_id'))

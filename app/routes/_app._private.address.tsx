@@ -6,8 +6,8 @@ import {
   useNavigation,
 } from 'react-router'
 import { toast } from 'sonner'
-import type { Route } from './+types/_app.address'
-import { requireAuth } from '~/server/auth.server'
+import type { Route } from './+types/_app._private.address'
+import { requireSessionUser } from '~/server/auth.context.server'
 import {
   createAddress,
   deleteAddress,
@@ -26,8 +26,8 @@ export const meta: Route.MetaFunction = () => [
   { title: 'Dirección | JB Store' },
 ]
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const auth = await requireAuth(request)
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const auth = requireSessionUser(context)
   // En paralelo: direcciones y carrito no dependen uno del otro
   const [result, cart] = await Promise.all([
     getAddresses(auth.token),
@@ -43,8 +43,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { addresses: result, cart }
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const auth = await requireAuth(request)
+export async function action({ request, context }: Route.ActionArgs) {
+  const auth = requireSessionUser(context)
   const form = await request.formData()
   const intent = form.get('intent')
 

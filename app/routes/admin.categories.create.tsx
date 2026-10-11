@@ -6,7 +6,7 @@ import type { Route } from './+types/admin.categories.create'
 import { CategoryForm } from '~/components/admin/categories/CategoryForm'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
-import { requireAdmin } from '~/server/auth.server'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { createCategory } from '~/server/categories.server'
 import { commitSession, getSession } from '~/server/session.server'
 
@@ -21,9 +21,9 @@ export const meta: Route.MetaFunction = () => [
   { title: `${t('global.new')} ${t('admin.category')} | JB Store` },
 ]
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAdmin(request),
+    requireSessionUser(context),
     request.formData(),
   ])
   const familyId = Number(form.get('family_id'))

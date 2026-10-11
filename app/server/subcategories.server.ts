@@ -106,7 +106,9 @@ export async function deleteSubCategory(
   token: string,
 ): Promise<{ error: ApiError }> {
   try {
-    const { data } = await apiClient(token).delete(`/api/admin/subcategories/${id}`)
+    const { data } = await apiClient(token).delete(
+      `/api/admin/subcategories/${id}`,
+    )
     return data
   } catch (err) {
     return { error: toApiError(err) }

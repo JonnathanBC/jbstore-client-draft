@@ -1,14 +1,14 @@
 import { redirect } from 'react-router'
-import type { Route } from './+types/_app.checkout_.paid'
-import { requireAuth } from '~/server/auth.server'
+import type { Route } from './+types/_app._private.checkout_.paid'
+import { requireSessionUser } from '~/server/auth.context.server'
 import { capturePayment } from '~/server/payments.server'
 import { commitSession, getSession } from '~/server/session.server'
 
 // Sólo se llega acá por el POST que hace Niubiz al terminar el formulario.
 export const loader = () => redirect('/checkout')
 
-export async function action({ request }: Route.ActionArgs) {
-  const auth = await requireAuth(request)
+export async function action({ request, context }: Route.ActionArgs) {
+  const auth = requireSessionUser(context)
   const session = await getSession(request.headers.get('Cookie'))
 
   const url = new URL(request.url)
