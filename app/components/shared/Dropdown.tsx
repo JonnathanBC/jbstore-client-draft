@@ -26,8 +26,9 @@ export const Dropdown = ({ children, items }: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger>{children}</DropdownMenuTrigger>
       <DropdownMenuContent className="w-full">
-        {items.map((item) => (
-          <DropdownMenuGroup>
+        {items.map((item, index) => (
+          // label puede ser un ReactNode (no sirve de key) y la lista es fija: el índice es estable
+          <DropdownMenuGroup key={index}>
             {item.headerLabel && (
               <DropdownMenuLabel>{item.headerLabel}</DropdownMenuLabel>
             )}

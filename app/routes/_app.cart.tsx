@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { data, useFetcher, useRouteLoaderData } from 'react-router'
 import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { HeaderTitle } from '~/components/HeaderTitle'
 import type { ApiError } from '~/lib/apiClient'
 import { clearCart, removeFromCart, updateCart } from '~/server/cart.server'
@@ -110,8 +111,8 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     if (fetcher.state !== 'idle' || !fetcher.data) return
 
-    if (fetcher.data.ok) console.log('✅', fetcher.data.message)
-    else console.error('❌', fetcher.data.error)
+    if (fetcher.data.ok) toast.success(fetcher.data.message)
+    else toast.error(fetcher.data.error)
   }, [fetcher.state, fetcher.data])
 
   return (
@@ -144,6 +145,7 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
                 <img
                   className="mr-2 aspect-video w-full rounded object-cover object-center lg:w-36"
                   src={cart.options.image}
+                  alt={cart.name}
                 />
                 <div className="w-80">
                   <p className="mb-1 text-sm">

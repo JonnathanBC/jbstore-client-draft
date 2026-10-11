@@ -205,6 +205,11 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
     return () => {
       cancelled = true
       controller.abort()
+      // Si se reintenta el pago, los timers del intento anterior no deben disparar toasts sobre el nuevo
+      if (confirmationTimeout.current) {
+        clearTimeout(confirmationTimeout.current)
+        confirmationTimeout.current = null
+      }
     }
   }, [fetcher.state, fetcher.data, niubiz.merchantId])
 
@@ -288,7 +293,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
                     <img
                       src={cart.options.image}
                       className="aspect-square size-14 rounded object-cover"
-                      alt="Image product"
+                      alt={cart.name}
                     />
                   </div>
                   <div className="flex-1">
