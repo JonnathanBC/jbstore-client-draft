@@ -8,7 +8,8 @@ import type { MutationResult } from '~/server/mutation.server'
 import { Button } from '~/components/ui/button'
 
 interface Props {
-  orderId: number
+  // Las órdenes usan UUID
+  orderId: string
 }
 
 type DriverItems = { items: { value: string; label: string }[] }

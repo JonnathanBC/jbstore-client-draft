@@ -1,46 +1,20 @@
-import { useEffect } from 'react'
-import { toast } from 'sonner'
-import { data, Link, useFetcher, useSearchParams } from 'react-router'
+import { data } from 'react-router'
 import { Route } from './+types/admin.orders._index'
 
-import { renderDateTime } from '~/components/table/renders'
-import { Badge } from '~/components/Badge'
-import { PdfIcon } from '~/components/icons/PdfIcon'
-import { Table } from '~/components/Table'
 import { t } from '~/i18n'
+import { OrdersPage } from '~/orders/OrdersPage'
+import {
+  ASSIGN_DRIVER_INTENT,
+  isOrderStatusIntent,
+  ORDER_STATUS_INTENTS,
+} from '~/orders/status'
 import { requireAdmin } from '~/server/auth.server'
-import { handleMutation } from '~/server/mutation.server'
+import { handleMutation, type MutationResult } from '~/server/mutation.server'
 import {
   assignOrderDriver,
   getOrders,
   updateOrderStatus,
 } from '~/server/orders.server'
-import { useModalStore } from '~/store/modal.store'
-import { Order } from '~/types/orders'
-import { Column } from '~/types/table'
-import { Button } from '~/components/ui/button'
-
-const orderStatusVariants = {
-  pending: 'warning',
-  processing: 'info',
-  shipped: 'default',
-  completed: 'success',
-  cancelled: 'danger',
-  failed: 'danger',
-  refunded: 'info',
-} as const satisfies Record<
-  Order['status'],
-  NonNullable<React.ComponentProps<typeof Badge>['variant']>
->
-
-const orderNextStep = {
-  pending: { intent: 'set-to-processing', labelKey: 'global.ready_to_ship' },
-  processing: { intent: 'assign-driver', labelKey: 'global.assign_delivery' },
-  failed: { intent: 'set-to-refunded', labelKey: 'admin.mark_as_refunded' },
-  refunded: { intent: 'assign-driver', labelKey: 'global.assign_delivery' },
-} as const satisfies Partial<
-  Record<Order['status'], { intent: string; labelKey: string }>
->
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.orders')} | JB Store` },
@@ -48,12 +22,12 @@ export const meta: Route.MetaFunction = () => [
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { token } = await requireAdmin(request)
+  const searchParams = new URL(request.url).searchParams
 
   const orders = await getOrders({
     token,
-    order: {
-      created_at: 'desc',
-    },
+    page: Number(searchParams.get('page')) || undefined,
+    order: { created_at: 'desc' },
   })
 
   return { orders }
@@ -65,198 +39,35 @@ export async function action({ request }: Route.ActionArgs) {
   const intent = formData.get('intent')
   const orderId = String(formData.get('orderId'))
 
-  switch (intent) {
-    case 'set-to-processing': {
-      const result = await updateOrderStatus({
-        token,
-        orderId,
-        status: 'processing',
-      })
+  // Lo envía AssignDriverModal (vive en root y apunta acá con ?index)
+  if (intent === ASSIGN_DRIVER_INTENT) {
+    const result = await assignOrderDriver({
+      token,
+      orderId,
+      driverId: String(formData.get('driverId')),
+    })
 
-      if ('error' in result) {
-        return data(
-          {
-            success: false,
-            error: result.error.message,
-            errors: result.error.errors,
-          },
-          { status: result.error.status },
-        )
-      }
-
-      return { success: true }
-    }
-    case 'assign-driver': {
-      const result = await assignOrderDriver({
-        token,
-        orderId,
-        driverId: String(formData.get('driverId')),
-      })
-
-      return handleMutation(request, result, {
-        message: 'Conductor asignado',
-      })
-    }
-    case 'set-to-refunded': {
-      const result = await updateOrderStatus({
-        token,
-        orderId,
-        status: 'refunded',
-      })
-
-      if ('error' in result) {
-        return data(
-          {
-            success: false,
-            error: result.error.message,
-            errors: result.error.errors,
-          },
-          { status: result.error.status },
-        )
-      }
-
-      return { success: true }
-    }
-    case 'cancel': {
-      const result = await updateOrderStatus({
-        token,
-        orderId,
-        status: 'cancelled',
-      })
-
-      if ('error' in result) {
-        return data(
-          {
-            success: false,
-            error: result.error.message,
-            errors: result.error.errors,
-          },
-          { status: result.error.status },
-        )
-      }
-
-      return { success: true }
-    }
-  }
-}
-
-const ActionButtons = ({ order }: { order: Order }) => {
-  const fetcher = useFetcher<{ success?: boolean; error?: string }>()
-  const step = orderNextStep[order.status as keyof typeof orderNextStep]
-  const openModal = useModalStore((state) => state.open)
-
-  useEffect(() => {
-    if (fetcher.state !== 'idle' || !fetcher.data) return
-    if (fetcher.data.error) toast.error(fetcher.data.error)
-    if (fetcher.data.success) toast.success(t('global.successfully_updated'))
-  }, [fetcher.state, fetcher.data])
-
-  return (
-    <fetcher.Form method="post" className="flex flex-col space-y-2">
-      <input type="hidden" name="orderId" value={order.id} />
-
-      {/* Asignar repartidor necesita elegir conductor: abre modal en vez de enviar */}
-      {step?.intent === 'assign-driver' && (
-        <button
-          type="button"
-          onClick={() => openModal('assignDriver', { orderId: order.id })}
-          className="font-medium text-blue-600 underline hover:no-underline"
-        >
-          {t(step.labelKey)}
-        </button>
-      )}
-
-      {step && step.intent !== 'assign-driver' && (
-        <button
-          name="intent"
-          value={step.intent}
-          type="submit"
-          className="font-medium text-blue-600 underline hover:no-underline"
-        >
-          {t(step.labelKey)}
-        </button>
-      )}
-
-      {order.status !== 'cancelled' && (
-        <button
-          name="intent"
-          value="cancel"
-          type="submit"
-          className="font-medium text-blue-600 underline hover:no-underline"
-        >
-          {t('global.cancel')}
-        </button>
-      )}
-    </fetcher.Form>
-  )
-}
-
-const columns: Column<Order>[] = [
-  { title: 'No Orden', dataIndex: 'id' as const },
-  {
-    title: 'Ticket',
-    render: (row: Order) => (
-      <Link to={`/resources/orders/${row.id}/ticket`} reloadDocument>
-        <PdfIcon className="size-10" />
-      </Link>
-    ),
-  },
-  {
-    title: 'Fecha',
-    dataIndex: 'created_at' as const,
-    render: (row: Order) => <>{renderDateTime(row.created_at)}</>,
-  },
-  {
-    title: 'Total',
-    dataIndex: 'total' as const,
-    render: (row: Order) => <>S/ {row.total}</>,
-  },
-  {
-    title: 'Cantidad',
-    dataIndex: 'content' as const,
-    render: (row: Order) => <>{Array(row.content).length}</>,
-  },
-  {
-    title: 'Estado',
-    dataIndex: 'status' as const,
-    render: (row: Order) => (
-      <Badge
-        label={row.status}
-        labelClassName="capitalize"
-        variant={orderStatusVariants[row.status]}
-      />
-    ),
-  },
-  {
-    title: 'Acciones',
-    render: (row: Order) => <ActionButtons order={row} />,
-  },
-]
-
-export default function OrdersPage({ loaderData }: Route.ComponentProps) {
-  const { orders } = loaderData
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const handlePageChange = (page: number) => {
-    const next = new URLSearchParams(searchParams)
-    next.set('page', String(page))
-    setSearchParams(next)
+    return handleMutation(request, result, { message: 'Conductor asignado' })
   }
 
-  return (
-    <>
-      <div className="mb-4 text-right">
-        <Button asChild>
-          <Link to="/admin/orders/create">{t('global.new')}</Link>
-        </Button>
-      </div>
+  if (!isOrderStatusIntent(intent)) {
+    return data<MutationResult>(
+      { ok: false, error: 'Acción inválida' },
+      { status: 400 },
+    )
+  }
 
-      <Table<Order>
-        dataSource={orders.data}
-        columns={columns}
-        meta={orders}
-        onPageChange={handlePageChange}
-      />
-    </>
-  )
+  const result = await updateOrderStatus({
+    token,
+    orderId,
+    status: ORDER_STATUS_INTENTS[intent],
+  })
+
+  return handleMutation(request, result, {
+    message: t('global.successfully_updated'),
+  })
+}
+
+export default function AdminOrdersRoute({ loaderData }: Route.ComponentProps) {
+  return <OrdersPage orders={loaderData.orders} />
 }

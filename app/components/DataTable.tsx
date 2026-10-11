@@ -46,6 +46,8 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[]
   data: TData[]
   meta: ApiResponse<unknown>
+  // false si el endpoint no soporta ?search: un input que no filtra nada confunde
+  searchable?: boolean
   searchPlaceholder?: string
   filters?: DataTableFilter[]
   // Botones propios de la pantalla (ej. "Nuevo"): van en la misma línea que los filtros
@@ -234,6 +236,7 @@ export function DataTable<TData>({
   columns,
   data,
   meta,
+  searchable = true,
   searchPlaceholder,
   filters = [],
   actions,
@@ -265,12 +268,15 @@ export function DataTable<TData>({
       />
 
       <div className="flex items-center justify-between gap-2">
-        <SearchInput
-          value={search}
-          placeholder={searchPlaceholder}
-          onSearch={(value) => update({ search: value || null })}
-        />
-        <div className="flex items-center gap-2">
+        {searchable && (
+          <SearchInput
+            value={search}
+            placeholder={searchPlaceholder}
+            onSearch={(value) => update({ search: value || null })}
+          />
+        )}
+        {/* ml-auto: sin buscador, filtros y acciones siguen pegados a la derecha */}
+        <div className="ml-auto flex items-center gap-2">
           {filters.length > 0 && (
             <FiltersPopover
               filters={filters}

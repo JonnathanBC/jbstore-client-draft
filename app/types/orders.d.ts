@@ -7,20 +7,23 @@ export type OrderStatusEnum =
   | 'failed'
   | 'refunded'
 
-export interface OrderTable {
+/** Foto del item del carrito al momento de comprar (Cart::content() de Laravel). */
+export interface OrderItem {
+  rowId: string
   id: number
-  created_at: string
-  status: OrderStatusEnum
-  content: unknown[]
-  total: number
-  pdf_path?: string
+  name: string
+  qty: number
+  price: number
+  subtotal: string
+  options: { image?: string; sku?: string }
 }
 
 export interface Order {
-  id: number
+  id: string
   created_at: string
   status: OrderStatusEnum
-  content: unknown[]
+  // Objeto indexado por rowId, NO un array
+  content: Record<string, OrderItem>
   total: number
   pdf_path?: string
 }
