@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import type { Route } from './+types/admin.subcategories.$id'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { handleMutation, type MutationResult } from '~/server/mutation.server'
 import type { RouteHandle } from '~/types/route'
 import {
@@ -33,7 +33,7 @@ export const handle: RouteHandle = {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const id = Number(params.id)
   if (!Number.isFinite(id) || id < 1) {
     throw new Response('Subcategoria no encontrada', { status: 404 })
@@ -56,7 +56,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const id = Number(params.id)
   if (!Number.isFinite(id) || id < 1) {
     return data<MutationResult>(

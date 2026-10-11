@@ -3,7 +3,7 @@ import { data, useFetcher } from 'react-router'
 import { toast } from 'sonner'
 
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.products.$productId.variants.$variantId'
 import { getVariant, updateVariant } from '~/server/variants'
@@ -51,7 +51,7 @@ export const handle: RouteHandle = {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const productId = Number(params.productId)
   const variantId = Number(params.variantId)
 
@@ -75,7 +75,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const productId = Number(params.productId)
   const variantId = Number(params.variantId)
 

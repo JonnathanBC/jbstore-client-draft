@@ -1,9 +1,9 @@
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { getUsers } from '~/server/user.server'
 import { Route } from './+types/resources.users'
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const url = new URL(request.url)
   const search = url.searchParams.get('search') ?? undefined
 

@@ -55,7 +55,7 @@ export async function action({ request }: Route.ActionArgs) {
   return createUserSession({
     request,
     token: result.token,
-    userId: result.user.id,
+    user: result.user,
     toast: { kind: 'success', title: 'Cuenta creada' },
   })
 }

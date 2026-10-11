@@ -7,7 +7,7 @@ import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { renderDateTime } from '~/components/table/renders'
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { getDrivers } from '~/server/drivers.server'
 import { Column } from '~/types/table'
 import { Driver } from '~/types/driver'
@@ -18,7 +18,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
 
   const drivers = await getDrivers({
     token,

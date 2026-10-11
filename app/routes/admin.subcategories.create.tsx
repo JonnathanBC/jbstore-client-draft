@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { SubCategoryForm } from '~/components/admin/subcategories/SubCategoryForm'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { createSubCategory } from '~/server/subcategories.server'
 import type { Route } from './+types/admin.subcategories.create'
@@ -23,7 +23,7 @@ export const meta: Route.MetaFunction = () => [
 
 export async function action({ request }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAuth(request),
+    requireAdmin(request),
     request.formData(),
   ])
   const categoryId = Number(form.get('category_id'))

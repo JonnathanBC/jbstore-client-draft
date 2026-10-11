@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { data, redirect } from 'react-router'
 import { toast } from 'sonner'
 
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.covers.create'
@@ -24,7 +24,7 @@ export const meta: Route.MetaFunction = () => [
 
 export async function action({ request }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAuth(request),
+    requireAdmin(request),
     request.formData(),
   ])
 

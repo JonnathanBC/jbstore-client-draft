@@ -1,6 +1,6 @@
 import { redirect } from 'react-router'
 import type { Route } from './+types/admin.families.create'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { createFamily } from '~/server/api.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { FamilyForm } from '~/components/admin/families/FamilyForm'
@@ -20,7 +20,7 @@ export const meta: Route.MetaFunction = () => [
 
 export async function action({ request }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAuth(request),
+    requireAdmin(request),
     request.formData(),
   ])
   const name = String(form.get('name') ?? '').trim()

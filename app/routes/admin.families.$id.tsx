@@ -1,6 +1,6 @@
 import { data } from 'react-router'
 import type { Route } from './+types/admin.families.$id'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { deleteFamily, getFamily, updateFamily } from '~/server/api.server'
 import { handleMutation, type MutationResult } from '~/server/mutation.server'
 import { FamilyForm } from '~/components/admin/families/FamilyForm'
@@ -28,7 +28,7 @@ export const handle: RouteHandle = {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const id = Number(params.id)
   if (!Number.isFinite(id) || id < 1) {
     throw new Response('Familia no encontrada', { status: 404 })
@@ -51,7 +51,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const id = Number(params.id)
   if (!Number.isFinite(id) || id < 1) {
     return data<MutationResult>(

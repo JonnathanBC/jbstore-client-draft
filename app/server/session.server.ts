@@ -1,9 +1,12 @@
 import { createCookieSessionStorage } from 'react-router'
 import type { ToastFlash } from '~/components/AppToaster'
+import type { User } from '~/types/user'
 
 type SessionData = {
   token: string
   userId: number
+  // Cookie firmada: el cliente no puede cambiarlo. Laravel igual valida el rol en cada request.
+  role: User['role']
 }
 
 // Resumen del pago para la página de gracias. Va en la cookie (máx ~4KB),

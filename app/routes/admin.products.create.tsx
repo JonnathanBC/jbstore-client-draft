@@ -3,7 +3,7 @@ import { redirect } from 'react-router'
 
 import { ProductForm } from '~/products/ProductForm'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
 import type { RouteHandle } from '~/types/route'
 import { Route } from './+types/admin.products.create'
@@ -22,7 +22,7 @@ export const meta: Route.MetaFunction = () => [
 
 export async function action({ request }: Route.ActionArgs) {
   const [{ token }, formData] = await Promise.all([
-    requireAuth(request),
+    requireAdmin(request),
     request.formData(),
   ])
 

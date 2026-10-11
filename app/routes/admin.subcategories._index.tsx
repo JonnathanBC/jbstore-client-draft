@@ -2,7 +2,7 @@ import { Link, useSearchParams } from 'react-router'
 
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { getSubCategories } from '~/server/subcategories.server'
 import type { RouteHandle } from '~/types/route'
 import type { Route } from './+types/admin.subcategories._index'
@@ -17,7 +17,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page') ?? 1)
   const per_page = Number(url.searchParams.get('per_page') ?? 10)

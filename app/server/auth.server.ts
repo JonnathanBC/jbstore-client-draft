@@ -1,9 +1,10 @@
 import { redirect } from 'react-router'
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
-import type { User } from '~/types/user'
+import { UserRole, type User } from '~/types/user'
 import type { ToastFlash } from '~/components/AppToaster'
 import { commitSession, getSession } from './session.server'
 import { mergeGuestCartOnLogin } from './guestCart.server'
+import { fetchMe } from './user.server'
 
 export interface AuthTokens {
   token: string
@@ -31,6 +32,27 @@ export async function requireAuth(request: Request): Promise<AuthTokens> {
 }
 
 /**
+ * Guard de TODO loader/action del admin. En RR7 los loaders hijos corren en paralelo
+ * con el del layout `admin.tsx`, así que el chequeo del layout no los protege.
+ * El rol sale de la sesión (sin request extra); Laravel igual lo valida con `can:admin`.
+ */
+export async function requireAdmin(request: Request): Promise<AuthTokens> {
+  const auth = await requireAuth(request)
+  const session = await getSession(request.headers.get('Cookie'))
+  // Sesiones previas a guardar el rol: lo pedimos a la API una vez más
+  const role = session.get('role') ?? (await fetchMe(auth.token)).role
+
+  if (role !== UserRole.ADMIN) {
+    throw new Response('This action is unauthorized.', {
+      status: 403,
+      statusText: 'FORBIDDEN',
+    })
+  }
+
+  return auth
+}
+
+/**
  * Único punto de entrada para iniciar sesión (login, registro, Google...).
  * Crea la sesión y fusiona el carrito guest: si un login nuevo no pasa por
  * aquí, los items del invitado quedan huérfanos en la cookie.
@@ -38,19 +60,20 @@ export async function requireAuth(request: Request): Promise<AuthTokens> {
 export async function createUserSession({
   request,
   token,
-  userId,
+  user,
   redirectTo = '/',
   toast,
 }: {
   request: Request
   token: string
-  userId: number
+  user: Pick<User, 'id' | 'role'>
   redirectTo?: string
   toast?: ToastFlash
 }) {
   const session = await getSession(request.headers.get('Cookie'))
   session.set('token', token)
-  session.set('userId', userId)
+  session.set('userId', user.id)
+  session.set('role', user.role)
   if (toast) session.flash('toast', toast)
 
   const headers = new Headers({ 'Set-Cookie': await commitSession(session) })

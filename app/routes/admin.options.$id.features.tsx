@@ -1,5 +1,5 @@
 import type { Route } from './+types/admin.options.$id.features'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { createFeature } from '~/server/feature.server'
 import { handleMutation } from '~/server/mutation.server'
 
@@ -13,7 +13,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     throw new Response('Method Not Allowed', { status: 405 })
   }
 
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const { value, description } = await request.json()
 
   const result = await createFeature(

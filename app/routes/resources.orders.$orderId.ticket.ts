@@ -1,10 +1,10 @@
 import type { Route } from './+types/resources.orders.$orderId.ticket'
 
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { downloadOrderTicket } from '~/server/orders.server'
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
 
   const pdf = await downloadOrderTicket({
     token,

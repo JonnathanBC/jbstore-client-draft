@@ -2,7 +2,7 @@ import type { Route } from './+types/admin.drivers.$id'
 import { RouteModalForm } from '~/components/modals/RouteModalForm'
 import { DriverFields, toDriverFormValues } from '~/drivers/DriverFields'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { deleteDriver, getDriver, updateDriver } from '~/server/drivers.server'
 import { handleMutation } from '~/server/mutation.server'
 
@@ -11,14 +11,14 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const driver = await getDriver(params.id, token)
 
   return { driver }
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const isDelete = request.method === 'DELETE'
 
   // La URL ya identifica al driver: el método HTTP decide qué hacer con él.

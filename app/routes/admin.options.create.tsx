@@ -5,7 +5,7 @@ import {
   toOptionFormValues,
 } from '~/features/options/OptionFields'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { handleMutation } from '~/server/mutation.server'
 import { createOption } from '~/server/options.server'
 
@@ -14,7 +14,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const payload = await request.json()
 
   const result = await createOption(payload, token)

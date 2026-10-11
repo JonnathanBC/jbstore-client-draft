@@ -6,7 +6,7 @@ import type { Route } from './+types/admin.categories.create'
 import { CategoryForm } from '~/components/admin/categories/CategoryForm'
 import { t } from '~/i18n'
 import type { RouteHandle } from '~/types/route'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { createCategory } from '~/server/categories.server'
 import { commitSession, getSession } from '~/server/session.server'
 
@@ -23,7 +23,7 @@ export const meta: Route.MetaFunction = () => [
 
 export async function action({ request }: Route.ActionArgs) {
   const [{ token }, form] = await Promise.all([
-    requireAuth(request),
+    requireAdmin(request),
     request.formData(),
   ])
   const familyId = Number(form.get('family_id'))

@@ -8,7 +8,7 @@ import { renderDateTime } from '~/components/table/renders'
 import { DataTable, type DataTableFilter } from '~/components/DataTable'
 import { Badge } from '~/components/Badge'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { Shipping, ShippingStatusEnum } from '~/types/shippings'
 import { getShippings, updateShippingStatus } from '~/server/shippings.server'
 import { Button } from '~/components/ui/button'
@@ -27,7 +27,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const searchParams = new URL(request.url).searchParams
 
   const search = searchParams.get('search') || undefined
@@ -49,7 +49,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const formData = request.formData()
   const shippingId = Number((await formData).get('shippingId'))
   const action = (await formData).get('action')

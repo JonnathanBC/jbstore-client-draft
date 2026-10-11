@@ -1,9 +1,9 @@
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { getDrivers } from '~/server/drivers.server'
 import { Route } from './+types/resources.drivers'
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
 
   const drivers = await getDrivers({
     token,

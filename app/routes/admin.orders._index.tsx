@@ -8,7 +8,7 @@ import { Badge } from '~/components/Badge'
 import { PdfIcon } from '~/components/icons/PdfIcon'
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { handleMutation } from '~/server/mutation.server'
 import {
   assignOrderDriver,
@@ -47,7 +47,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
 
   const orders = await getOrders({
     token,
@@ -60,7 +60,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const formData = await request.formData()
   const intent = formData.get('intent')
   const orderId = String(formData.get('orderId'))

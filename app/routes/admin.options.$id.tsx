@@ -1,5 +1,5 @@
 import type { Route } from './+types/admin.options.$id'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { handleMutation } from '~/server/mutation.server'
 import { deleteOption } from '~/server/options.server'
 
@@ -12,7 +12,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     throw new Response('Method Not Allowed', { status: 405 })
   }
 
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const result = await deleteOption(Number(params.id), token)
 
   return handleMutation(request, result, { message: 'Opción eliminada' })

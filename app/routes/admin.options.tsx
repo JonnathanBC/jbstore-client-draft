@@ -8,7 +8,7 @@ import { Badge } from '~/components/Badge'
 import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { FeatureForm } from '~/features/FeatureForm'
 import { t } from '~/i18n'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import type { MutationResult } from '~/server/mutation.server'
 import { getOptions } from '~/server/options.server'
 import { Feature } from '~/types/feature'
@@ -23,7 +23,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page') ?? 1)
   const per_page = Number(url.searchParams.get('per_page') ?? 10)

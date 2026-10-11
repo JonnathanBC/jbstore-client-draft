@@ -26,7 +26,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const response = await createUserSession({
     request,
     token: result.token,
-    userId: result.user.id,
+    user: result.user,
   })
   // El state es de un solo uso: lo borramos al terminar
   response.headers.append('Set-Cookie', await clearOAuthState())

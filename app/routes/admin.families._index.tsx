@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from 'react-router'
 import type { Route } from './+types/admin.families._index'
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { getFamilies } from '~/server/api.server'
 import { Table } from '~/components/Table'
 import { t } from '~/i18n'
@@ -15,7 +15,7 @@ export const meta: Route.MetaFunction = () => [
 ]
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
   const url = new URL(request.url)
   const page = Number(url.searchParams.get('page') ?? 1)
   const per_page = Number(url.searchParams.get('per_page') ?? 10)

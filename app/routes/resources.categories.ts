@@ -1,9 +1,9 @@
-import { requireAuth } from '~/server/auth.server'
+import { requireAdmin } from '~/server/auth.server'
 import { getCategories } from '~/server/categories.server'
 import { Route } from './+types/resources.categories'
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { token } = await requireAuth(request)
+  const { token } = await requireAdmin(request)
 
   const url = new URL(request.url)
   const familyId = url.searchParams.get('family_id')
