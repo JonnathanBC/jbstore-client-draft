@@ -7,6 +7,7 @@ import { getCategories } from '~/server/categories.server'
 import type { RouteHandle } from '~/types/route'
 import type { Category } from '~/types/category'
 import type { Route } from './+types/admin.categories._index'
+import { Button } from '~/components/ui/button'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.categories') }
 
@@ -65,9 +66,9 @@ export default function CategoriesIndex({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <div className="mb-4 text-right">
-        <Link to="/admin/categories/create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="/admin/categories/create">{t('global.new')}</Link>
+        </Button>
       </div>
 
       <Table<Category>

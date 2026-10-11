@@ -9,6 +9,7 @@ import { getCovers, reorderCovers } from '~/server/covers.server'
 import { renderDate } from '~/components/table/renders'
 import DndSortable from '~/components/shared/DndSortable'
 import type { Cover } from '~/types/cover'
+import { Button } from '~/components/ui/button'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.covers') }
 
@@ -48,7 +49,10 @@ export async function action({ request }: Route.ActionArgs) {
 
     const result = await reorderCovers(ids, token)
     if (result && 'error' in result) {
-      return data({ error: result.error.message }, { status: result.error.status })
+      return data(
+        { error: result.error.message },
+        { status: result.error.status },
+      )
     }
   }
 
@@ -82,9 +86,9 @@ export default function CoversIndex({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <div className="mb-4 text-right">
-        <Link to="/admin/covers/create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="/admin/covers/create">{t('global.new')}</Link>
+        </Button>
       </div>
 
       <DndSortable
@@ -122,12 +126,9 @@ export default function CoversIndex({ loaderData }: Route.ComponentProps) {
                 <p>{renderDate(cover.end_at ?? '--')}</p>
               </div>
               <div>
-                <Link
-                  to={`/admin/covers/${cover.id}`}
-                  className="btn btn-sm btn-primary"
-                >
-                  Editar
-                </Link>
+                <Button asChild size="sm">
+                  <Link to={`/admin/covers/${cover.id}`}>Editar</Link>
+                </Button>
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import type { Family } from '~/types/family'
 import { t } from '@/i18n'
+import { Button } from '~/components/ui/button'
 
 interface Props {
   family?: Family
@@ -54,22 +55,18 @@ export function FamilyForm({ family }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? 'Guardando...' : 'Guardar'}
-        </button>
+        </Button>
         {isEdit ? (
-          <button
+          <Button
+            variant="danger"
             type="button"
-            className="btn btn-danger"
             onClick={remove}
             disabled={fetcher.state !== 'idle'}
           >
             {t('global.delete')}
-          </button>
+          </Button>
         ) : null}
       </div>
 

@@ -8,6 +8,7 @@ import { AsyncSelectOld } from '~/components/inputs/AsyncSelectOld'
 import { t } from '~/i18n'
 import { createImagePreview } from '~/lib/helper'
 import type { Product } from '~/types/product'
+import { Button } from '~/components/ui/button'
 
 interface Props {
   product?: Product
@@ -60,13 +61,12 @@ export function ProductForm({ product, validationErrors }: Props) {
         </figure>
 
         <div className="mb-4">
-          <label
-            htmlFor="image-upload"
-            className="btn btn-primary inline-flex cursor-pointer gap-2"
-          >
-            <Upload />
-            Actualizar imagen
-          </label>
+          <Button asChild>
+            <label htmlFor="image-upload" className="cursor-pointer">
+              <Upload />
+              Actualizar imagen
+            </label>
+          </Button>
           <input
             id="image-upload"
             type="file"
@@ -242,13 +242,9 @@ export function ProductForm({ product, validationErrors }: Props) {
         )}
 
         <div className="flex items-center gap-2">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button type="submit" disabled={submitting}>
             {submitting ? 'Guardando...' : 'Guardar'}
-          </button>
+          </Button>
           {isEdit ? <DeleteProductButton productId={product!.id} /> : null}
         </div>
 
@@ -277,13 +273,13 @@ function DeleteProductButton({ productId }: { productId: number }) {
   }
 
   return (
-    <button
+    <Button
+      variant="danger"
       type="button"
-      className="btn btn-danger"
       disabled={fetcher.state !== 'idle'}
       onClick={handleDelete}
     >
       {t('global.delete')}
-    </button>
+    </Button>
   )
 }

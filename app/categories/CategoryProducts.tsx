@@ -3,6 +3,8 @@ import { Link, useNavigation, useSearchParams } from 'react-router'
 import { Pagination } from '~/components/Pagination'
 import { ApiResponse } from '~/types/api'
 import { Product } from '~/types/product'
+import { Button } from '~/components/ui/button'
+import { ProductSortSelect } from '~/components/shared/ProductSortSelect'
 
 interface Props {
   products: ApiResponse<Product>
@@ -36,15 +38,10 @@ export const CategoryProducts = ({ products }: Props) => {
       <div className="px-4">
         <div className="mb-4 flex items-center justify-between">
           <span className="mr-2 text-nowrap">Ordenar por:</span>
-          <select
-            value={searchParams.get('orderBy') ?? ''}
-            onChange={(e) => handleSort(e.target.value)}
-            className="rounded"
-          >
-            <option value="relevant">Relevancia</option>
-            <option value="major_to_minor">Precio: mayor a menor</option>
-            <option value="minor_to_major">Precio: menor a mayor</option>
-          </select>
+          <ProductSortSelect
+            value={searchParams.get('orderBy')}
+            onChange={handleSort}
+          />
         </div>
 
         <div
@@ -66,12 +63,11 @@ export const CategoryProducts = ({ products }: Props) => {
                 </h2>
                 <p className="mb-4 text-gray-600">${product.price}</p>
 
-                <Link
-                  to={`/products/${product.id}`}
-                  className="btn btn-primary block w-full text-center"
-                >
-                  Ver más
-                </Link>
+                <Button asChild>
+                  <Link to={`/products/${product.id}`} className="w-full">
+                    Ver más
+                  </Link>
+                </Button>
               </div>
             </article>
           ))}

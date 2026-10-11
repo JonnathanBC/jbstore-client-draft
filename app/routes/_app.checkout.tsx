@@ -14,6 +14,7 @@ import {
 } from '~/hooks/useNiubizScript'
 import { getSession } from '~/server/session.server'
 import { formatNiubizDate } from '~/lib/niubiz'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Checkout | JB Store' }]
 
@@ -65,9 +66,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
   const [paymentStatus, setPaymentStatus] = useState<
     'idle' | 'waiting' | 'confirming'
   >('idle')
-  const confirmationTimeout = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  )
+  const confirmationTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const paymentNavigationStarted = useRef(false)
   const isBusy = fetcher.state !== 'idle' || paymentStatus !== 'idle'
 
@@ -293,11 +292,11 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
 
             {paymentType === 'card-credit' && (
               <fetcher.Form method="post">
-                <button
+                <Button
                   type="submit"
                   disabled={!niubizLoaded || isBusy}
                   aria-live="polite"
-                  className="btn btn-primary mt-4 w-full"
+                  className="mt-4 w-full"
                 >
                   {isBusy && (
                     <LoaderCircle
@@ -312,7 +311,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
                       : paymentStatus === 'confirming'
                         ? 'Confirmando pago...'
                         : 'Finalizar pedido'}
-                </button>
+                </Button>
               </fetcher.Form>
             )}
 

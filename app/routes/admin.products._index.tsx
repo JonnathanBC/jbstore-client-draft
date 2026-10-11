@@ -7,6 +7,7 @@ import { Route } from './+types/admin.products._index'
 import { getProducts } from '~/server/products.server'
 import { Product } from '~/types/product'
 import { Column } from '~/types/table'
+import { Button } from '~/components/ui/button'
 
 export const handle: RouteHandle = { breadcrumb: t('global.products') }
 
@@ -60,9 +61,9 @@ export default function ProductsIndex({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <div className="mb-4 text-right">
-        <Link to="/admin/products/create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="/admin/products/create">{t('global.new')}</Link>
+        </Button>
       </div>
 
       <Table<Product>

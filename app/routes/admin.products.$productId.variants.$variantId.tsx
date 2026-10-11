@@ -137,13 +137,12 @@ export default function VariantEdit({ loaderData }: Route.ComponentProps) {
           />
         </figure>
         <div className="my-4">
-          <label
-            htmlFor="image-upload"
-            className="btn btn-primary inline-flex cursor-pointer gap-2"
-          >
-            <Upload />
-            Actualizar imagen
-          </label>
+          <Button asChild>
+            <label htmlFor="image-upload" className="cursor-pointer">
+              <Upload />
+              Actualizar imagen
+            </label>
+          </Button>
           <input
             id="image-upload"
             type="file"
@@ -162,14 +161,21 @@ export default function VariantEdit({ loaderData }: Route.ComponentProps) {
 
       <div className="card">
         <div className="space-y-4">
-          <Input name="sku" label="Ingrese el código (SKU)" defaultValue={variant.sku} />
-          <Input name="stock" label="Ingrese el stock" type='number' defaultValue={variant.stock} />
+          <Input
+            name="sku"
+            label="Ingrese el código (SKU)"
+            defaultValue={variant.sku}
+          />
+          <Input
+            name="stock"
+            label="Ingrese el stock"
+            type="number"
+            defaultValue={variant.stock}
+          />
         </div>
 
-        <div className='mt-4 text-right'>
-          <Button>
-            Actualizar
-          </Button>
+        <div className="mt-4 text-right">
+          <Button>Actualizar</Button>
         </div>
       </div>
     </fetcher.Form>

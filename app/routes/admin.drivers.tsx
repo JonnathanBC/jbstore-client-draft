@@ -11,6 +11,7 @@ import { requireAuth } from '~/server/auth.server'
 import { getDrivers } from '~/server/drivers.server'
 import { Column } from '~/types/table'
 import { Driver } from '~/types/driver'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = () => [
   { title: `${t('admin.drivers')} | JB Store` },
@@ -46,17 +47,19 @@ const ActionButtons = ({ driver }: { driver: Driver }) => {
 
   return (
     <>
-      <Link to={String(driver.id)} className="btn btn-primary mr-4">
-        {t('global.edit')}
-      </Link>
-      <button
+      <Button asChild>
+        <Link to={String(driver.id)} className="mr-4">
+          {t('global.edit')}
+        </Link>
+      </Button>
+      <Button
+        variant="danger"
         type="button"
-        className="btn btn-danger"
         disabled={fetcher.state !== 'idle'}
         onClick={handleDelete}
       >
         {t('global.delete')}
-      </button>
+      </Button>
     </>
   )
 }
@@ -111,9 +114,9 @@ export default function DriversPage({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <div className="mb-4 text-right">
-        <Link to="create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="create">{t('global.new')}</Link>
+        </Button>
       </div>
 
       <Table<Driver>

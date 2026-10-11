@@ -10,6 +10,7 @@ import { t } from '~/i18n'
 import type { loader } from '~/routes/admin.products.$id'
 import type { MutationResult } from '~/server/mutation.server'
 import { useModalStore } from '~/store/modal.store'
+import { Button } from '~/components/ui/button'
 
 export const OptionsFeaturesProduct = () => {
   const openModal = useModalStore((state) => state.open)
@@ -49,12 +50,9 @@ export const OptionsFeaturesProduct = () => {
       <header className="mb-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
-          <button
-            onClick={() => openModal('productOption')}
-            className="btn btn-primary"
-          >
+          <Button onClick={() => openModal('productOption')}>
             {t('admin.add_option')}
-          </button>
+          </Button>
         </div>
       </header>
 

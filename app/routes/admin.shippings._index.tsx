@@ -11,6 +11,7 @@ import { t } from '~/i18n'
 import { requireAuth } from '~/server/auth.server'
 import { Shipping, ShippingStatusEnum } from '~/types/shippings'
 import { getShippings, updateShippingStatus } from '~/server/shippings.server'
+import { Button } from '~/components/ui/button'
 
 const shippingStatusVariants = {
   pending: 'warning',
@@ -211,9 +212,9 @@ export default function ShippingsPage({ loaderData }: Route.ComponentProps) {
       filters={filters}
       searchPlaceholder="Buscar por conductor o placa"
       actions={
-        <Link to="/admin/orders/create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="/admin/orders/create">{t('global.new')}</Link>
+        </Button>
       }
     />
   )

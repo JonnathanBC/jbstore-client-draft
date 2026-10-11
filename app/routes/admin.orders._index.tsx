@@ -18,6 +18,7 @@ import {
 import { useModalStore } from '~/store/modal.store'
 import { Order } from '~/types/orders'
 import { Column } from '~/types/table'
+import { Button } from '~/components/ui/button'
 
 const orderStatusVariants = {
   pending: 'warning',
@@ -245,9 +246,9 @@ export default function OrdersPage({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <div className="mb-4 text-right">
-        <Link to="/admin/orders/create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="/admin/orders/create">{t('global.new')}</Link>
+        </Button>
       </div>
 
       <Table<Order>

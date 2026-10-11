@@ -3,11 +3,7 @@ import { data, useFetcher, useRouteLoaderData } from 'react-router'
 import { Trash2 } from 'lucide-react'
 import { HeaderTitle } from '~/components/HeaderTitle'
 import type { ApiError } from '~/lib/apiClient'
-import {
-  clearCart,
-  removeFromCart,
-  updateCart,
-} from '~/server/cart.server'
+import { clearCart, removeFromCart, updateCart } from '~/server/cart.server'
 import { loadCart } from '~/server/loadCart.server'
 import { getOptionalAuth } from '~/server/auth.server'
 import {
@@ -17,6 +13,7 @@ import {
 } from '~/server/guestCart.server'
 import type { loader as appLoader } from './_app'
 import type { Route } from './+types/_app.cart'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = () => [{ title: 'Carrito | JB Store' }]
 
@@ -172,25 +169,15 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
                 <fetcher.Form method="post" className="ml-auto space-x-3">
                   <input type="hidden" name="rowId" value={cart.rowId} />
 
-                  <button
-                    type="submit"
-                    name="intent"
-                    value="decrease"
-                    className="btn btn-primary"
-                  >
+                  <Button type="submit" name="intent" value="decrease">
                     -
-                  </button>
+                  </Button>
 
                   <span>{cart.qty}</span>
 
-                  <button
-                    type="submit"
-                    name="intent"
-                    value="increase"
-                    className="btn btn-primary"
-                  >
+                  <Button type="submit" name="intent" value="increase">
                     +
-                  </button>
+                  </Button>
                 </fetcher.Form>
               </li>
             ))}
@@ -205,12 +192,11 @@ export default function CartPage({ loaderData }: Route.ComponentProps) {
               <p>$ {items?.subtotal}</p>
             </div>
 
-            <a
-              href="/address"
-              className="btn btn-primary block w-full text-center"
-            >
-              Continuar con la compra
-            </a>
+            <Button asChild>
+              <a href="/address" className="w-full">
+                Continuar con la compra
+              </a>
+            </Button>
           </div>
         )}
       </div>

@@ -7,6 +7,7 @@ import { Checkbox } from '~/components/shared/Checkbox'
 import { Edit2, House, Star, Trash2 } from 'lucide-react'
 import { cn } from '~/lib/utils'
 import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
+import { Button } from '~/components/ui/button'
 
 type Props = {
   addresses: Address[]
@@ -218,12 +219,9 @@ export const ShippingAddress = ({
               </ul>
             )}
 
-            <button
-              className="btn btn-primary mt-2 block w-full"
-              onClick={() => openForm(null)}
-            >
+            <Button className="mt-2 w-full" onClick={() => openForm(null)}>
               Añadir dirección
-            </button>
+            </Button>
           </div>
         </section>
       )}

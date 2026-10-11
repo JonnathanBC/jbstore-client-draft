@@ -5,6 +5,8 @@ import { Pagination } from '~/components/Pagination'
 import { ApiResponse } from '~/types/api'
 import { Option } from '~/types/option'
 import { Product } from '~/types/product'
+import { Button } from '~/components/ui/button'
+import { ProductSortSelect } from '~/components/shared/ProductSortSelect'
 
 interface Props {
   options: Option[]
@@ -126,15 +128,10 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
         <div className="md:flex-1">
           <div className="mb-4 flex items-center justify-between">
             <span className="mr-2 text-nowrap">Ordenar por:</span>
-            <select
-              value={searchParams.get('orderBy') ?? ''}
-              onChange={(e) => handleSort(e.target.value)}
-              className="rounded"
-            >
-              <option value="relevant">Relevancia</option>
-              <option value="major_to_minor">Precio: mayor a menor</option>
-              <option value="minor_to_major">Precio: menor a mayor</option>
-            </select>
+            <ProductSortSelect
+              value={searchParams.get('orderBy')}
+              onChange={handleSort}
+            />
           </div>
           <div
             className={`grid grid-cols-1 gap-6 transition-opacity sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${
@@ -155,12 +152,11 @@ export const FamilyOptionProductsFilter = ({ options, products }: Props) => {
                   </h2>
                   <p className="mb-4 text-gray-600">${product.price}</p>
 
-                  <Link
-                    to={`/products/${product.id}`}
-                    className="btn btn-primary block w-full text-center"
-                  >
-                    Ver más
-                  </Link>
+                  <Button asChild>
+                    <Link to={`/products/${product.id}`} className="w-full">
+                      Ver más
+                    </Link>
+                  </Button>
                 </div>
               </article>
             ))}

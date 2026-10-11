@@ -11,7 +11,12 @@ import { Filter } from 'lucide-react'
 import { Badge } from '~/components/Badge'
 import { Pagination } from '~/components/Pagination'
 import { Button } from '~/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
+import { Input } from '~/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -117,14 +122,13 @@ const SearchInput = ({
   }, [value])
 
   return (
-    // Clase .input del proyecto: mismo alto (h-10) y borde que los campos de los formularios
-    <input
+    <Input
       type="search"
       value={value}
       onChange={(e) => setValue(e.target.value)}
       placeholder={placeholder ?? t('global.search')}
       aria-label={t('global.search')}
-      className="input max-w-sm"
+      className="max-w-sm"
     />
   )
 }
@@ -143,7 +147,7 @@ const FiltersPopover = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="lg" className="border-weak rounded-lg px-4">
+        <Button variant="outline">
           {t('global.filters')}
           {activeCount > 0 && (
             <span className="bg-primary text-primary-foreground rounded-full px-1.5 text-xs">
@@ -163,7 +167,7 @@ const FiltersPopover = ({
               value={values[filter.key] || ALL}
               onValueChange={(v) => onChange(filter.key, v === ALL ? '' : v)}
             >
-              <SelectTrigger className="border-weak w-full rounded-lg data-[size=default]:h-10">
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

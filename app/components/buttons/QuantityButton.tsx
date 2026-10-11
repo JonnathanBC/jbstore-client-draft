@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { cn } from '~/lib/utils'
+import { Button } from '~/components/ui/button'
 
 type Props = {
   quantity: number
@@ -10,24 +11,19 @@ type Props = {
 export const QuantityButton = ({ quantity, setQuantity, className }: Props) => {
   return (
     <div className={cn('flex items-center space-x-6', className)}>
-      <button
+      <Button
         type="button"
-        className="btn btn-primary"
         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
         disabled={quantity <= 1}
       >
         -
-      </button>
+      </Button>
 
       <span>{quantity}</span>
 
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={() => setQuantity((q) => q + 1)}
-      >
+      <Button type="button" onClick={() => setQuantity((q) => q + 1)}>
         +
-      </button>
+      </Button>
     </div>
   )
 }

@@ -17,6 +17,7 @@ import { RouteHandle } from '~/types/route'
 import type { Product } from '~/types/product'
 import type { Route } from './+types/_app.products.$id'
 import { QuantityButton } from '~/components/buttons/QuantityButton'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = ({ data }) => [
   {
@@ -230,13 +231,13 @@ export default function ProductDetail({ loaderData }: Route.ComponentProps) {
                 value={JSON.stringify(selectedFeat)}
               />
 
-              <button
+              <Button
                 type="submit"
-                className="btn btn-primary mb-6 w-full"
+                className="mb-6 w-full"
                 disabled={busy || !hasAllOptionsSelected}
               >
                 {busy ? 'Agregando...' : 'Agregar al carrito'}
-              </button>
+              </Button>
             </fetcher.Form>
 
             {!hasAllOptionsSelected && (

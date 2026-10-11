@@ -8,6 +8,7 @@ import type { RouteHandle } from '~/types/route'
 import type { Route } from './+types/admin.subcategories._index'
 import { SubCategory } from '~/types/subcategory'
 import { Column } from '~/types/table'
+import { Button } from '~/components/ui/button'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.subcategories') }
 
@@ -71,9 +72,9 @@ export default function SubCategoriesIndex({
   return (
     <>
       <div className="mb-4 text-right">
-        <Link to="/admin/subcategories/create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="/admin/subcategories/create">{t('global.new')}</Link>
+        </Button>
       </div>
 
       <Table<SubCategory>

@@ -18,6 +18,10 @@ type Props = {
   onItemSelect?: (item: SelectItem) => void
   className?: string
   value?: string
+  // Sin value/onChange (form nativo): Radix renderiza un <select> oculto con este name y viaja en el formData
+  defaultValue?: string
+  name?: string
+  id?: string
   disabled?: boolean
   placeholder?: string
 }
@@ -27,6 +31,9 @@ export const Select = ({
   onChange,
   onItemSelect,
   value,
+  defaultValue,
+  name,
+  id,
   disabled,
   placeholder,
   className,
@@ -41,15 +48,13 @@ export const Select = ({
   return (
     <SelectUI
       value={value}
+      defaultValue={defaultValue}
+      name={name}
       onValueChange={handleValueChange}
       disabled={disabled}
     >
-      <SelectTrigger
-        className={cn(
-          'border-weak focus:ring-primary h-10! w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none',
-          className,
-        )}
-      >
+      {/* Alto, borde y radio vienen del SelectTrigger de ui: acá solo el ancho */}
+      <SelectTrigger id={id} className={cn('w-full', className)}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

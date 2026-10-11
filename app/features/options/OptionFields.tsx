@@ -10,6 +10,7 @@ import { Field } from '~/components/inputs/Field'
 import { FieldError } from '~/components/inputs/FieldError'
 import { Select } from '~/components/inputs/Select'
 import { t } from '~/i18n'
+import { Button } from '~/components/ui/button'
 
 /** 1 = texto, 2 = color (así lo guarda la API). */
 const TYPE_ITEMS = [
@@ -113,13 +114,13 @@ export const OptionFields = () => {
 
       <FieldError name="features" />
 
-      <button
+      <Button
         type="button"
-        className="btn btn-primary col-span-2 justify-self-start"
+        className="col-span-2 justify-self-start"
         onClick={() => append(EMPTY_FEATURE)}
       >
         Añadir
-      </button>
+      </Button>
     </div>
   )
 }

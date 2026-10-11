@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { Modal } from '~/components/modals/Modal'
 import { useModalContext } from '~/components/modals/ModalContext'
 import type { MutationResult } from '~/server/mutation.server'
+import { Button } from '~/components/ui/button'
 
 interface Props {
   orderId: number
@@ -60,13 +61,9 @@ export default function AssignDriverModal({ orderId }: Props) {
         </select>
 
         <div className="text-right">
-          <button
-            type="submit"
-            className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Asignando...' : 'Asignar'}
-          </button>
+          </Button>
         </div>
       </fetcher.Form>
     </Modal>

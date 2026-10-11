@@ -6,6 +6,7 @@ import { Table } from '~/components/Table'
 import { t } from '~/i18n'
 import type { Family } from '~/types/family'
 import type { RouteHandle } from '~/types/route'
+import { Button } from '~/components/ui/button'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.families') }
 
@@ -58,9 +59,9 @@ export default function FamiliesIndex({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <div className="mb-4 text-right">
-        <Link to="/admin/families/create" className="btn btn-primary">
-          {t('global.new')}
-        </Link>
+        <Button asChild>
+          <Link to="/admin/families/create">{t('global.new')}</Link>
+        </Button>
       </div>
 
       <Table<Family>

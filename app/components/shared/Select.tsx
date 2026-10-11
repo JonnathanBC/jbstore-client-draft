@@ -1,46 +1,37 @@
-import type { ComponentType, InputHTMLAttributes, SVGProps } from 'react'
-import { cn } from '~/lib/utils'
+import { Select as BaseSelect } from '~/components/inputs/Select'
 
-interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface Props {
+  name: string
   label: string
   items: { value: string; label: string }[]
-  icon?: ComponentType<SVGProps<SVGSVGElement>>
+  defaultValue?: string
   error?: string
+  className?: string
 }
 
+// Para forms nativos (sin react-hook-form): label + error alrededor del Select único
 export function Select({
-  label,
   name,
-  icon: Icon,
-  className,
+  label,
   items,
+  defaultValue,
   error,
+  className,
 }: Props) {
   return (
-    <div>
-      <label htmlFor={name} className="block text-sm font-medium text-zinc-900">
-        <p className="mb-1">{label}</p>
-        <div className="relative flex items-center">
-          <select
-            id={name}
-            name={name}
-            className={cn(
-              'w-full rounded border border-zinc-300 py-3 pr-10 pl-4 text-sm text-slate-900 outline-purple-600',
-              className,
-            )}
-          >
-            {items.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          {Icon ? (
-            <Icon className="absolute right-4 size-5 text-zinc-400" />
-          ) : null}
-        </div>
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+    <div className="text-sm font-medium text-zinc-900">
+      <label htmlFor={name} className="mb-1 block">
+        {label}
       </label>
+      <BaseSelect
+        id={name}
+        name={name}
+        items={items}
+        // El <select> nativo arrancaba en la primera opción: mantenemos ese comportamiento
+        defaultValue={defaultValue ?? items[0]?.value}
+        className={className}
+      />
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   )
 }

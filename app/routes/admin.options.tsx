@@ -14,6 +14,7 @@ import { getOptions } from '~/server/options.server'
 import { Feature } from '~/types/feature'
 import { Option } from '~/types/option'
 import { RouteHandle } from '~/types/route'
+import { Button } from '~/components/ui/button'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.options') }
 
@@ -115,9 +116,9 @@ export default function OptionsPage({ loaderData }: Route.ComponentProps) {
         <header className="px-6 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">{t('admin.options')}</h1>
-            <Link to="create" className="btn btn-primary">
-              {t('global.new')}
-            </Link>
+            <Button asChild>
+              <Link to="create">{t('global.new')}</Link>
+            </Button>
           </div>
         </header>
         <div className="p-6">

@@ -10,6 +10,7 @@ import { Field } from '~/components/inputs/Field'
 import { Radio } from '~/components/inputs/Radio'
 import { t } from '~/i18n'
 import { createImagePreview } from '~/lib/helper'
+import { Button } from '~/components/ui/button'
 
 interface CoverFormValues {
   title: string
@@ -81,13 +82,12 @@ export function CoverForm({ cover }: Props) {
           alt=""
         />
       </figure>
-      <label
-        htmlFor="image-upload"
-        className="btn btn-primary inline-flex cursor-pointer gap-2"
-      >
-        <Upload />
-        {t('global.update_image')}
-      </label>
+      <Button asChild>
+        <label htmlFor="image-upload" className="cursor-pointer">
+          <Upload />
+          {t('global.update_image')}
+        </label>
+      </Button>
       <input
         id="image-upload"
         type="file"
@@ -127,22 +127,18 @@ export function CoverForm({ cover }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? t('global.saving') : t('global.save')}
-        </button>
+        </Button>
         {isEdit ? (
-          <button
+          <Button
+            variant="danger"
             type="button"
-            className="btn btn-danger"
             onClick={remove}
             disabled={fetcher.state !== 'idle'}
           >
             {t('global.delete')}
-          </button>
+          </Button>
         ) : null}
       </div>
     </form>

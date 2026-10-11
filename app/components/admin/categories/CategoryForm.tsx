@@ -6,6 +6,7 @@ import { showDeleteConfirm } from '~/components/confirm/showDeleteConfirm'
 import { AsyncSelectOld } from '~/components/inputs/AsyncSelectOld'
 import { t } from '~/i18n'
 import type { Category } from '~/types/category'
+import { Button } from '~/components/ui/button'
 
 interface Props {
   category?: Category
@@ -77,22 +78,18 @@ export function CategoryForm({ category, validationErrors }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? 'Guardando...' : 'Guardar'}
-        </button>
+        </Button>
         {isEdit ? (
-          <button
+          <Button
+            variant="danger"
             type="button"
-            className="btn btn-danger"
             onClick={remove}
             disabled={fetcher.state !== 'idle'}
           >
             {t('global.delete')}
-          </button>
+          </Button>
         ) : null}
       </div>
 

@@ -3,6 +3,7 @@ import { getPublicCovers } from '~/server/covers.server'
 import type { Route } from './+types/_app._index'
 import { getPublicProducts } from '~/server/products.server'
 import { Link } from 'react-router'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = () => [{ title: 'JB Store' }]
 
@@ -47,12 +48,11 @@ export default function HomeIndex({ loaderData }: Route.ComponentProps) {
                 </h2>
                 <p className="mb-4 text-gray-600">${product.price}</p>
 
-                <Link
-                  to={`/products/${product.id}`}
-                  className="btn btn-primary block w-full text-center"
-                >
-                  Ver más
-                </Link>
+                <Button asChild>
+                  <Link to={`/products/${product.id}`} className="w-full">
+                    Ver más
+                  </Link>
+                </Button>
               </div>
             </article>
           ))}

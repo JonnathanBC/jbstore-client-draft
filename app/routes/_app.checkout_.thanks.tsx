@@ -4,6 +4,7 @@ import type { Route } from './+types/_app.checkout_.thanks'
 import { requireAuth } from '~/server/auth.server'
 import { getSession } from '~/server/session.server'
 import { formatNiubizDate } from '~/lib/niubiz'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Gracias por tu compra | JB Store' },
@@ -61,9 +62,11 @@ export default function CheckoutThanksPage({
         </dl>
       </div>
 
-      <Link to="/" className="btn btn-primary mt-6 block w-full text-center">
-        Seguir comprando
-      </Link>
+      <Button asChild>
+        <Link to="/" className="mt-6 w-full">
+          Seguir comprando
+        </Link>
+      </Button>
     </div>
   )
 }

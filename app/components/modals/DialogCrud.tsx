@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Button } from '~/components/ui/button'
 
 interface ActionData {
   errors?: Record<string, string[]>
@@ -62,14 +63,14 @@ export const DialogCrud = ({
               <DialogHeader className="mb-4 flex-row items-center justify-between gap-0">
                 <DialogTitle>{title}</DialogTitle>
                 <div className="flex items-center gap-4">
-                  <button
-                    className="btn btn-primary flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  <Button
+                    className="flex items-center gap-2"
                     type="submit"
                     disabled={isSubmitting}
                   >
                     <Save className="size-4" />
                     {isSubmitting ? 'Guardando...' : 'Guardar'}
-                  </button>
+                  </Button>
                   <DialogClose
                     type="button"
                     className="cursor-pointer hover:text-red-800"

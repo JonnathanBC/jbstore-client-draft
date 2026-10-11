@@ -104,13 +104,14 @@ export const Navbar = () => {
               <div className="h-[calc(100vh-60px)] overflow-auto bg-white py-4">
                 <div className="flex items-center justify-between px-4 pb-4">
                   <h2 className="text-3xl font-bold">{activeFamily.label}</h2>
-                  <Link
-                    to={`/families/${activeFamily.value}`}
-                    onClick={closeMenu}
-                    className="btn btn-primary"
-                  >
-                    Ver todo
-                  </Link>
+                  <Button asChild>
+                    <Link
+                      to={`/families/${activeFamily.value}`}
+                      onClick={closeMenu}
+                    >
+                      Ver todo
+                    </Link>
+                  </Button>
                 </div>
 
                 {loadingCategories && (

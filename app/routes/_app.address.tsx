@@ -20,6 +20,7 @@ import type { AddressInput } from '~/types/addresses'
 import { commitSession, getSession } from '~/server/session.server'
 import { loadCart } from '~/server/loadCart.server'
 import { CartSummary } from '~/addresses/components/CartSummary'
+import { Button } from '~/components/ui/button'
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Dirección | JB Store' },
@@ -162,12 +163,11 @@ export default function AddressPage() {
         </div>
         <div className="col-span-1">
           <CartSummary cart={cart} />
-          <a
-            href="/checkout"
-            className="btn btn-primary mt-4 block w-full text-center"
-          >
-            Ir al pago
-          </a>
+          <Button asChild>
+            <a href="/checkout" className="mt-4 w-full">
+              Ir al pago
+            </a>
+          </Button>
         </div>
       </div>
     </section>

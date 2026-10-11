@@ -2,6 +2,7 @@ import { Link, useLoaderData } from 'react-router'
 
 import { t } from '~/i18n'
 import { loader } from '~/routes/admin.products.$id'
+import { Button } from '~/components/ui/button'
 
 export const Variants = () => {
   const { product } = useLoaderData<typeof loader>()
@@ -32,12 +33,11 @@ export const Variants = () => {
                 ))}
               </p>
 
-              <Link
-                to={`variants/${variant.id}`}
-                className="btn btn-primary ml-auto"
-              >
-                Editar
-              </Link>
+              <Button asChild>
+                <Link to={`variants/${variant.id}`} className="ml-auto">
+                  Editar
+                </Link>
+              </Button>
             </li>
           ))}
         </ul>

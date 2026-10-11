@@ -27,7 +27,7 @@ export function Input({
         type={type}
         placeholder={placeholder}
         name={name}
-        className="input mt-0.5"
+        className="mt-0.5"
         {...rest}
       />
     </div>
