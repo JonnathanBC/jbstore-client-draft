@@ -40,6 +40,15 @@ const secret = process.env.SESSION_SECRET
 if (!secret) {
   throw new Error('SESSION_SECRET env var is required')
 }
+// Con el secret de ejemplo cualquiera puede firmar una cookie (y con ella un role de admin)
+if (
+  process.env.NODE_ENV === 'production' &&
+  (secret.length < 32 || secret.startsWith('change-me'))
+) {
+  throw new Error(
+    'SESSION_SECRET is too weak for production: use 32+ random chars (openssl rand -hex 32)',
+  )
+}
 
 export const { getSession, commitSession, destroySession } =
   createCookieSessionStorage<SessionData, SessionFlashData>({

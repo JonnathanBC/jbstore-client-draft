@@ -19,7 +19,8 @@ export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData()
   const email = String(form.get('email') ?? '').trim()
   const password = String(form.get('password') ?? '')
-  const redirectTo = String(form.get('redirectTo') ?? '/admin')
+  // Mismo default que el componente: un cliente no tiene por qué caer en /admin
+  const redirectTo = String(form.get('redirectTo') ?? '/')
 
   if (!email || !password) {
     return { error: 'Email y contraseña son requeridos' }

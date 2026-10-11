@@ -84,8 +84,20 @@ export async function createUserSession({
 }
 
 // Solo rutas internas: evita open redirect con redirectTo=https://sitio-malicioso.com
+// Base ficticia: solo la usamos para que URL resuelva `to` como lo haría el navegador.
+const INTERNAL_ORIGIN = 'http://internal.invalid'
+
 function safeRedirect(to: string, fallback = '/') {
-  return to.startsWith('/') && !to.startsWith('//') ? to : fallback
+  // Los navegadores tratan `\` como `/`: `/\evil.com` termina siendo `//evil.com`
+  if (!to.startsWith('/') || to.startsWith('//') || to.includes('\\')) {
+    return fallback
+  }
+
+  // Doble chequeo: si al resolverla cambia de origen (ej. con tabs/saltos de línea), no es interna
+  const url = new URL(to, INTERNAL_ORIGIN)
+  return url.origin === INTERNAL_ORIGIN
+    ? url.pathname + url.search + url.hash
+    : fallback
 }
 
 export interface LoginResult {
