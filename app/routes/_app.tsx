@@ -1,4 +1,5 @@
-import { Outlet, data } from 'react-router'
+import { Outlet, data, useRouteLoaderData } from 'react-router'
+import { RouteErrorContent } from '~/components/shared/RouteErrorContent'
 import type { Route } from './+types/_app'
 import { Header } from '~/components/shared/Header'
 import { Footer } from '~/components/shared/Footer'
@@ -50,6 +51,28 @@ export async function loader({ request }: Route.LoaderArgs) {
   return data(
     { ...userData, cartCount, toast },
     { headers: { 'Set-Cookie': await commitSession(session) } },
+  )
+}
+
+// Reemplaza al layout entero: redibuja Header/Footer para que un 404 no deje al usuario sin navegación
+export function ErrorBoundary() {
+  // Si falló una ruta hija, los datos de este layout siguen disponibles
+  const layoutData = useRouteLoaderData<typeof loader>('routes/_app')
+
+  return (
+    <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-900">
+      <Header
+        user={layoutData?.user ?? null}
+        isAdmin={layoutData?.isAdmin ?? false}
+        cartCount={layoutData?.cartCount ?? 0}
+      />
+      <main className="w-full flex-1">
+        <div className="mx-auto max-w-7xl p-6">
+          <RouteErrorContent />
+        </div>
+      </main>
+      <Footer />
+    </div>
   )
 }
 

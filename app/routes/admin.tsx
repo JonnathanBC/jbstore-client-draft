@@ -4,6 +4,7 @@ import { requireAdmin } from '~/server/auth.server'
 import { commitSession, getSession } from '~/server/session.server'
 import { Sidebar } from '~/components/admin/Sidebar'
 import { Breadcrumbs } from '~/components/shared/Breadcrumbs'
+import { RouteErrorContent } from '~/components/shared/RouteErrorContent'
 import { AppToaster, type ToastFlash } from '~/components/AppToaster'
 import type { RouteHandle } from '~/types/route'
 import { fetchMe } from '~/server/user.server'
@@ -26,6 +27,20 @@ export async function loader({ request }: Route.LoaderArgs) {
   return data(
     { user, toast },
     { headers: { 'Set-Cookie': await commitSession(session) } },
+  )
+}
+
+// Reemplaza al layout entero: por eso redibuja el Sidebar y no deja al admin sin navegación
+export function ErrorBoundary() {
+  return (
+    <>
+      <Sidebar />
+      <div className="min-h-screen px-4 py-6 sm:ml-64">
+        <main className="border-weak rounded-lg border border-dashed p-4">
+          <RouteErrorContent homeTo="/admin" />
+        </main>
+      </div>
+    </>
   )
 }
 
