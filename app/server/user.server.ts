@@ -1,5 +1,13 @@
 import { apiClient, toApiError, type ApiError } from '~/lib/apiClient'
 import { ProfileInput, User, UserOption } from '~/types/user'
+import { ApiResponse } from '~/types/api'
+
+export interface GetUsersParams {
+  token: string
+  page?: number
+  per_page?: number
+  order?: { created_at?: 'asc' | 'desc' }
+}
 
 export async function fetchMe(token: string): Promise<User> {
   const client = apiClient(token)
@@ -23,6 +31,23 @@ export async function completeProfile(
 }
 
 export async function getUsers({
+  token,
+  ...params
+}: GetUsersParams): Promise<ApiResponse<User>> {
+  try {
+    const { data } = await apiClient(token).get<ApiResponse<User>>(
+      '/api/admin/users/list',
+      {
+        params,
+      },
+    )
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
+
+export async function getUserOptions({
   token,
   search,
 }: {

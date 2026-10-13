@@ -10,6 +10,7 @@ import {
   ShoppingCartIcon,
   Tag,
   Tags,
+  Users,
 } from 'lucide-react'
 import { t } from '~/i18n'
 
@@ -83,6 +84,13 @@ export const menuItems: MenuItem[] = [
     label: t('admin.covers'),
     href: '/admin/covers',
     icon: Briefcase,
+  },
+  {
+    type: 'link',
+    key: 'users',
+    label: t('admin.users'),
+    href: '/admin/users',
+    icon: Users,
   },
   {
     type: 'section',

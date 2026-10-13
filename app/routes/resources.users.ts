@@ -2,7 +2,7 @@ import {
   requireAdminMiddleware,
   requireSessionUser,
 } from '~/server/auth.context.server'
-import { getUsers } from '~/server/user.server'
+import { getUserOptions } from '~/server/user.server'
 import { Route } from './+types/resources.users'
 
 export async function loader({ request, context }: Route.LoaderArgs) {
@@ -10,7 +10,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const url = new URL(request.url)
   const search = url.searchParams.get('search') ?? undefined
 
-  const users = await getUsers({ token, search })
+  const users = await getUserOptions({ token, search })
 
   return {
     items: users.map((u) => ({
