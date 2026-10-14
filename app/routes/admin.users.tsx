@@ -1,5 +1,4 @@
-import { useSearchParams } from 'react-router'
-import { Table } from '~/components/Table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { renderDateTime } from '~/components/table/renders'
 import { t } from '~/i18n'
 import { requireSessionUser } from '~/server/auth.context.server'
@@ -23,7 +22,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     token,
     page: Number(searchParams.get('page') ?? 1),
     per_page: Number(searchParams.get('per_page') ?? 10),
-    search: String(searchParams.get('search')) || undefined,
+    search: searchParams.get('search') ?? undefined,
     order: { created_at: 'desc' },
   })
 
@@ -34,21 +33,21 @@ export async function action() {
   return null
 }
 
-const columns = [
-  { header: 'ID', accessorKey: 'id' as const },
-  { header: 'Nombre', accessorKey: 'name' as const },
-  { header: 'Apellido', accessorKey: 'last_name' as const },
-  { header: 'Correo', accessorKey: 'email' as const },
+const columns: ColumnDef<User>[] = [
+  { header: 'ID', accessorKey: 'id' },
+  { header: 'Nombre', accessorKey: 'name' },
+  { header: 'Apellido', accessorKey: 'last_name' },
+  { header: 'Correo', accessorKey: 'email' },
   {
     header: 'Rol',
-    accessorKey: 'role' as const,
-    render: (user: User) =>
-      user.role === 'ROLE_ADMIN' ? 'Administrador' : 'Usuario',
+    accessorKey: 'role',
+    cell: ({ row }) =>
+      row.original.role === 'ROLE_ADMIN' ? 'Administrador' : 'Usuario',
   },
   {
     header: 'Fecha de creación',
-    accessorKey: 'created_at' as const,
-    render: (user: User) => renderDateTime(user.created_at),
+    accessorKey: 'created_at',
+    cell: ({ row }) => renderDateTime(row.original.created_at),
   },
 ]
 
