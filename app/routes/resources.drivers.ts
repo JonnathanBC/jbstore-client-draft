@@ -5,7 +5,7 @@ import {
 import { getDrivers } from '~/server/drivers.server'
 import { Route } from './+types/resources.drivers'
 
-export async function loader({ request, context }: Route.LoaderArgs) {
+export async function loader({ context }: Route.LoaderArgs) {
   const { token } = requireSessionUser(context)
 
   const drivers = await getDrivers({

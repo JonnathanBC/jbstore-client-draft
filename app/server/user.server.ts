@@ -6,6 +6,7 @@ export interface GetUsersParams {
   token: string
   page?: number
   per_page?: number
+  search?: string
   order?: { created_at?: 'asc' | 'desc' }
 }
 

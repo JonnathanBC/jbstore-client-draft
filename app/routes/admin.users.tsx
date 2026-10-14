@@ -7,6 +7,7 @@ import { getUsers } from '~/server/user.server'
 import type { User } from '~/types/user'
 import type { RouteHandle } from '~/types/route'
 import type { Route } from './+types/admin.users'
+import { DataTable } from '~/components/DataTable'
 
 export const handle: RouteHandle = { breadcrumb: t('admin.users') }
 
@@ -22,6 +23,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     token,
     page: Number(searchParams.get('page') ?? 1),
     per_page: Number(searchParams.get('per_page') ?? 10),
+    search: String(searchParams.get('search')) || undefined,
     order: { created_at: 'desc' },
   })
 
@@ -33,37 +35,32 @@ export async function action() {
 }
 
 const columns = [
-  { title: 'ID', dataIndex: 'id' as const },
-  { title: 'Nombre', dataIndex: 'name' as const },
-  { title: 'Apellido', dataIndex: 'last_name' as const },
-  { title: 'Correo', dataIndex: 'email' as const },
+  { header: 'ID', accessorKey: 'id' as const },
+  { header: 'Nombre', accessorKey: 'name' as const },
+  { header: 'Apellido', accessorKey: 'last_name' as const },
+  { header: 'Correo', accessorKey: 'email' as const },
   {
-    title: 'Rol',
+    header: 'Rol',
+    accessorKey: 'role' as const,
     render: (user: User) =>
       user.role === 'ROLE_ADMIN' ? 'Administrador' : 'Usuario',
   },
   {
-    title: 'Fecha de creación',
+    header: 'Fecha de creación',
+    accessorKey: 'created_at' as const,
     render: (user: User) => renderDateTime(user.created_at),
   },
 ]
 
 export default function AdminUsersRoute({ loaderData }: Route.ComponentProps) {
   const { users } = loaderData
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const handlePageChange = (page: number) => {
-    const next = new URLSearchParams(searchParams)
-    next.set('page', String(page))
-    setSearchParams(next)
-  }
 
   return (
-    <Table<User>
-      dataSource={users.data}
+    <DataTable
+      data={users.data}
       columns={columns}
       meta={users}
-      onPageChange={handlePageChange}
+      searchPlaceholder="Buscar por id, nombre, apellido, email"
     />
   )
 }
